@@ -145,8 +145,10 @@ function FontLoader() {
       .navbar {
         position: sticky; top: 0; z-index: 900; background: rgba(250,246,239,0.95);
         backdrop-filter: blur(12px); border-bottom: 1px solid var(--border);
-        padding: 12px 48px; min-height: 100px; display: flex; align-items: center; justify-content: space-between;
+        padding: 8px 48px; min-height: 80px; display: flex; align-items: center; justify-content: space-between;
       }
+      .nav-logo { height: 90px; cursor: pointer; transition: transform 0.2s; }
+      .nav-logo:hover { transform: scale(1.02); }
 
       /* Search input */
       .search-input {
@@ -191,7 +193,8 @@ function FontLoader() {
       .page-pad { padding: 64px 48px 80px; }
 
       @media (max-width: 640px) {
-        .navbar { padding: 12px 20px; min-height: 80px; height: auto; }
+        .navbar { padding: 8px 20px; min-height: 64px; height: auto; }
+        .nav-logo { height: 60px; }
         .footer { padding: 48px 20px 24px; }
 
         /* 2-col product grid on mobile */
@@ -459,7 +462,7 @@ function Navbar({ page, setPage }) {
   const links = [['home', 'Home'], ['products', 'Shop'], ['about', 'Our Story']];
   return (
     <nav className="navbar">
-      <img src="/img/logo.png" alt="Ceylon Crunch" height="150" style={{ cursor: 'pointer', transition: 'transform 0.2s' }} onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.02)'} onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'} onClick={() => { setPage('home'); window.scrollTo(0, 0); }} />
+      <img src="/img/logo.png" alt="Ceylon Crunch" className="nav-logo" onClick={() => { setPage('home'); window.scrollTo(0, 0); }} />
       <div className="hide-mobile" style={{ display: 'flex', gap: 32, alignItems: 'center' }}>
         {links.map(([key, label]) => (
           <button key={key} onClick={() => { setPage(key); window.scrollTo(0, 0); }}
