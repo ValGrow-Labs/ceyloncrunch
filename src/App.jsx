@@ -116,6 +116,26 @@ function FontLoader() {
         .mobile-stack { flex-direction: column !important; }
       }
 
+      .hero-section {
+        position: relative;
+        min-height: 88vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        background: linear-gradient(135deg, var(--cream) 0%, var(--cream-dark) 60%, #e0d4c0 100%);
+      }
+      .hero-content {
+        position: relative;
+        z-index: 1;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 60px 48px;
+        text-align: center;
+        width: 100%;
+        background: radial-gradient(ellipse at center, rgba(250,246,239,0.9) 0%, rgba(250,246,239,0.6) 40%, rgba(250,246,239,0) 70%);
+      }
+
       /* Drawer overlay */
       .drawer-overlay {
         position: fixed; inset: 0; background: rgba(0,0,0,0.45);
@@ -222,6 +242,9 @@ function FontLoader() {
         /* Footer */
         .footer-grid { grid-template-columns: 1fr !important; gap: 36px !important; }
         .footer-grid > div:last-child { text-align: left !important; }
+
+        .hero-section { min-height: 100vh; overflow-x: hidden; overflow-y: visible; align-items: flex-start; padding: 100px 0 60px; }
+        .hero-content { padding: 40px 24px; }
       }
     `}</style>
   );
@@ -499,15 +522,15 @@ function HomePage({ setPage, setDetailId }) {
   return (
     <main>
       {/* HERO */}
-      <section className="grain" style={{ position: 'relative', minHeight: '88vh', display: 'flex', alignItems: 'center', overflow: 'hidden', background: 'linear-gradient(135deg, var(--cream) 0%, var(--cream-dark) 60%, #e0d4c0 100%)' }}>
+      <section className="grain hero-section">
         <div style={{ position: 'absolute', inset: 0, backgroundImage: 'url(/img/hero-bg.jpg)', backgroundSize: 'cover', backgroundPosition: 'center', opacity: 0.52 }} />
-        <div style={{ position: 'relative', zIndex: 1, maxWidth: 760, margin: '0 auto', padding: '80px 48px', textAlign: 'center' }}>
+        <div className="hero-content">
           <p className="animate-fadeUp" style={{ fontSize: 13, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--green-light)', fontWeight: 700, marginBottom: 20 }}>Ceylon Crunch — Est. 2020</p>
-          <h1 className="animate-fadeUp-2" style={{ fontSize: 'clamp(38px,6vw,72px)', fontWeight: 700, lineHeight: 1.12, color: 'var(--green)', marginBottom: 28 }}>
+          <h1 className="animate-fadeUp-2" style={{ fontSize: 'clamp(38px,6vw,72px)', fontWeight: 700, lineHeight: 1.12, color: 'var(--green)', marginBottom: 28, textShadow: '0 4px 24px rgba(250,246,239,0.8), 0 2px 8px rgba(250,246,239,0.9)' }}>
             In a world that rushes everything,<br />
             <em style={{ color: 'var(--brown)', fontStyle: 'italic' }}>we chose to wait.</em>
           </h1>
-          <p className="animate-fadeUp-3" style={{ fontSize: 18, color: 'var(--ink)', lineHeight: 1.8, maxWidth: 560, margin: '0 auto 40px', fontWeight: 400 }}>
+          <p className="animate-fadeUp-3" style={{ fontSize: 18, color: 'var(--ink)', lineHeight: 1.8, maxWidth: 560, margin: '0 auto 40px', fontWeight: 600, textShadow: '0 2px 10px rgba(250,246,239,0.9)' }}>
             Sourced from Sri Lankan growers who know when a nut is ready without checking a calendar. Honest food for moments that matter.
           </p>
           <div className="animate-fadeUp-4" style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap' }}>
