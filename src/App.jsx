@@ -145,7 +145,7 @@ function FontLoader() {
       .navbar {
         position: sticky; top: 0; z-index: 900; background: rgba(250,246,239,0.95);
         backdrop-filter: blur(12px); border-bottom: 1px solid var(--border);
-        padding: 0 48px; height: 72px; display: flex; align-items: center; justify-content: space-between;
+        padding: 12px 48px; min-height: 100px; display: flex; align-items: center; justify-content: space-between;
       }
 
       /* Search input */
@@ -191,7 +191,7 @@ function FontLoader() {
       .page-pad { padding: 64px 48px 80px; }
 
       @media (max-width: 640px) {
-        .navbar { padding: 0 20px; height: 64px; }
+        .navbar { padding: 12px 20px; min-height: 80px; height: auto; }
         .footer { padding: 48px 20px 24px; }
 
         /* 2-col product grid on mobile */
@@ -459,7 +459,7 @@ function Navbar({ page, setPage }) {
   const links = [['home', 'Home'], ['products', 'Shop'], ['about', 'Our Story']];
   return (
     <nav className="navbar">
-      <img src="/img/logo.png" alt="Ceylon Crunch" height="90" style={{ cursor: 'pointer' }} onClick={() => { setPage('home'); window.scrollTo(0, 0); }} />
+      <img src="/img/logo.png" alt="Ceylon Crunch" height="150" style={{ cursor: 'pointer', transition: 'transform 0.2s' }} onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.02)'} onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'} onClick={() => { setPage('home'); window.scrollTo(0, 0); }} />
       <div className="hide-mobile" style={{ display: 'flex', gap: 32, alignItems: 'center' }}>
         {links.map(([key, label]) => (
           <button key={key} onClick={() => { setPage(key); window.scrollTo(0, 0); }}
@@ -499,12 +499,12 @@ function HomePage({ setPage, setDetailId }) {
       <section className="grain" style={{ position: 'relative', minHeight: '88vh', display: 'flex', alignItems: 'center', overflow: 'hidden', background: 'linear-gradient(135deg, var(--cream) 0%, var(--cream-dark) 60%, #e0d4c0 100%)' }}>
         <div style={{ position: 'absolute', inset: 0, backgroundImage: 'url(/img/hero-bg.jpg)', backgroundSize: 'cover', backgroundPosition: 'center', opacity: 0.52 }} />
         <div style={{ position: 'relative', zIndex: 1, maxWidth: 760, margin: '0 auto', padding: '80px 48px', textAlign: 'center' }}>
-          <p className="animate-fadeUp" style={{ fontSize: 13, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--brown)', fontWeight: 600, marginBottom: 20 }}>Ceylon Crunch — Est. 2020</p>
-          <h1 className="animate-fadeUp-2" style={{ fontSize: 'clamp(38px,6vw,72px)', fontWeight: 700, lineHeight: 1.12, color: 'var(--green-dark)', marginBottom: 28 }}>
+          <p className="animate-fadeUp" style={{ fontSize: 13, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--green-light)', fontWeight: 700, marginBottom: 20 }}>Ceylon Crunch — Est. 2020</p>
+          <h1 className="animate-fadeUp-2" style={{ fontSize: 'clamp(38px,6vw,72px)', fontWeight: 700, lineHeight: 1.12, color: 'var(--green)', marginBottom: 28 }}>
             In a world that rushes everything,<br />
-            <em style={{ color: 'var(--brown)' }}>we chose to wait.</em>
+            <em style={{ color: 'var(--brown)', fontStyle: 'italic' }}>we chose to wait.</em>
           </h1>
-          <p className="animate-fadeUp-3" style={{ fontSize: 18, color: 'var(--ink-soft)', lineHeight: 1.8, maxWidth: 560, margin: '0 auto 40px', fontWeight: 300 }}>
+          <p className="animate-fadeUp-3" style={{ fontSize: 18, color: 'var(--ink)', lineHeight: 1.8, maxWidth: 560, margin: '0 auto 40px', fontWeight: 400 }}>
             Sourced from Sri Lankan growers who know when a nut is ready without checking a calendar. Honest food for moments that matter.
           </p>
           <div className="animate-fadeUp-4" style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -608,7 +608,7 @@ function HomePage({ setPage, setDetailId }) {
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <div className="footer-grid" style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', gap: 32, alignItems: 'start', marginBottom: 48 }}>
             <div>
-              <img src="/img/logo.png" alt="Ceylon Crunch" height="64" style={{ marginBottom: 16 }} />
+              <img src="/img/logo.png" alt="Ceylon Crunch" height="100" style={{ marginBottom: 20 }} />
               <p style={{ fontSize: 14, lineHeight: 1.75, maxWidth: 280 }}>Healthy Crunch for Every Home.<br />From the land. Handled with care. Shared with intention.</p>
             </div>
             <div style={{ display: 'flex', gap: 40 }}>
