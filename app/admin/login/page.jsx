@@ -20,8 +20,8 @@ export default function AdminLoginPage() {
       setError(err.message)
       setLoading(false)
     } else {
-      router.push('/admin')
-      router.refresh()
+      // Full page reload so server middleware picks up the new session cookie
+      window.location.href = '/admin'
     }
   }
 
