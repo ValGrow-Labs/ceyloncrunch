@@ -55,7 +55,7 @@ export default async function HomePage() {
       }}>
         <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${hero.bg_image || '/img/hero-bg.jpg'})`, backgroundSize: 'cover', backgroundPosition: 'center', opacity: (hero.bg_opacity ?? 0.52) * 0.4 }} />
 
-        <div className="hero-split" style={{ maxWidth: 1200, margin: '0 auto', padding: '80px 48px', display: 'grid', gridTemplateColumns: '1fr 480px', gap: 64, alignItems: 'center', width: '100%', position: 'relative', zIndex: 1 }}>
+        <div className="hero-split" style={{ maxWidth: 1200, margin: '0 auto', padding: 'clamp(60px,8vw,80px) clamp(16px,4vw,48px)', display: 'grid', gridTemplateColumns: '1fr 480px', gap: 64, alignItems: 'center', width: '100%', position: 'relative', zIndex: 1 }}>
 
           {/* Left: text */}
           <div>
@@ -163,7 +163,7 @@ export default async function HomePage() {
           FEATURES STRIP
       ═══════════════════════════════════════════════ */}
       {featuresRaw.length > 0 && (
-        <section style={{ background: 'var(--cream-dark)', padding: '48px 48px' }}>
+        <section style={{ background: 'var(--cream-dark)', padding: 'clamp(32px,5vw,48px) clamp(16px,4vw,48px)' }}>
           <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px,1fr))', gap: 32 }}>
             {featuresRaw.map((f, i) => (
               <div key={i} style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
@@ -183,7 +183,7 @@ export default async function HomePage() {
       {/* ═══════════════════════════════════════════════
           FEATURED — top 3 editorial cards
       ═══════════════════════════════════════════════ */}
-      <section style={{ padding: '96px 48px 64px', maxWidth: 1200, margin: '0 auto' }}>
+      <section style={{ padding: 'clamp(56px,8vw,96px) clamp(16px,4vw,48px) clamp(40px,6vw,64px)', maxWidth: 1200, margin: '0 auto' }}>
         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 52, flexWrap: 'wrap', gap: 16 }}>
           <div>
             <p style={{ fontSize: 12, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--brown)', fontWeight: 600, marginBottom: 10 }}>
@@ -248,7 +248,7 @@ export default async function HomePage() {
       {/* ═══════════════════════════════════════════════
           CATEGORIES
       ═══════════════════════════════════════════════ */}
-      <section style={{ padding: '0 48px 96px', maxWidth: 1200, margin: '0 auto' }}>
+      <section style={{ padding: '0 clamp(16px,4vw,48px) clamp(56px,8vw,96px)', maxWidth: 1200, margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: 44 }}>
           <p style={{ fontSize: 12, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--brown)', fontWeight: 600, marginBottom: 10 }}>
             {categoriesSection.eyebrow || 'Browse by Type'}
@@ -275,7 +275,7 @@ export default async function HomePage() {
       {/* ═══════════════════════════════════════════════
           ABOUT STRIP
       ═══════════════════════════════════════════════ */}
-      <section style={{ background: 'var(--green-dark)', padding: '96px 48px', position: 'relative', overflow: 'hidden' }}>
+      <section style={{ background: 'var(--green-dark)', padding: 'clamp(56px,8vw,96px) clamp(16px,4vw,48px)', position: 'relative', overflow: 'hidden' }}>
         {/* Background texture */}
         <div style={{ position: 'absolute', inset: 0, backgroundImage: 'url(/img/hero-bg.jpg)', backgroundSize: 'cover', backgroundPosition: 'center', opacity: 0.06 }} />
         <div className="about-strip-grid" style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, alignItems: 'center', position: 'relative', zIndex: 1 }}>
@@ -322,7 +322,7 @@ export default async function HomePage() {
       {/* ═══════════════════════════════════════════════
           NEWSLETTER
       ═══════════════════════════════════════════════ */}
-      <section style={{ background: 'var(--cream-dark)', padding: '88px 48px', textAlign: 'center' }}>
+      <section style={{ background: 'var(--cream-dark)', padding: 'clamp(56px,8vw,88px) clamp(16px,4vw,48px)', textAlign: 'center' }}>
         <div style={{ maxWidth: 560, margin: '0 auto' }}>
           <p style={{ fontSize: 12, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--brown)', fontWeight: 600, marginBottom: 16 }}>
             {newsletterSection.eyebrow || 'Stay Connected'}

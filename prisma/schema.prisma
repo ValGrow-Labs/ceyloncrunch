@@ -1,0 +1,65 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Product {
+  id            String   @id @default(cuid())
+  name          String
+  slug          String   @unique
+  category      String
+  price         Int      // Price in LKR (cents)
+  variants      String   // JSON array stored as string: ["250g", "500g", "1kg"]
+  badge         String?
+  badgeType     String?
+  rating        Float    @default(4.5)
+  reviews       Int      @default(0)
+  image         String
+  description   String
+  nutritionInfo String?  // JSON string
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  orderItems    OrderItem[]
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  customerName    String
+  customerEmail   String
+  customerPhone   String
+  shippingAddress String
+  items           String      // JSON array of order items
+  subtotal        Int
+  delivery        Int
+  total           Int
+  status          String      @default("pending") // pending, paid, shipped, delivered
+  paymentId       String?     // PayHere payment ID
+  paymentUrl      String?     // PayHere checkout URL
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  orderItems      OrderItem[]
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id])
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+  name      String
+  price     Int
+  variant   String
+  quantity  Int
+}
+
+model Newsletter {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+}

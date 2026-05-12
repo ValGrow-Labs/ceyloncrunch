@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import Link from 'next/link'
 import { useCart } from '@/contexts/CartContext'
 import { useRouter } from 'next/navigation'
 import { IconCash, IconBank, IconCard } from './Icons'
@@ -7,7 +8,6 @@ import { IconCash, IconBank, IconCard } from './Icons'
 export default function CheckoutClient({ paymentSettings, deliverySettings }) {
   const { cart, subtotal, currency, freeThreshold, deliveryFee, dispatch } = useCart()
   const router = useRouter()
-  const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [paymentMethod, setPaymentMethod] = useState('cod')
@@ -54,21 +54,19 @@ export default function CheckoutClient({ paymentSettings, deliverySettings }) {
       if (!res.ok) throw new Error(data.error || 'Failed to place order')
 
       if (paymentMethod === 'payhere' && data.paymentUrl) {
-        const form2 = document.createElement('form')
-        form2.method = 'POST'
-        form2.action = data.paymentUrl
+        const f2 = document.createElement('form')
+        f2.method = 'POST'
+        f2.action = data.paymentUrl
         Object.entries(data.paymentData || {}).forEach(([k, v]) => {
-          const input = document.createElement('input')
-          input.type = 'hidden'
-          input.name = k
-          input.value = v
-          form2.appendChild(input)
+          const inp = document.createElement('input')
+          inp.type = 'hidden'; inp.name = k; inp.value = v
+          f2.appendChild(inp)
         })
-        document.body.appendChild(form2)
-        form2.submit()
+        document.body.appendChild(f2)
+        f2.submit()
       } else {
         dispatch({ type: 'CLEAR' })
-        router.push(`/order/success?id=${data.id}&method=${paymentMethod}`)
+        window.location.href = `/order/success?id=${data.id}&method=${paymentMethod}`
       }
     } catch (err) {
       setError(err.message)
@@ -80,95 +78,86 @@ export default function CheckoutClient({ paymentSettings, deliverySettings }) {
     return (
       <div style={{ textAlign: 'center', padding: '80px 20px' }}>
         <h2 style={{ fontFamily: 'Playfair Display,serif', fontSize: 28, color: 'var(--green-dark)', marginBottom: 16 }}>Your cart is empty</h2>
-        <a href="/shop" className="btn-primary" style={{ display: 'inline-flex' }}>Browse Products</a>
+        <Link href="/shop" className="btn-primary" style={{ display: 'inline-flex' }}>Browse Products</Link>
       </div>
     )
   }
 
-  const inputStyle = { width: '100%', padding: '13px 16px', border: '1.5px solid var(--border)', borderRadius: 12, fontSize: 15, background: '#fff', outline: 'none', transition: 'border-color 0.2s' }
-  const labelStyle = { display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--ink-soft)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }
-
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: 48, alignItems: 'start' }}>
-      {/* Left: form */}
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
-        {/* Contact */}
-        <div style={{ background: '#fff', borderRadius: 20, padding: 32, boxShadow: '0 2px 16px rgba(0,0,0,0.05)' }}>
-          <h2 style={{ fontFamily: 'Playfair Display,serif', fontSize: 22, fontWeight: 700, color: 'var(--green-dark)', marginBottom: 24 }}>Contact & Delivery</h2>
+    <div className="checkout-grid">
+
+      {/* ── LEFT: Form ── */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+
+        {/* Contact & Delivery */}
+        <div style={cardStyle}>
+          <h2 style={cardTitle}>Contact & Delivery</h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-              <div>
-                <label style={labelStyle}>Full Name *</label>
-                <input style={inputStyle} value={form.name} onChange={e => set('name', e.target.value)}
-                  onFocus={e => e.target.style.borderColor = 'var(--green)'}
-                  onBlur={e => e.target.style.borderColor = 'var(--border)'}
-                  placeholder="John Silva" required />
-              </div>
-              <div>
-                <label style={labelStyle}>Phone *</label>
-                <input style={inputStyle} value={form.phone} onChange={e => set('phone', e.target.value)}
-                  onFocus={e => e.target.style.borderColor = 'var(--green)'}
-                  onBlur={e => e.target.style.borderColor = 'var(--border)'}
-                  placeholder="+94 77 xxx xxxx" required />
-              </div>
+            <div className="form-row-2col">
+              <Field label="Full Name *">
+                <Input value={form.name} onChange={v => set('name', v)} placeholder="John Silva" required />
+              </Field>
+              <Field label="Phone *">
+                <Input value={form.phone} onChange={v => set('phone', v)} placeholder="+94 77 xxx xxxx" required />
+              </Field>
             </div>
-            <div>
-              <label style={labelStyle}>Email *</label>
-              <input type="email" style={inputStyle} value={form.email} onChange={e => set('email', e.target.value)}
-                onFocus={e => e.target.style.borderColor = 'var(--green)'}
-                onBlur={e => e.target.style.borderColor = 'var(--border)'}
-                placeholder="john@example.com" required />
-            </div>
-            <div>
-              <label style={labelStyle}>Delivery Address *</label>
-              <textarea style={{ ...inputStyle, minHeight: 80, resize: 'vertical' }} value={form.address} onChange={e => set('address', e.target.value)}
-                onFocus={e => e.target.style.borderColor = 'var(--green)'}
-                onBlur={e => e.target.style.borderColor = 'var(--border)'}
-                placeholder="No. 123, Main Street, Colombo 3" required />
-            </div>
-            <div>
-              <label style={labelStyle}>City</label>
-              <input style={inputStyle} value={form.city} onChange={e => set('city', e.target.value)}
-                onFocus={e => e.target.style.borderColor = 'var(--green)'}
-                onBlur={e => e.target.style.borderColor = 'var(--border)'}
-                placeholder="Colombo" />
-            </div>
-            <div>
-              <label style={labelStyle}>Order Notes (optional)</label>
-              <textarea style={{ ...inputStyle, minHeight: 64, resize: 'vertical' }} value={form.notes} onChange={e => set('notes', e.target.value)}
-                onFocus={e => e.target.style.borderColor = 'var(--green)'}
-                onBlur={e => e.target.style.borderColor = 'var(--border)'}
-                placeholder="Any special instructions?" />
-            </div>
+            <Field label="Email *">
+              <Input type="email" value={form.email} onChange={v => set('email', v)} placeholder="john@example.com" required />
+            </Field>
+            <Field label="Delivery Address *">
+              <textarea value={form.address} onChange={e => set('address', e.target.value)}
+                placeholder="No. 123, Main Street, Colombo 3" required rows={3}
+                style={{ ...IS, resize: 'vertical' }} onFocus={fp.onFocus} onBlur={fp.onBlur} />
+            </Field>
+            <Field label="City">
+              <Input value={form.city} onChange={v => set('city', v)} placeholder="Colombo" />
+            </Field>
+            <Field label="Order Notes (optional)">
+              <textarea value={form.notes} onChange={e => set('notes', e.target.value)}
+                placeholder="Any special instructions?" rows={2}
+                style={{ ...IS, resize: 'vertical' }} onFocus={fp.onFocus} onBlur={fp.onBlur} />
+            </Field>
           </div>
         </div>
 
         {/* Payment */}
-        <div style={{ background: '#fff', borderRadius: 20, padding: 32, boxShadow: '0 2px 16px rgba(0,0,0,0.05)' }}>
-          <h2 style={{ fontFamily: 'Playfair Display,serif', fontSize: 22, fontWeight: 700, color: 'var(--green-dark)', marginBottom: 24 }}>Payment Method</h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div style={cardStyle}>
+          <h2 style={cardTitle}>Payment Method</h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {availableMethods.map(m => (
-              <div key={m.key} className={`payment-card ${paymentMethod === m.key ? 'selected' : ''}`}
+              <div key={m.key}
                 onClick={() => setPaymentMethod(m.key)}
-                style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                <div style={{ width: 40, height: 40, borderRadius: 10, background: paymentMethod === m.key ? 'var(--green)' : 'var(--cream-dark)', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 0.2s', color: paymentMethod === m.key ? '#fff' : 'var(--ink)', flexShrink: 0 }}>
-                  {m.icon}
-                </div>
-                <div>
+                style={{
+                  border: `2px solid ${paymentMethod === m.key ? 'var(--green)' : 'var(--border)'}`,
+                  borderRadius: 14, padding: '14px 16px', cursor: 'pointer',
+                  background: paymentMethod === m.key ? '#f0f7f2' : '#fff',
+                  display: 'flex', alignItems: 'center', gap: 14, transition: 'all 0.15s',
+                }}>
+                <div style={{
+                  width: 38, height: 38, borderRadius: 10, flexShrink: 0,
+                  background: paymentMethod === m.key ? 'var(--green)' : 'var(--cream-dark)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  color: paymentMethod === m.key ? '#fff' : 'var(--ink)', transition: 'all 0.15s',
+                }}>{m.icon}</div>
+                <div style={{ flex: 1 }}>
                   <div style={{ fontWeight: 600, fontSize: 15, color: 'var(--ink)' }}>{m.label}</div>
                   <div style={{ fontSize: 13, color: 'var(--muted)', marginTop: 2 }}>{m.desc}</div>
                 </div>
-                <div style={{ marginLeft: 'auto', width: 20, height: 20, borderRadius: '50%', border: `2px solid ${paymentMethod === m.key ? 'var(--green)' : 'var(--border)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{
+                  width: 20, height: 20, borderRadius: '50%', flexShrink: 0,
+                  border: `2px solid ${paymentMethod === m.key ? 'var(--green)' : 'var(--border)'}`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
                   {paymentMethod === m.key && <div style={{ width: 10, height: 10, borderRadius: '50%', background: 'var(--green)' }} />}
                 </div>
               </div>
             ))}
           </div>
 
-          {/* Bank transfer instructions */}
+          {/* Bank transfer details */}
           {paymentMethod === 'bank_transfer' && payments.bank_transfer && (
-            <div style={{ marginTop: 20, padding: 20, background: 'var(--cream-dark)', borderRadius: 14 }}>
-              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--green-dark)', marginBottom: 12 }}>Bank Details</div>
+            <div style={{ marginTop: 16, padding: 16, background: 'var(--cream-dark)', borderRadius: 12 }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--green-dark)', marginBottom: 10 }}>Bank Details</div>
               <div style={{ fontSize: 14, lineHeight: 1.8, color: 'var(--ink-soft)' }}>
                 <div><strong>Bank:</strong> {payments.bank_transfer.bank_name}</div>
                 <div><strong>Account Name:</strong> {payments.bank_transfer.account_name}</div>
@@ -176,54 +165,74 @@ export default function CheckoutClient({ paymentSettings, deliverySettings }) {
                 <div><strong>Branch:</strong> {payments.bank_transfer.branch}</div>
               </div>
               {payments.bank_transfer.instructions && (
-                <p style={{ fontSize: 13, color: 'var(--muted)', marginTop: 12, lineHeight: 1.6 }}>{payments.bank_transfer.instructions}</p>
+                <p style={{ fontSize: 13, color: 'var(--muted)', marginTop: 10, lineHeight: 1.6 }}>{payments.bank_transfer.instructions}</p>
               )}
             </div>
           )}
         </div>
 
-        {error && <div style={{ padding: 16, background: '#fff0f0', border: '1px solid #ffcccc', borderRadius: 12, color: '#c0392b', fontSize: 14 }}>{error}</div>}
+        {error && (
+          <div style={{ padding: '12px 16px', background: '#fff0f0', border: '1px solid #fca5a5', borderRadius: 12, color: '#c0392b', fontSize: 14 }}>{error}</div>
+        )}
 
-        <button type="submit" disabled={loading} className="btn-primary"
-          style={{ justifyContent: 'center', padding: '16px 32px', fontSize: 17, opacity: loading ? 0.7 : 1 }}>
-          {loading ? <><span className="spinner" style={{ width: 18, height: 18, marginRight: 8 }} />Processing...</> : `Place Order — ${currency} ${total.toLocaleString()}`}
+        <button type="button" onClick={handleSubmit} disabled={loading} className="btn-primary"
+          style={{ justifyContent: 'center', padding: '16px', fontSize: 17, width: '100%', opacity: loading ? 0.75 : 1 }}>
+          {loading
+            ? <><span className="spinner" style={{ width: 18, height: 18, marginRight: 8 }} />Processing...</>
+            : `Place Order — ${currency} ${total.toLocaleString()}`}
         </button>
-      </form>
+      </div>
 
-      {/* Right: order summary */}
-      <div style={{ position: 'sticky', top: 100 }}>
-        <div style={{ background: '#fff', borderRadius: 20, padding: 28, boxShadow: '0 2px 16px rgba(0,0,0,0.05)' }}>
-          <h3 style={{ fontFamily: 'Playfair Display,serif', fontSize: 18, fontWeight: 700, marginBottom: 20, color: 'var(--green-dark)' }}>Order Summary</h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 20 }}>
+      {/* ── RIGHT: Order Summary ── */}
+      <div className="order-summary-sticky">
+        <div style={cardStyle}>
+          <h3 style={{ ...cardTitle, fontSize: 17 }}>Order Summary</h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 16 }}>
             {cart.map(item => (
               <div key={`${item.id}-${item.variant}`} style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-                <div style={{ position: 'relative' }}>
+                <div style={{ position: 'relative', flexShrink: 0 }}>
                   <img src={item.image || '/img/placeholder.jpg'} alt={item.name}
                     style={{ width: 52, height: 52, objectFit: 'cover', borderRadius: 10 }} />
                   <span style={{ position: 'absolute', top: -6, right: -6, width: 20, height: 20, background: 'var(--green)', color: '#fff', borderRadius: '50%', fontSize: 11, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{item.qty}</span>
                 </div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 14, fontWeight: 600 }}>{item.name}</div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.name}</div>
                   <div style={{ fontSize: 12, color: 'var(--muted)' }}>{item.variant}</div>
                 </div>
-                <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--green)' }}>{currency} {(item.price * item.qty).toLocaleString()}</div>
+                <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--green)', flexShrink: 0 }}>{currency} {(item.price * item.qty).toLocaleString()}</div>
               </div>
             ))}
           </div>
-          <div style={{ borderTop: '1px solid var(--border)', paddingTop: 16 }}>
+          <div style={{ borderTop: '1px solid var(--border)', paddingTop: 14 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, color: 'var(--muted)', marginBottom: 8 }}>
               <span>Subtotal</span><span style={{ color: 'var(--ink)' }}>{currency} {subtotal.toLocaleString()}</span>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, color: 'var(--muted)', marginBottom: 16 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, color: 'var(--muted)', marginBottom: 14 }}>
               <span>Delivery</span>
-              <span style={{ color: delivery === 0 ? 'var(--green)' : 'var(--ink)' }}>{delivery === 0 ? 'Free' : `${currency} ${delivery.toLocaleString()}`}</span>
+              <span style={{ color: delivery === 0 ? 'var(--green)' : 'var(--ink)' }}>
+                {delivery === 0 ? 'Free' : `${currency} ${delivery.toLocaleString()}`}
+              </span>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 20, fontWeight: 700, fontFamily: 'Playfair Display,serif' }}>
-              <span>Total</span><span style={{ color: 'var(--green)' }}>{currency} {total.toLocaleString()}</span>
+              <span>Total</span>
+              <span style={{ color: 'var(--green)' }}>{currency} {total.toLocaleString()}</span>
             </div>
           </div>
         </div>
       </div>
+
     </div>
   )
+}
+
+const cardStyle = { background: '#fff', borderRadius: 20, padding: 24, boxShadow: '0 2px 16px rgba(0,0,0,0.06)' }
+const cardTitle = { fontFamily: 'Playfair Display,serif', fontSize: 20, fontWeight: 700, color: 'var(--green-dark)', marginBottom: 20 }
+const IS = { width: '100%', padding: '12px 14px', border: '1.5px solid var(--border)', borderRadius: 12, fontSize: 15, outline: 'none', transition: 'border-color 0.2s', fontFamily: 'inherit', background: '#fff' }
+const fp = { onFocus: e => e.target.style.borderColor = 'var(--green)', onBlur: e => e.target.style.borderColor = 'var(--border)' }
+
+function Field({ label, children }) {
+  return <div><label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--ink-soft)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 7 }}>{label}</label>{children}</div>
+}
+function Input({ value, onChange, placeholder, type = 'text', required }) {
+  return <input type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} required={required} style={IS} onFocus={fp.onFocus} onBlur={fp.onBlur} />
 }

@@ -230,33 +230,65 @@ a { text-decoration: none; color: inherit; }
 }
 @media (min-width: 769px) { .show-mobile-only { display: none !important; } }
 
+/* Checkout layout */
+.checkout-grid { display: grid; grid-template-columns: 1fr 380px; gap: 40px; align-items: start; }
+.form-row-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.order-summary-sticky { position: sticky; top: 92px; }
+
 @media (max-width: 900px) {
   .hero-split { grid-template-columns: 1fr !important; }
   .hero-product-col { display: none !important; }
   .categories-grid-asym { grid-template-columns: 1fr 1fr !important; grid-template-rows: auto auto !important; }
   .featured-3col { grid-template-columns: 1fr 1fr !important; }
+  /* checkout stacks on tablet */
+  .checkout-grid { grid-template-columns: 1fr !important; gap: 24px !important; }
+  .order-summary-sticky { position: static !important; }
 }
 
 @media (max-width: 640px) {
-  .navbar     { padding: 8px 20px; min-height: 64px; }
-  .nav-logo   { height: 60px; }
-  .footer     { padding: 48px 20px 24px; }
-  .prod-grid  { grid-template-columns: repeat(2, 1fr) !important; gap: 12px !important; }
-  .prod-card-img  { height: 150px !important; }
-  .prod-card-body { padding: 12px 12px 14px !important; gap: 7px !important; }
-  .prod-card-title { font-size: 14px !important; }
-  .prod-card-price { font-size: 16px !important; }
-  .prod-card-add  { padding: 7px 10px !important; font-size: 11px !important; }
-  .prod-card-pill { padding: 4px 10px !important; font-size: 11px !important; }
-  .detail-grid { grid-template-columns: 1fr !important; gap: 24px !important; margin-bottom: 40px !important; }
-  .detail-img  { height: 280px !important; }
-  .page-pad    { padding: 24px 16px 60px !important; }
-  .about-strip-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
+  .navbar     { padding: 8px 16px; min-height: 64px; }
+  .nav-logo   { height: 56px; }
+  .footer     { padding: 40px 16px 24px; }
+
+  /* product grids */
+  .prod-grid  { grid-template-columns: repeat(2, 1fr) !important; gap: 10px !important; }
+  .prod-card-img  { height: 140px !important; }
+  .prod-card-body { padding: 10px 10px 12px !important; gap: 6px !important; }
+  .prod-card-title { font-size: 13px !important; line-height: 1.3 !important; }
+  .prod-card-price { font-size: 15px !important; }
+  .prod-card-add  { padding: 6px 10px !important; font-size: 11px !important; }
+  .prod-card-pill { padding: 3px 8px !important; font-size: 10px !important; }
+
+  /* product detail */
+  .detail-grid { grid-template-columns: 1fr !important; gap: 20px !important; margin-bottom: 32px !important; }
+  .detail-img  { height: 260px !important; }
+
+  /* pages */
+  .page-pad { padding: 20px 16px 56px !important; }
+
+  /* about strip */
+  .about-strip-grid { grid-template-columns: 1fr !important; gap: 28px !important; }
   .about-strip-img  { display: none !important; }
-  .footer-grid { grid-template-columns: 1fr !important; gap: 36px !important; }
+
+  /* footer */
+  .footer-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
   .footer-grid > div:last-child { text-align: left !important; }
-  .hero-section  { min-height: 100vh; overflow-x: hidden; align-items: flex-start; padding: 100px 0 60px; }
-  .hero-content  { padding: 40px 24px; }
+
+  /* hero */
+  .hero-section { min-height: 100svh; overflow-x: hidden; }
+
+  /* home sections padding */
+  .home-section-pad { padding-left: 16px !important; padding-right: 16px !important; }
+
+  /* featured cards */
   .featured-3col { grid-template-columns: 1fr !important; }
-  .categories-grid-asym { grid-template-columns: 1fr 1fr !important; grid-template-rows: auto auto !important; }
+  .categories-grid-asym { grid-template-columns: 1fr 1fr !important; grid-template-rows: 180px 180px !important; }
+
+  /* checkout */
+  .checkout-grid  { grid-template-columns: 1fr !important; gap: 20px !important; }
+  .form-row-2col  { grid-template-columns: 1fr !important; gap: 14px !important; }
+  .order-summary-sticky { position: static !important; }
+
+  /* cart drawer */
+  .cart-drawer { width: 100vw !important; }
 }
