@@ -41,12 +41,29 @@ export default function TeamClient({ members, currentUserId, isSuperAdmin }) {
     const res = await fetch('/api/team/reset-password', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: member.full_name }),
+      body: JSON.stringify({ email: member.email || member.full_name }),
     })
     const data = await res.json()
     if (res.ok) showMsg(`Password reset email sent to ${member.full_name || 'the user'}.`, 'success')
     else showMsg(data.error || 'Failed to send reset email', 'error')
     setResetting(null)
+  }
+
+  const deleteMember = async (member) => {
+    if (!confirm(`⚠️ Permanently delete "${member.full_name || 'this user'}"?\n\nThis will remove their account completely and cannot be undone.`)) return
+    showMsg('')
+    const res = await fetch('/api/team', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: member.id }),
+    })
+    const data = await res.json()
+    if (res.ok) {
+      setList(l => l.filter(m => m.id !== member.id))
+      showMsg(`${member.full_name || 'User'} has been permanently deleted.`, 'success')
+    } else {
+      showMsg(data.error || 'Failed to delete user', 'error')
+    }
   }
 
   const inputStyle = { width: '100%', padding: '10px 14px', border: '1.5px solid #e5e7eb', borderRadius: 10, fontSize: 14, outline: 'none', fontFamily: 'inherit' }
@@ -162,8 +179,12 @@ export default function TeamClient({ members, currentUserId, isSuperAdmin }) {
                           {resetting === member.id ? '...' : 'Reset Password'}
                         </button>
                         <button onClick={() => updateMember(member.id, { active: !member.active })}
-                          style={btn(member.active ? '#dc2626' : '#16a34a', member.active ? '#fee2e2' : '#dcfce7')}>
+                          style={btn(member.active ? '#b45309' : '#16a34a', member.active ? '#fef3c7' : '#dcfce7')}>
                           {member.active ? 'Deactivate' : 'Activate'}
+                        </button>
+                        <button onClick={() => deleteMember(member)}
+                          style={btn('#dc2626', '#fee2e2')}>
+                          Delete
                         </button>
                       </div>
                     ) : (
@@ -182,7 +203,8 @@ export default function TeamClient({ members, currentUserId, isSuperAdmin }) {
         <strong style={{ color: '#374151' }}>How password management works:</strong><br />
         • <strong>Invite:</strong> New team members receive an email → click the link → set their own password<br />
         • <strong>Reset Password:</strong> Sends a secure reset email to the team member — they reset it themselves<br />
-        • <strong>Deactivate:</strong> Blocks the user from logging in without deleting their account
+        • <strong>Deactivate:</strong> Blocks login without deleting — account can be reactivated<br />
+        • <strong>Delete:</strong> Permanently removes the account — cannot be undone
       </div>
     </div>
   )
