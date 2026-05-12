@@ -251,7 +251,7 @@ function FontLoader() {
 }
 
 // ─── PRODUCT DATA ────────────────────────────────────────────────────────────
-const PRODUCTS = [
+const fallbackProducts = [
   { id: 1, slug: 'roasted-cashews', name: 'Roasted Cashews', category: 'Roasted Nuts', price: 1200, variants: ['250g', '500g', '1kg'], badge: 'Bestseller', badgeType: 'green', rating: 4.8, reviews: 142, image: '/img/product-1.jpg', description: 'Golden-roasted to perfection, our cashews are slow-roasted in small batches over measured heat, drawing out the deep nuttiness while preserving the natural sweetness of the kernel. Chosen for character, not quantity.' },
   { id: 2, slug: 'honey-glazed-almonds', name: 'Honey Glazed Almonds', category: 'Specialty Snacks', price: 1450, variants: ['250g', '500g'], badge: 'New', badgeType: 'gold', rating: 4.7, reviews: 89, image: '/img/product-2.jpg', description: 'Raw almonds coated in pure wildflower honey and slow-roasted until the glaze caramelises into a glossy, crackling shell. A treat that earns its place at any table.' },
   { id: 3, slug: 'ceylon-trail-mix', name: 'Ceylon Trail Mix', category: 'Mixed Trails', price: 980, variants: ['300g', '600g', '1kg'], badge: 'Popular', badgeType: 'green', rating: 4.6, reviews: 203, image: '/img/product-3.jpg', description: 'A thoughtfully assembled blend of roasted nuts, sun-dried fruits, and seeds — each element selected for its individual integrity. No fillers. No compromise. A trail mix that actually means something.' },
@@ -265,6 +265,58 @@ const PRODUCTS = [
   { id: 11, slug: 'salted-pistachios', name: 'Salted Pistachios', category: 'Roasted Nuts', price: 2400, variants: ['250g', '500g'], badge: null, badgeType: null, rating: 4.7, reviews: 108, image: '/img/product-11.jpg', description: 'Roasted in-shell pistachios finished with a light sea salt cure. Cracking one open is part of the ritual. Slowing down is built into the experience.' },
   { id: 12, slug: 'superfood-nut-mix', name: 'Superfood Nut Mix', category: 'Mixed Trails', price: 1350, variants: ['300g', '600g', '1kg'], badge: 'Bestseller', badgeType: 'green', rating: 4.9, reviews: 189, image: '/img/product-12.jpg', description: 'Walnuts, almonds, goji berries, pumpkin seeds and macadamia — each chosen for nutritional density and flavour. A mix built for people who take what they eat seriously.' },
 ];
+
+// ─── PRODUCTS CONTEXT ────────────────────────────────────────────────────────
+const ProductsCtx = createContext(null);
+
+function ProductsProvider({ children }) {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const apiUrl = import.meta.env.VITE_WC_API_URL;
+    if (!apiUrl) {
+      console.log('No WooCommerce API URL found, using fallback products.');
+      setProducts(fallbackProducts);
+      setLoading(false);
+      return;
+    }
+
+    fetch(apiUrl)
+      .then(res => res.json())
+      .then(data => {
+        if (!Array.isArray(data)) throw new Error('Invalid API response');
+        const mapped = data.map(wc => ({
+          id: wc.id,
+          slug: wc.slug || String(wc.id),
+          name: wc.name,
+          category: wc.categories?.length > 0 ? wc.categories[0].name : 'Uncategorized',
+          price: Number(wc.prices?.price || 0) / 100,
+          variants: wc.attributes?.length > 0 && wc.attributes[0].terms ? wc.attributes[0].terms.map(t => t.name) : ['Standard'],
+          badge: wc.on_sale ? 'Sale' : null,
+          badgeType: wc.on_sale ? 'red' : null,
+          rating: Number(wc.average_rating || 5),
+          reviews: wc.review_count || 0,
+          image: wc.images?.length > 0 ? wc.images[0].src : '/img/placeholder.jpg',
+          description: wc.short_description ? wc.short_description.replace(/(<([^>]+)>)/gi, "") : wc.description?.replace(/(<([^>]+)>)/gi, "") || 'A premium selection.',
+        }));
+        setProducts(mapped.length > 0 ? mapped : fallbackProducts);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error('Error fetching from WooCommerce:', err);
+        setProducts(fallbackProducts);
+        setLoading(false);
+      });
+  }, []);
+
+  return (
+    <ProductsCtx.Provider value={{ products, loading }}>
+      {children}
+    </ProductsCtx.Provider>
+  );
+}
+const useProducts = () => useContext(ProductsCtx);
 
 // ─── CART CONTEXT ────────────────────────────────────────────────────────────
 const CartCtx = createContext(null);
@@ -387,15 +439,22 @@ const IconCart = ({ size = 22, color = 'currentColor' }) => <svg width={size} he
 
 // ─── CART DRAWER ──────────────────────────────────────────────────────────────
 function CartDrawer({ setPage }) {
-  const { cart, dispatch, drawerOpen, setDrawerOpen } = useCart();
+  const { cart, dispatch, drawerOpen, setDrawerOpen, showToast } = useCart();
   const [ordered, setOrdered] = useState(false);
   if (!drawerOpen) return null;
   const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
   const delivery = subtotal >= 3000 ? 0 : 300;
   const total = subtotal + delivery;
   const handleOrder = () => {
-    setOrdered(true);
-    setTimeout(() => { dispatch({ type: 'CLEAR' }); setOrdered(false); setDrawerOpen(false); }, 2200);
+    const apiUrl = import.meta.env.VITE_WC_API_URL || '';
+    const baseUrl = apiUrl.split('/wp-json')[0] || 'https://your-wp-domain.com';
+    const cartParam = cart.map(item => `${item.id}:${item.qty}`).join(',');
+    const checkoutUrl = `${baseUrl}/checkout/?fill_cart=${cartParam}`;
+    
+    showToast('Redirecting to secure checkout...');
+    setTimeout(() => {
+      window.location.href = checkoutUrl;
+    }, 1200);
   };
   return (
     <>
@@ -482,7 +541,7 @@ function CartDrawer({ setPage }) {
 function Navbar({ page, setPage }) {
   const { cart, setDrawerOpen } = useCart();
   const count = cart.reduce((s, i) => s + i.qty, 0);
-  const links = [['home', 'Home'], ['products', 'Shop'], ['about', 'Our Story']];
+  const links = [['home', 'Home'], ['products', 'Shop'], ['about', 'Our Story'], ['track', 'Track Order']];
   return (
     <nav className="navbar">
       <img src="/img/logo.png" alt="Ceylon Crunch" className="nav-logo" onClick={() => { setPage('home'); window.scrollTo(0, 0); }} />
@@ -506,7 +565,8 @@ function Navbar({ page, setPage }) {
 
 // ─── HOME PAGE ────────────────────────────────────────────────────────────────
 function HomePage({ setPage, setDetailId }) {
-  const bestsellers = PRODUCTS.filter(p => p.badge === 'Bestseller' || [1, 2, 3, 4].includes(p.id)).slice(0, 4);
+  const { products, loading } = useProducts();
+  const bestsellers = products.filter(p => p.badge === 'Bestseller' || p.badge === 'Sale' || [1, 2, 3, 4].includes(p.id)).slice(0, 4);
   const cats = [
     { name: 'Roasted Nuts', img: '/img/product-1.jpg' },
     { name: 'Raw Nuts', img: '/img/product-4.jpg' },
@@ -662,11 +722,12 @@ function HomePage({ setPage, setDetailId }) {
 
 // ─── SHOP PAGE ────────────────────────────────────────────────────────────────
 function ShopPage({ setPage, setDetailId }) {
+  const { products, loading } = useProducts();
   const [cat, setCat] = useState('All');
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState('default');
-  const cats = ['All', 'Roasted Nuts', 'Raw Nuts', 'Mixed Trails', 'Specialty Snacks'];
-  let prods = PRODUCTS
+  const cats = ['All', ...new Set(products.map(p => p.category))];
+  let prods = products
     .filter(p => cat === 'All' || p.category === cat)
     .filter(p => p.name.toLowerCase().includes(search.toLowerCase()));
   if (sort === 'low') prods = [...prods].sort((a, b) => a.price - b.price);
@@ -708,12 +769,13 @@ function ShopPage({ setPage, setDetailId }) {
 
 // ─── PRODUCT DETAIL PAGE ─────────────────────────────────────────────────────
 function ProductDetailPage({ productId, setPage, setDetailId }) {
-  const product = PRODUCTS.find(p => p.id === productId) || PRODUCTS[0];
+  const { products, loading } = useProducts();
+  const product = products.find(p => p.id === productId) || products[0];
   const { addToCart, showToast } = useCart();
-  const [variant, setVariant] = useState(product.variants[0]);
+  const [variant, setVariant] = useState(product?.variants?.[0] || 'Standard');
   const [qty, setQty] = useState(1);
   const [tab, setTab] = useState('description');
-  const related = PRODUCTS.filter(p => p.category === product.category && p.id !== product.id).slice(0, 4);
+  const related = products.filter(p => product && p.category === product.category && p.id !== product.id).slice(0, 4);
   const highlights = [
     { icon: <IconLeaf color="var(--green)" size={16} />, text: '100% Natural, No Additives' },
     { icon: <IconFlag color="var(--green)" size={16} />, text: 'Single-Origin Sri Lanka' },
@@ -889,11 +951,46 @@ function AboutPage({ setPage }) {
   );
 }
 
+// ─── TRACK ORDER PAGE ──────────────────────────────────────────────────────────
+function TrackOrderPage() {
+  const [orderId, setOrderId] = useState('');
+  const [email, setEmail] = useState('');
+  
+  const handleTrack = (e) => {
+    e.preventDefault();
+    const apiUrl = import.meta.env.VITE_WC_API_URL || '';
+    const baseUrl = apiUrl.split('/wp-json')[0] || 'https://your-wp-domain.com';
+    window.location.href = `${baseUrl}/order-tracking/?orderid=${orderId}&order_email=${email}`;
+  };
+
+  return (
+    <main className="page-pad" style={{ maxWidth: 800, margin: '0 auto', padding: '100px 48px' }}>
+      <div style={{ textAlign: 'center', marginBottom: 40 }}>
+        <h1 style={{ fontFamily: 'Playfair Display,serif', fontSize: 'clamp(28px,4vw,40px)', fontWeight: 700, color: 'var(--green-dark)' }}>Track Your Order</h1>
+        <p style={{ fontSize: 16, color: 'var(--muted)', marginTop: 12 }}>Enter your order ID and billing email to check its status.</p>
+      </div>
+      
+      <form onSubmit={handleTrack} style={{ display: 'flex', flexDirection: 'column', gap: 20, background: '#fff', padding: 40, borderRadius: 24, boxShadow: '0 4px 24px rgba(0,0,0,0.05)' }}>
+        <div>
+          <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--ink-soft)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Order ID</label>
+          <input type="text" required value={orderId} onChange={e => setOrderId(e.target.value)} placeholder="e.g. 12345" className="search-input" style={{ width: '100%', background: '#f9f9f9' }} />
+        </div>
+        <div>
+          <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--ink-soft)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Billing Email</label>
+          <input type="email" required value={email} onChange={e => setEmail(e.target.value)} placeholder="email@example.com" className="search-input" style={{ width: '100%', background: '#f9f9f9' }} />
+        </div>
+        <button type="submit" className="btn-primary" style={{ justifyContent: 'center', padding: '16px', marginTop: 10, fontSize: 16 }}>Track Status</button>
+      </form>
+    </main>
+  );
+}
+
 // ─── APP ─────────────────────────────────────────────────────────────────────
 export default function App() {
   const [page, setPage] = useState('home');
   const [detailId, setDetailId] = useState(null);
   return (
+    <ProductsProvider>
     <CartProvider>
       <FontLoader />
       <Navbar page={page} setPage={setPage} />
@@ -901,9 +998,11 @@ export default function App() {
       {page === 'products' && <ShopPage setPage={setPage} setDetailId={setDetailId} />}
       {page === 'product' && <ProductDetailPage productId={detailId} setPage={setPage} setDetailId={setDetailId} />}
       {page === 'about' && <AboutPage setPage={setPage} />}
+      {page === 'track' && <TrackOrderPage />}
       <CartDrawer setPage={setPage} />
       <Toast />
     </CartProvider>
+    </ProductsProvider>
   );
 }
 
