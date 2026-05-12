@@ -7,29 +7,63 @@ export default function TeamClient({ members, currentUserId, isSuperAdmin }) {
   const [inviting, setInviting] = useState(false)
   const [form, setForm] = useState({ email: '', full_name: '', role: 'admin' })
   const [loading, setLoading] = useState(false)
-  const [msg, setMsg] = useState('')
+  const [msg, setMsg] = useState({ text: '', type: 'success' })
+  const [resetting, setResetting] = useState(null)
+
+  const showMsg = (text, type = 'success') => setMsg({ text, type })
 
   const invite = async (e) => {
     e.preventDefault()
     setLoading(true)
-    setMsg('')
+    showMsg('')
     const res = await fetch('/api/team', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form) })
     const data = await res.json()
-    if (res.ok) { setMsg('Invitation sent! They will receive an email to set their password.'); setInviting(false); setForm({ email: '', full_name: '', role: 'admin' }) }
-    else setMsg(data.error || 'Failed to invite')
+    if (res.ok) {
+      showMsg('Invitation sent! They will receive an email with a link to set their password.', 'success')
+      setInviting(false)
+      setForm({ email: '', full_name: '', role: 'admin' })
+    } else {
+      showMsg(data.error || 'Failed to invite', 'error')
+    }
     setLoading(false)
   }
 
   const updateMember = async (id, updates) => {
     const res = await fetch('/api/team', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, ...updates }) })
     if (res.ok) setList(l => l.map(m => m.id === id ? { ...m, ...updates } : m))
+    else showMsg('Failed to update member', 'error')
+  }
+
+  const sendResetPassword = async (member) => {
+    if (!confirm(`Send a password reset email to ${member.full_name || member.id}?`)) return
+    setResetting(member.id)
+    showMsg('')
+    const res = await fetch('/api/team/reset-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: member.full_name }),
+    })
+    const data = await res.json()
+    if (res.ok) showMsg(`Password reset email sent to ${member.full_name || 'the user'}.`, 'success')
+    else showMsg(data.error || 'Failed to send reset email', 'error')
+    setResetting(null)
   }
 
   const inputStyle = { width: '100%', padding: '10px 14px', border: '1.5px solid #e5e7eb', borderRadius: 10, fontSize: 14, outline: 'none', fontFamily: 'inherit' }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-      {msg && <div style={{ padding: '12px 16px', background: msg.includes('sent') ? '#f0fdf4' : '#fff0f0', border: `1px solid ${msg.includes('sent') ? '#bbf7d0' : '#fca5a5'}`, borderRadius: 10, fontSize: 14, color: msg.includes('sent') ? '#166534' : '#dc2626' }}>{msg}</div>}
+      {msg.text && (
+        <div style={{
+          padding: '12px 16px',
+          background: msg.type === 'success' ? '#f0fdf4' : '#fff0f0',
+          border: `1px solid ${msg.type === 'success' ? '#bbf7d0' : '#fca5a5'}`,
+          borderRadius: 10, fontSize: 14,
+          color: msg.type === 'success' ? '#166534' : '#dc2626',
+        }}>
+          {msg.text}
+        </div>
+      )}
 
       {/* Invite form */}
       {isSuperAdmin && (
@@ -61,10 +95,13 @@ export default function TeamClient({ members, currentUserId, isSuperAdmin }) {
                   </select>
                 </div>
               </div>
+              <div style={{ padding: '10px 14px', background: '#f0f7f2', borderRadius: 10, fontSize: 13, color: 'var(--green-dark)' }}>
+                ℹ️ They will receive an email with a link to set their own password.
+              </div>
               <div style={{ display: 'flex', gap: 10 }}>
                 <button type="submit" disabled={loading}
-                  style={{ padding: '10px 22px', background: 'var(--green)', color: '#fff', border: 'none', borderRadius: 50, fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
-                  {loading ? 'Sending…' : 'Send Invitation'}
+                  style={{ padding: '10px 22px', background: 'var(--green)', color: '#fff', border: 'none', borderRadius: 50, fontSize: 14, fontWeight: 600, cursor: 'pointer', opacity: loading ? 0.7 : 1 }}>
+                  {loading ? 'Sending...' : 'Send Invitation'}
                 </button>
                 <button type="button" onClick={() => setInviting(false)}
                   style={{ padding: '10px 20px', background: '#f3f4f6', color: '#6b7280', border: 'none', borderRadius: 50, fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
@@ -91,9 +128,7 @@ export default function TeamClient({ members, currentUserId, isSuperAdmin }) {
           </thead>
           <tbody>
             {list.map(member => (
-              <tr key={member.id} style={{ borderTop: '1px solid #f3f4f6' }}
-                onMouseEnter={e => e.currentTarget.style.background = '#fafafa'}
-                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+              <tr key={member.id} style={{ borderTop: '1px solid #f3f4f6' }}>
                 <td style={{ padding: '14px 16px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                     <div style={{ width: 34, height: 34, borderRadius: '50%', background: 'var(--gold)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, color: '#fff', flexShrink: 0 }}>
@@ -102,7 +137,9 @@ export default function TeamClient({ members, currentUserId, isSuperAdmin }) {
                     <div>
                       <div style={{ fontSize: 14, fontWeight: 600, color: '#111' }}>
                         {member.full_name || 'Admin'}
-                        {member.id === currentUserId && <span style={{ marginLeft: 8, fontSize: 11, background: '#f0f7f2', color: 'var(--green)', padding: '2px 8px', borderRadius: 50, fontWeight: 600 }}>You</span>}
+                        {member.id === currentUserId && (
+                          <span style={{ marginLeft: 8, fontSize: 11, background: '#f0f7f2', color: 'var(--green)', padding: '2px 8px', borderRadius: 50, fontWeight: 600 }}>You</span>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -114,17 +151,23 @@ export default function TeamClient({ members, currentUserId, isSuperAdmin }) {
                 </td>
                 {isSuperAdmin && (
                   <td style={{ padding: '14px 16px' }}>
-                    {member.id !== currentUserId && (
-                      <div style={{ display: 'flex', gap: 8 }}>
+                    {member.id !== currentUserId ? (
+                      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                         <button onClick={() => updateMember(member.id, { role: member.role === 'admin' ? 'super_admin' : 'admin' })}
-                          style={{ padding: '5px 10px', background: '#ede9fe', color: '#6d28d9', border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+                          style={btn('#6d28d9', '#ede9fe')}>
                           {member.role === 'admin' ? 'Make Super' : 'Make Admin'}
                         </button>
+                        <button onClick={() => sendResetPassword(member)} disabled={resetting === member.id}
+                          style={btn('#d97706', '#fef3c7')}>
+                          {resetting === member.id ? '...' : 'Reset Password'}
+                        </button>
                         <button onClick={() => updateMember(member.id, { active: !member.active })}
-                          style={{ padding: '5px 10px', background: member.active ? '#fee2e2' : '#dcfce7', color: member.active ? '#991b1b' : '#166534', border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+                          style={btn(member.active ? '#dc2626' : '#16a34a', member.active ? '#fee2e2' : '#dcfce7')}>
                           {member.active ? 'Deactivate' : 'Activate'}
                         </button>
                       </div>
+                    ) : (
+                      <span style={{ fontSize: 12, color: '#9ca3af' }}>—</span>
                     )}
                   </td>
                 )}
@@ -133,8 +176,20 @@ export default function TeamClient({ members, currentUserId, isSuperAdmin }) {
           </tbody>
         </table>
       </div>
+
+      {/* Info box */}
+      <div style={{ background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: 12, padding: '14px 18px', fontSize: 13, color: '#6b7280', lineHeight: 1.6 }}>
+        <strong style={{ color: '#374151' }}>How password management works:</strong><br />
+        • <strong>Invite:</strong> New team members receive an email → click the link → set their own password<br />
+        • <strong>Reset Password:</strong> Sends a secure reset email to the team member — they reset it themselves<br />
+        • <strong>Deactivate:</strong> Blocks the user from logging in without deleting their account
+      </div>
     </div>
   )
 }
 
 const labelStyle = { display: 'block', fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 6 }
+const btn = (color, bg) => ({
+  padding: '5px 10px', background: bg, color: color,
+  border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer',
+})

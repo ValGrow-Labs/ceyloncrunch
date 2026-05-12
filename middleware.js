@@ -22,6 +22,7 @@ export async function middleware(request) {
   const { data: { user } } = await supabase.auth.getUser()
   const path = request.nextUrl.pathname
 
+  // Protect all /admin routes except login
   if (path.startsWith('/admin') && path !== '/admin/login') {
     if (!user) {
       const url = request.nextUrl.clone()
@@ -35,5 +36,6 @@ export async function middleware(request) {
 }
 
 export const config = {
+  // /auth/* is intentionally excluded — those pages are public (invite accept, reset password)
   matcher: ['/admin/:path*'],
 }
