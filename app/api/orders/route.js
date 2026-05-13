@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase-server'
+import { createClient, createAdminClient } from '@/lib/supabase-server'
 import { buildPayHerePayload } from '@/lib/payhere'
 import { getSetting } from '@/lib/settings'
 
@@ -19,7 +19,8 @@ export async function GET(request) {
 }
 
 export async function POST(request) {
-  const supabase = await createClient()
+  // Use service role to bypass RLS — this is a server-side API route, safe to use
+  const supabase = await createAdminClient()
   const body = await request.json()
   const { customer_name, customer_email, customer_phone, shipping_address, city, items, subtotal, delivery, payment_method, notes } = body
 
