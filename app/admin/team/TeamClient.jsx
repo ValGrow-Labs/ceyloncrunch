@@ -9,6 +9,9 @@ export default function TeamClient({ members, currentUserId, isSuperAdmin }) {
   const [loading, setLoading] = useState(false)
   const [msg, setMsg] = useState({ text: '', type: 'success' })
   const [resetting, setResetting] = useState(null)
+  const [passwordModal, setPasswordModal] = useState(null) // { id, name }
+  const [newPassword, setNewPassword] = useState('')
+  const [settingPassword, setSettingPassword] = useState(false)
 
   const showMsg = (text, type = 'success') => setMsg({ text, type })
 
@@ -47,6 +50,29 @@ export default function TeamClient({ members, currentUserId, isSuperAdmin }) {
     if (res.ok) showMsg(`Password reset email sent to ${member.full_name || 'the user'}.`, 'success')
     else showMsg(data.error || 'Failed to send reset email', 'error')
     setResetting(null)
+  }
+
+  const submitPassword = async (e) => {
+    e.preventDefault()
+    if (!passwordModal || newPassword.length < 8) {
+      showMsg('Password must be at least 8 characters', 'error')
+      return
+    }
+    setSettingPassword(true)
+    const res = await fetch('/api/team/set-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: passwordModal.id, password: newPassword }),
+    })
+    const data = await res.json()
+    if (res.ok) {
+      showMsg(`Password set successfully for ${passwordModal.name}.`, 'success')
+      setPasswordModal(null)
+      setNewPassword('')
+    } else {
+      showMsg(data.error || 'Failed to set password', 'error')
+    }
+    setSettingPassword(false)
   }
 
   const deleteMember = async (member) => {
@@ -174,9 +200,13 @@ export default function TeamClient({ members, currentUserId, isSuperAdmin }) {
                           style={btn('#6d28d9', '#ede9fe')}>
                           {member.role === 'admin' ? 'Make Super' : 'Make Admin'}
                         </button>
+                        <button onClick={() => setPasswordModal({ id: member.id, name: member.full_name || 'this user' })}
+                          style={btn('#0891b2', '#cffafe')}>
+                          Set Password
+                        </button>
                         <button onClick={() => sendResetPassword(member)} disabled={resetting === member.id}
                           style={btn('#d97706', '#fef3c7')}>
-                          {resetting === member.id ? '...' : 'Reset Password'}
+                          {resetting === member.id ? '...' : 'Reset Email'}
                         </button>
                         <button onClick={() => updateMember(member.id, { active: !member.active })}
                           style={btn(member.active ? '#b45309' : '#16a34a', member.active ? '#fef3c7' : '#dcfce7')}>
@@ -200,12 +230,49 @@ export default function TeamClient({ members, currentUserId, isSuperAdmin }) {
 
       {/* Info box */}
       <div style={{ background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: 12, padding: '14px 18px', fontSize: 13, color: '#6b7280', lineHeight: 1.6 }}>
-        <strong style={{ color: '#374151' }}>How password management works:</strong><br />
-        • <strong>Invite:</strong> New team members receive an email → click the link → set their own password<br />
-        • <strong>Reset Password:</strong> Sends a secure reset email to the team member — they reset it themselves<br />
+        <strong style={{ color: '#374151' }}>Password management options:</strong><br />
+        • <strong>Set Password:</strong> Directly set a new password for the user — confirms their email instantly<br />
+        • <strong>Reset Email:</strong> Sends a reset link to their email — they choose the password<br />
         • <strong>Deactivate:</strong> Blocks login without deleting — account can be reactivated<br />
         • <strong>Delete:</strong> Permanently removes the account — cannot be undone
       </div>
+
+      {/* Set Password Modal */}
+      {passwordModal && (
+        <div onClick={() => !settingPassword && setPasswordModal(null)}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: 20 }}>
+          <form onClick={e => e.stopPropagation()} onSubmit={submitPassword}
+            style={{ background: '#fff', borderRadius: 20, padding: 28, width: '100%', maxWidth: 440, boxShadow: '0 24px 60px rgba(0,0,0,0.3)' }}>
+            <h3 style={{ fontFamily: 'Playfair Display,serif', fontSize: 20, fontWeight: 700, color: 'var(--green-dark)', marginBottom: 6 }}>
+              Set Password
+            </h3>
+            <p style={{ fontSize: 14, color: '#6b7280', marginBottom: 20 }}>
+              For <strong>{passwordModal.name}</strong>. They can use this immediately to log in.
+            </p>
+            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 6 }}>New Password</label>
+            <input type="text" value={newPassword} onChange={e => setNewPassword(e.target.value)}
+              autoFocus required minLength={8}
+              placeholder="Minimum 8 characters"
+              style={{ width: '100%', padding: '12px 14px', border: '1.5px solid #e5e7eb', borderRadius: 10, fontSize: 15, outline: 'none', fontFamily: 'monospace', marginBottom: 20 }}
+              onFocus={e => e.target.style.borderColor = 'var(--green)'}
+              onBlur={e => e.target.style.borderColor = '#e5e7eb'} />
+            <div style={{ padding: '10px 14px', background: '#fef3c7', border: '1px solid #fde68a', borderRadius: 10, fontSize: 13, color: '#92400e', marginBottom: 20 }}>
+              ⚠️ Make sure to securely share this password with the user. They can change it later from their account.
+            </div>
+            <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
+              <button type="button" onClick={() => { setPasswordModal(null); setNewPassword('') }}
+                disabled={settingPassword}
+                style={{ padding: '10px 20px', background: '#f3f4f6', color: '#6b7280', border: 'none', borderRadius: 50, fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
+                Cancel
+              </button>
+              <button type="submit" disabled={settingPassword || newPassword.length < 8}
+                style={{ padding: '10px 22px', background: 'var(--green)', color: '#fff', border: 'none', borderRadius: 50, fontSize: 14, fontWeight: 600, cursor: settingPassword ? 'not-allowed' : 'pointer', opacity: settingPassword || newPassword.length < 8 ? 0.5 : 1 }}>
+                {settingPassword ? 'Setting...' : 'Set Password'}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
     </div>
   )
 }
