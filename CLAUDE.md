@@ -19,6 +19,7 @@ Ceylon Crunch is a full-stack e-commerce site for a Sri Lankan nuts and healthy 
 npm run dev       # Start dev server on port 3000
 npm run build     # Production build
 npm run start     # Run production build
+npm run lint      # Next.js ESLint
 ```
 
 ## Architecture
@@ -27,6 +28,8 @@ npm run start     # Run production build
 - `app/(store)/` — public storefront (home, shop, product detail, about, track, checkout, order result)
 - `app/admin/` — protected admin dashboard (middleware redirects unauthenticated users to `/admin/login`)
 - `app/api/` — API routes (products, orders, newsletter, settings, upload, team, webhook)
+- `app/auth/` — Supabase Auth flows (`callback`, `accept-invite`, `reset-password`)
+- `contexts/` — React client contexts: `CartContext` (cart state + drawer) and `SettingsContext` (site_settings hydrated client-side)
 
 ### Database (Supabase)
 Run `supabase/schema.sql` then `supabase/seed.sql` in the Supabase SQL editor to set up the database.

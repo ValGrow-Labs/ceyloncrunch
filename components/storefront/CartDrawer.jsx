@@ -93,7 +93,7 @@ export default function CartDrawer() {
                 {delivery === 0 ? 'Free' : `${currency} ${delivery.toLocaleString()}`}
               </span>
             </div>
-            {delivery > 0 && (
+            {delivery > 0 && freeThreshold > 0 && freeThreshold < 1e9 && subtotal < freeThreshold && (
               <div style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 10, padding: '7px 12px', background: '#fff', borderRadius: 8 }}>
                 Add {currency} {(freeThreshold - subtotal).toLocaleString()} more for free delivery
               </div>

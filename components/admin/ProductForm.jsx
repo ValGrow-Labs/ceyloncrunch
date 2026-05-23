@@ -13,14 +13,19 @@ export default function ProductForm({ initial = {} }) {
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState('')
-  const [variantInput, setVariantInput] = useState('')
+
+  const normalizedInitialVariants = (initial.variants || []).map(v =>
+    typeof v === 'string'
+      ? { size: v, price: initial.price || 0 }
+      : { size: v.size || '', price: v.price ?? (initial.price || 0) }
+  )
 
   const [form, setForm] = useState({
     name: initial.name || '',
     slug: initial.slug || '',
     category: initial.category || CATEGORIES[0],
     price: initial.price || '',
-    variants: initial.variants || [],
+    variants: normalizedInitialVariants,
     badge: initial.badge || '',
     badge_type: initial.badge_type || '',
     rating: initial.rating || 4.5,
@@ -36,12 +41,18 @@ export default function ProductForm({ initial = {} }) {
 
   const autoSlug = (name) => name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
 
-  const addVariant = () => {
-    const v = variantInput.trim()
-    if (v && !form.variants.includes(v)) {
-      set('variants', [...form.variants, v])
-      setVariantInput('')
-    }
+  const addVariant = (size = '', price = '') => {
+    set('variants', [...form.variants, { size, price: price === '' ? '' : Number(price) }])
+  }
+
+  const updateVariant = (idx, field, value) => {
+    set('variants', form.variants.map((v, i) =>
+      i === idx ? { ...v, [field]: field === 'price' ? (value === '' ? '' : Number(value)) : value } : v
+    ))
+  }
+
+  const removeVariant = (idx) => {
+    set('variants', form.variants.filter((_, i) => i !== idx))
   }
 
   const handleSubmit = async (e) => {
@@ -49,7 +60,16 @@ export default function ProductForm({ initial = {} }) {
     setSaving(true)
     setError('')
     try {
-      const payload = { ...form, price: parseInt(form.price), rating: parseFloat(form.rating), reviews: parseInt(form.reviews) }
+      const cleanedVariants = form.variants
+        .filter(v => v.size && v.size.trim())
+        .map(v => ({ size: v.size.trim(), price: parseInt(v.price) || parseInt(form.price) || 0 }))
+      const payload = {
+        ...form,
+        variants: cleanedVariants,
+        price: parseInt(form.price),
+        rating: parseFloat(form.rating),
+        reviews: parseInt(form.reviews),
+      }
       let res
       if (isEdit) {
         res = await fetch(`/api/products/${initial.slug}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
@@ -100,20 +120,25 @@ export default function ProductForm({ initial = {} }) {
       </Section>
 
       {/* Variants */}
-      <Section title="Variants (Weight Options)">
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
-          {form.variants.map(v => (
-            <span key={v} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '5px 12px', background: '#f0f7f2', border: '1px solid var(--green)', borderRadius: 50, fontSize: 13, color: 'var(--green)', fontWeight: 500 }}>
-              {v}
-              <button type="button" onClick={() => set('variants', form.variants.filter(x => x !== v))} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#9ca3af', fontSize: 14, lineHeight: 1 }}>×</button>
-            </span>
+      <Section title="Variants (Weight + Price)">
+        <p style={{ fontSize: 12, color: '#6b7280', marginBottom: 4 }}>Each weight option has its own price. Leave empty to use the base price above.</p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {form.variants.map((v, idx) => (
+            <div key={idx} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr auto', gap: 8, alignItems: 'center' }}>
+              <input value={v.size} onChange={e => updateVariant(idx, 'size', e.target.value)}
+                placeholder="Size (e.g. 250g)" style={inputStyle} {...focusProps} />
+              <input type="number" value={v.price} onChange={e => updateVariant(idx, 'price', e.target.value)}
+                min={0} placeholder="Price (LKR)" style={inputStyle} {...focusProps} />
+              <button type="button" onClick={() => removeVariant(idx)}
+                style={{ padding: '10px 14px', background: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca', borderRadius: 10, fontSize: 13, cursor: 'pointer', fontWeight: 600 }}>Remove</button>
+            </div>
           ))}
         </div>
-        <div style={{ display: 'flex', gap: 8 }}>
-          <input value={variantInput} onChange={e => setVariantInput(e.target.value)}
-            onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addVariant() } }}
-            placeholder="e.g. 250g, 500g, 1kg" style={{ ...inputStyle, flex: 1 }} {...focusProps} />
-          <button type="button" onClick={addVariant} style={{ padding: '10px 18px', background: 'var(--green)', color: '#fff', border: 'none', borderRadius: 10, fontSize: 13, cursor: 'pointer', fontWeight: 600 }}>Add</button>
+        <div style={{ display: 'flex', gap: 8, marginTop: 8, flexWrap: 'wrap' }}>
+          <button type="button" onClick={() => addVariant()} style={{ padding: '10px 18px', background: 'var(--green)', color: '#fff', border: 'none', borderRadius: 10, fontSize: 13, cursor: 'pointer', fontWeight: 600 }}>+ Add Variant</button>
+          <button type="button" onClick={() => set('variants', [
+            { size: '100g', price: '' }, { size: '250g', price: '' }, { size: '500g', price: '' }, { size: '1KG', price: '' },
+          ])} style={{ padding: '10px 18px', background: '#f3f4f6', color: '#374151', border: '1px solid #e5e7eb', borderRadius: 10, fontSize: 13, cursor: 'pointer', fontWeight: 600 }}>Preset: 100g / 250g / 500g / 1KG</button>
         </div>
       </Section>
 

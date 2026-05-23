@@ -12,7 +12,7 @@ insert into site_settings (key, value) values
   "tagline": "Healthy Crunch for Every Home",
   "logo_url": "/img/logo.png",
   "favicon_url": "/img/logo.png",
-  "established": "2020"
+  "established": "2026"
 }'),
 
 ('theme', '{
@@ -31,10 +31,10 @@ insert into site_settings (key, value) values
 }'),
 
 ('hero', '{
-  "eyebrow": "Ceylon Crunch — Est. 2020",
-  "headline": "In a world that rushes everything,",
-  "headline_italic": "we chose to wait.",
-  "subtext": "Sourced from Sri Lankan growers who know when a nut is ready without checking a calendar. Honest food for moments that matter.",
+  "eyebrow": "Ceylon Crunch — Established 2026",
+  "headline": "In a world that rushes,",
+  "headline_italic": "we take it slow.",
+  "subtext": "Sourced from authentic growers. Honest food for moments that matter.",
   "primary_cta": "Shop the Collection",
   "primary_cta_link": "/shop",
   "secondary_cta": "Our Story",
@@ -44,10 +44,10 @@ insert into site_settings (key, value) values
 }'),
 
 ('features', '[
-  {"icon": "leaf",  "title": "Single-Origin",  "text": "Sourced from named Sri Lankan farms, not commodity chains."},
-  {"icon": "pin",   "title": "Rooted in Lanka", "text": "Every product carries the patience of the land it came from."},
+  {"icon": "leaf",  "title": "Naturally Grown", "text": "Crops that follow the seasons, not the market."},
+  {"icon": "pin",   "title": "Authentic Sources", "text": "Sourced directly from independent growers — no brokers, no commodity chains."},
   {"icon": "box",   "title": "Small-Batch",     "text": "Packed in measured quantities to preserve freshness and character."},
-  {"icon": "truck", "title": "Island Delivery", "text": "Free island-wide delivery on orders above LKR 3,000."}
+  {"icon": "truck", "title": "Island-Wide Delivery", "text": "Available across Sri Lanka. Reliable, tracked dispatch."}
 ]'),
 
 ('bestsellers_section', '{
@@ -77,8 +77,8 @@ insert into site_settings (key, value) values
   "image_url": "/img/product-12.jpg",
   "stats": [
     {"value": "10K+", "label": "Homes Reached"},
-    {"value": "100%", "label": "Single-Origin"},
-    {"value": "Est.", "label": "2020"}
+    {"value": "100%", "label": "Naturally Grown"},
+    {"value": "Est.", "label": "2026"}
   ]
 }'),
 
@@ -91,14 +91,15 @@ insert into site_settings (key, value) values
 
 ('footer', '{
   "tagline": "Healthy Crunch for Every Home.\nFrom the land. Handled with care. Shared with intention.",
-  "contact_email": "hello@ceyloncrunch.lk",
+  "contact_email": "ceyloncrunch26@gmail.com",
+  "contact_phone": "+94 77 944 3867",
   "address": "Colombo, Sri Lanka",
-  "copyright": "© 2020–2026 Ceylon Crunch. All rights reserved.",
-  "sub_tagline": "Crafted with patience. Packed with care.",
+  "copyright": "© 2026 Ceylon Crunch. All rights reserved.",
+  "sub_tagline": "Handled with Care",
   "social": {
     "instagram": "",
     "facebook": "",
-    "whatsapp": "",
+    "whatsapp": "+94779443867",
     "tiktok": ""
   }
 }'),
@@ -113,8 +114,8 @@ insert into site_settings (key, value) values
 ('store', '{
   "currency": "LKR",
   "currency_symbol": "LKR",
-  "free_delivery_threshold": 3000,
-  "delivery_fee": 300,
+  "free_delivery_threshold": 0,
+  "delivery_fee": 350,
   "min_order": 0,
   "tax_rate": 0
 }'),
@@ -152,15 +153,15 @@ insert into site_settings (key, value) values
     {"name": "Other Provinces",    "fee": 450,  "days": "2–4"},
     {"name": "Remote Areas",       "fee": 600,  "days": "3–5"}
   ],
-  "free_threshold": 3000,
-  "free_threshold_enabled": true,
+  "free_threshold": 0,
+  "free_threshold_enabled": false,
   "cod_extra_fee": 0,
   "estimated_dispatch": "1 business day"
 }'),
 
 ('announcement_bar', '{
   "enabled": false,
-  "message": "Free delivery on orders over LKR 3,000 — island-wide!",
+  "message": "Island-wide delivery available across Sri Lanka.",
   "bg_color": "#1E5631",
   "text_color": "#ffffff",
   "link": "",
@@ -174,13 +175,12 @@ insert into site_settings (key, value) values
   "hero_subtext": "A brand built for growers who follow seasons and not demand — and for people who believe food should be honest before it is impressive.",
   "quote": "Long before machines, discounts, and mass packing, nuts were handled slowly — grown by familiar hands, dried under open skies, traded with pride, and shared with respect.",
   "sections": [
-    {"icon": "leaf",  "title": "How It Started",  "text": "Long before machines, discounts, and mass packing, nuts in Sri Lanka were handled slowly — grown by familiar hands, dried under open skies, traded with pride, and shared with respect. That world quietly faded. But it never truly disappeared. We built Ceylon Crunch to find it again."},
-    {"icon": "pin",   "title": "Our Farmers",     "text": "Across the island, there are still growers who know when a nut is ready without checking a calendar. Still harvests that follow seasons and not demand. Still people who believe food should be honest before it is impressive. We work with them directly — no brokers, no commodity chains."},
-    {"icon": "box",   "title": "Our Process",     "text": "We source only what we are proud to put our name on. Never rushed, never mixed, never hidden behind flavors or polish. Each batch is chosen for its character, not its quantity. Each pack carries the patience of the land it came from."},
-    {"icon": "check", "title": "Our Promise",     "text": "This is not a snack for everywhere. It is for moments that matter — after a long day, at a shared table, in quiet gratitude. We believe some things should still feel earned. From the land. Handled with care. Shared with intention."}
+    {"icon": "leaf",  "title": "Our Story",    "text": "Grown by seasons, not demand. We source from independent growers who follow natural seasons and not just market demand. Because we believe a good product should be simple, real, and naturally grown."},
+    {"icon": "pin",   "title": "Our Farmers",  "text": "Locally and internationally, there are still growers who know when a harvest is ready without looking at the calendar. They are still growing crops that follow the seasons, not the market, and people who believe food should be honest before it is impressive."},
+    {"icon": "box",   "title": "Our Promise",  "text": "Not crafted for just anywhere. It is crafted for moments that truly matter — at the end of a long day, around a shared table, in quiet gratitude. Cultivated from the land."}
   ],
-  "cta_headline": "From the Land. Handled with Care.",
-  "cta_subtext": "Shared with intention. Every pack we send carries the patience of the land it came from.",
+  "cta_headline": "From the Land. Handled with Care. Shared with intention.",
+  "cta_subtext": "",
   "cta_label": "Shop the Collection"
 }'),
 

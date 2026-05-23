@@ -1,20 +1,23 @@
 'use client'
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useCart } from '@/contexts/CartContext'
 import Stars from './Stars'
 import { IconLeaf, IconFlag, IconBox, IconCheck } from './Icons'
+import { normalizeVariants } from '@/lib/variants'
 
 export default function ProductDetailClient({ product, currency }) {
   const { addToCart, showToast } = useCart()
-  const [variant, setVariant] = useState(product.variants?.[0] || 'Standard')
+  const variants = useMemo(() => normalizeVariants(product), [product])
+  const [variant, setVariant] = useState(variants[0]?.size || 'Standard')
   const [qty, setQty] = useState(1)
   const [tab, setTab] = useState('description')
 
+  const selectedPrice = variants.find(v => v.size === variant)?.price ?? product.price
   const nutrition = product.nutrition_info || {}
 
   const highlights = [
     { icon: <IconLeaf color="var(--green)" size={16} />, text: '100% Natural, No Additives' },
-    { icon: <IconFlag color="var(--green)" size={16} />, text: 'Single-Origin Sri Lanka' },
+    { icon: <IconFlag color="var(--green)" size={16} />, text: 'Authentically Sourced' },
     { icon: <IconBox  color="var(--green)" size={16} />, text: 'Small-Batch Packed' },
     { icon: <IconCheck color="var(--green)" size={16} />, text: 'Quality Verified Each Batch' },
   ]
@@ -27,7 +30,7 @@ export default function ProductDetailClient({ product, currency }) {
 
   const handleAddToCart = () => {
     for (let i = 0; i < qty; i++) {
-      addToCart({ id: product.id, name: product.name, image: product.image_url, price: product.price, variant })
+      addToCart({ id: product.id, name: product.name, image: product.image_url, price: selectedPrice, variant })
     }
   }
 
@@ -52,15 +55,17 @@ export default function ProductDetailClient({ product, currency }) {
           </div>
 
           <div style={{ fontFamily: 'Playfair Display,serif', fontSize: 32, fontWeight: 700, color: 'var(--green)' }}>
-            {currency} {product.price.toLocaleString()}
+            {currency} {selectedPrice.toLocaleString()}
           </div>
 
-          {product.variants?.length > 0 && (
+          {variants.length > 0 && (
             <div>
               <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10 }}>Select Weight</div>
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                {product.variants.map(v => (
-                  <button key={v} className={`pill-btn ${variant === v ? 'active' : ''}`} onClick={() => setVariant(v)}>{v}</button>
+                {variants.map(v => (
+                  <button key={v.size} className={`pill-btn ${variant === v.size ? 'active' : ''}`} onClick={() => setVariant(v.size)}>
+                    {v.size} <span style={{ opacity: 0.7, fontWeight: 500, marginLeft: 4 }}>· {currency} {v.price.toLocaleString()}</span>
+                  </button>
                 ))}
               </div>
             </div>

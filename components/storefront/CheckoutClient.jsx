@@ -14,7 +14,7 @@ export default function CheckoutClient({ paymentSettings, deliverySettings }) {
   const [form, setForm] = useState({ name: '', email: '', phone: '', address: '', city: 'Colombo', notes: '' })
 
   const payments = paymentSettings || {}
-  const delivery = subtotal >= (freeThreshold || 3000) ? 0 : (deliveryFee || 300)
+  const delivery = (freeThreshold > 0 && subtotal >= freeThreshold) ? 0 : (deliveryFee || 350)
   const total = subtotal + delivery
 
   const availableMethods = [

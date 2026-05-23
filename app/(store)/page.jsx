@@ -60,18 +60,18 @@ export default async function HomePage() {
           {/* Left: text */}
           <div>
             <span className="animate-fadeUp" style={{ display: 'inline-block', fontSize: 12, letterSpacing: '0.2em', textTransform: 'uppercase', background: 'var(--green)', color: '#fff', padding: '5px 16px', borderRadius: 50, fontWeight: 700, marginBottom: 24 }}>
-              {hero.eyebrow || 'Ceylon Crunch — Est. 2020'}
+              {hero.eyebrow || 'Ceylon Crunch — Established 2026'}
             </span>
 
             <h1 className="animate-fadeUp-2" style={{ fontSize: 'clamp(40px,5.5vw,76px)', fontWeight: 700, lineHeight: 1.07, color: 'var(--green-dark)', marginBottom: 28, letterSpacing: '-0.01em' }}>
-              {hero.headline || 'In a world that rushes everything,'}<br />
+              {hero.headline || 'In a world that rushes,'}<br />
               <em style={{ color: 'var(--brown)', fontStyle: 'italic', backgroundImage: 'linear-gradient(135deg, var(--brown) 0%, var(--gold) 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                {hero.headline_italic || 'we chose to wait.'}
+                {hero.headline_italic || 'we take it slow.'}
               </em>
             </h1>
 
             <p className="animate-fadeUp-3" style={{ fontSize: 18, color: 'var(--ink-soft)', lineHeight: 1.8, maxWidth: 520, marginBottom: 40, fontWeight: 300 }}>
-              {hero.subtext || 'Sourced from Sri Lankan growers who know when a nut is ready without checking a calendar. Honest food for moments that matter.'}
+              {hero.subtext || 'Sourced from authentic growers. Honest food for moments that matter.'}
             </p>
 
             <div className="animate-fadeUp-4" style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginBottom: 48 }}>
@@ -224,7 +224,7 @@ export default async function HomePage() {
                     <div style={{ fontFamily: 'Playfair Display,serif', fontSize: 18, fontWeight: 700, color: 'var(--green)' }}>{currency} {product.price.toLocaleString()}</div>
                   </div>
                   <div style={{ fontSize: 12, color: 'var(--muted)', textAlign: 'right' }}>
-                    {product.variants?.join(' · ')}
+                    {product.variants?.map(v => typeof v === 'string' ? v : v.size).join(' · ')}
                   </div>
                 </div>
               </div>
@@ -235,7 +235,7 @@ export default async function HomePage() {
         {/* Full product grid */}
         <div style={{ textAlign: 'center', marginBottom: 40 }}>
           <p style={{ fontSize: 12, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--brown)', fontWeight: 600, marginBottom: 10 }}>The Full Collection</p>
-          <h2 style={{ fontSize: 'clamp(24px,3.5vw,36px)', fontWeight: 700, color: 'var(--green-dark)' }}>Every Product, Every Batch</h2>
+          <h2 style={{ fontSize: 'clamp(24px,3.5vw,36px)', fontWeight: 700, color: 'var(--green-dark)' }}>Curated with character, not volume.</h2>
         </div>
         <div className="prod-grid">
           {allProducts.map(p => <ProductCard key={p.id} product={p} />)}

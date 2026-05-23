@@ -9,10 +9,9 @@ export default async function AboutPage() {
   const about = settings.about_page || {}
 
   const sections = about.sections || [
-    { icon: 'leaf',  title: 'How It Started',  text: 'Long before machines, discounts, and mass packing, nuts in Sri Lanka were handled slowly — grown by familiar hands, dried under open skies, traded with pride, and shared with respect.' },
-    { icon: 'pin',   title: 'Our Farmers',     text: 'Across the island, there are still growers who know when a nut is ready without checking a calendar. We work with them directly — no brokers, no commodity chains.' },
-    { icon: 'box',   title: 'Our Process',     text: 'We source only what we are proud to put our name on. Never rushed, never mixed, never hidden behind flavors or polish.' },
-    { icon: 'check', title: 'Our Promise',     text: 'This is not a snack for everywhere. It is for moments that matter. From the land. Handled with care. Shared with intention.' },
+    { icon: 'leaf',  title: 'Our Story',    text: 'Grown by seasons, not demand. We source from independent growers who follow natural seasons and not just market demand. Because we believe a good product should be simple, real, and naturally grown.' },
+    { icon: 'pin',   title: 'Our Farmers',  text: 'Locally and internationally, there are still growers who know when a harvest is ready without looking at the calendar. They are still growing crops that follow the seasons, not the market, and people who believe food should be honest before it is impressive.' },
+    { icon: 'box',   title: 'Our Promise',  text: 'Not crafted for just anywhere. It is crafted for moments that truly matter — at the end of a long day, around a shared table, in quiet gratitude. Cultivated from the land.' },
   ]
 
   return (
@@ -61,11 +60,13 @@ export default async function AboutPage() {
       {/* CTA */}
       <section style={{ background: 'var(--cream-dark)', padding: '80px 48px', textAlign: 'center' }}>
         <h2 style={{ fontFamily: 'Playfair Display,serif', fontSize: 'clamp(24px,3vw,36px)', fontWeight: 700, color: 'var(--green-dark)', marginBottom: 20 }}>
-          {about.cta_headline || 'From the Land. Handled with Care.'}
+          {about.cta_headline || 'From the Land. Handled with Care. Shared with intention.'}
         </h2>
-        <p style={{ fontSize: 16, color: 'var(--muted)', maxWidth: 480, margin: '0 auto 36px', lineHeight: 1.75, fontWeight: 300 }}>
-          {about.cta_subtext || 'Shared with intention. Every pack we send carries the patience of the land it came from.'}
-        </p>
+        {about.cta_subtext && (
+          <p style={{ fontSize: 16, color: 'var(--muted)', maxWidth: 480, margin: '0 auto 36px', lineHeight: 1.75, fontWeight: 300 }}>
+            {about.cta_subtext}
+          </p>
+        )}
         <Link href="/shop">
           <button className="btn-primary">{about.cta_label || 'Shop the Collection'}</button>
         </Link>

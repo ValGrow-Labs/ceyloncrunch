@@ -29,8 +29,8 @@ export function CartProvider({ children, storeSettings }) {
   const [toast, setToast] = useState(null)
 
   const currency = storeSettings?.currency_symbol || storeSettings?.currency || 'LKR'
-  const freeThreshold = storeSettings?.free_delivery_threshold ?? 3000
-  const deliveryFee = storeSettings?.delivery_fee ?? 300
+  const freeThreshold = storeSettings?.free_delivery_threshold ?? 0
+  const deliveryFee = storeSettings?.delivery_fee ?? 350
 
   useEffect(() => {
     try { localStorage.setItem('cc_cart', JSON.stringify(cart)) } catch {}
@@ -48,7 +48,7 @@ export function CartProvider({ children, storeSettings }) {
   }
 
   const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0)
-  const delivery = subtotal >= freeThreshold ? 0 : deliveryFee
+  const delivery = (freeThreshold > 0 && subtotal >= freeThreshold) ? 0 : deliveryFee
   const total = subtotal + delivery
   const itemCount = cart.reduce((s, i) => s + i.qty, 0)
 

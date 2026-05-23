@@ -1,12 +1,16 @@
 'use client'
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import Link from 'next/link'
 import { useCart } from '@/contexts/CartContext'
 import Stars from './Stars'
+import { normalizeVariants } from '@/lib/variants'
 
 export default function ProductCard({ product }) {
   const { addToCart, currency } = useCart()
-  const [variant, setVariant] = useState(product.variants?.[0] || 'Standard')
+  const variants = useMemo(() => normalizeVariants(product), [product])
+  const [variant, setVariant] = useState(variants[0]?.size || 'Standard')
+
+  const selectedPrice = variants.find(v => v.size === variant)?.price ?? product.price
 
   return (
     <div className="card-hover" style={{ background: '#fff', borderRadius: 20, overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: '0 2px 12px rgba(0,0,0,0.07)' }}>
@@ -42,20 +46,20 @@ export default function ProductCard({ product }) {
           <span style={{ fontSize: 11, color: 'var(--muted)' }}>{product.rating} ({product.reviews})</span>
         </div>
 
-        {product.variants?.length > 0 && (
+        {variants.length > 0 && (
           <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
-            {product.variants.map(v => (
-              <button key={v} className={`pill-btn prod-card-pill ${variant === v ? 'active' : ''}`} onClick={() => setVariant(v)}>{v}</button>
+            {variants.map(v => (
+              <button key={v.size} className={`pill-btn prod-card-pill ${variant === v.size ? 'active' : ''}`} onClick={() => setVariant(v.size)}>{v.size}</button>
             ))}
           </div>
         )}
 
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 'auto', paddingTop: 4 }}>
           <span className="prod-card-price" style={{ fontFamily: 'Playfair Display, serif', fontSize: 20, fontWeight: 700, color: 'var(--green)' }}>
-            {currency} {product.price.toLocaleString()}
+            {currency} {selectedPrice.toLocaleString()}
           </span>
           <button className="btn-primary prod-card-add" style={{ padding: '9px 18px', fontSize: 13 }}
-            onClick={() => addToCart({ id: product.id, name: product.name, image: product.image_url, price: product.price, variant })}>
+            onClick={() => addToCart({ id: product.id, name: product.name, image: product.image_url, price: selectedPrice, variant })}>
             Add
           </button>
         </div>
