@@ -138,10 +138,45 @@ a { text-decoration: none; color: inherit; }
 .navbar {
   position: sticky; top: 0; z-index: 900; background: rgba(250,246,239,0.95);
   backdrop-filter: blur(12px); border-bottom: 1px solid var(--border);
-  padding: 8px 48px; min-height: 80px; display: flex; align-items: center; justify-content: space-between;
+  padding: 6px 48px; min-height: 96px; display: flex; align-items: center; justify-content: space-between;
 }
-.nav-logo { height: 90px; cursor: pointer; transition: transform 0.2s; }
-.nav-logo:hover { transform: scale(1.02); }
+.nav-logo { height: 140px; width: auto; cursor: pointer; transition: transform 0.2s; object-fit: contain; }
+.nav-logo:hover { transform: scale(1.03); }
+
+/* ── Floating WhatsApp button ── */
+.wa-fab {
+  position: fixed; bottom: 24px; right: 24px; z-index: 950;
+  width: 60px; height: 60px; border-radius: 50%;
+  background: #25D366; color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 8px 24px rgba(37,211,102,0.45), 0 4px 12px rgba(0,0,0,0.18);
+  cursor: pointer; transition: transform 0.25s ease, box-shadow 0.25s ease;
+  text-decoration: none;
+}
+.wa-fab:hover { transform: scale(1.08); box-shadow: 0 12px 32px rgba(37,211,102,0.55), 0 6px 16px rgba(0,0,0,0.22); }
+.wa-fab-ring {
+  position: absolute; inset: -6px; border-radius: 50%;
+  border: 2px solid #25D366; opacity: 0.55;
+  animation: wa-pulse 2.2s ease-out infinite;
+  pointer-events: none;
+}
+.wa-fab-tooltip {
+  position: absolute; right: 70px; top: 50%; transform: translateY(-50%);
+  background: #1a1a1a; color: #fff; font-size: 13px; font-weight: 500;
+  padding: 7px 12px; border-radius: 8px; white-space: nowrap;
+  opacity: 0; pointer-events: none; transition: opacity 0.2s, transform 0.2s;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+.wa-fab-tooltip::after {
+  content: ''; position: absolute; left: 100%; top: 50%; transform: translateY(-50%);
+  border: 6px solid transparent; border-left-color: #1a1a1a;
+}
+.wa-fab:hover .wa-fab-tooltip { opacity: 1; transform: translateY(-50%) translateX(-4px); }
+@keyframes wa-pulse {
+  0%   { transform: scale(1); opacity: 0.55; }
+  70%  { transform: scale(1.35); opacity: 0; }
+  100% { transform: scale(1.35); opacity: 0; }
+}
 
 /* ── Cart Drawer ── */
 .drawer-overlay {
@@ -246,8 +281,11 @@ a { text-decoration: none; color: inherit; }
 }
 
 @media (max-width: 640px) {
-  .navbar     { padding: 8px 16px; min-height: 64px; }
-  .nav-logo   { height: 56px; }
+  .navbar     { padding: 6px 16px; min-height: 80px; }
+  .nav-logo   { height: 88px; }
+  .wa-fab     { width: 54px; height: 54px; bottom: 18px; right: 18px; }
+  .wa-fab svg { width: 26px; height: 26px; }
+  .wa-fab-tooltip { display: none; }
   .footer     { padding: 40px 16px 24px; }
 
   /* product grids */

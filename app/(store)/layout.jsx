@@ -6,6 +6,7 @@ import CartDrawer from '@/components/storefront/CartDrawer'
 import Toast from '@/components/storefront/Toast'
 import AnnouncementBar from '@/components/storefront/AnnouncementBar'
 import Footer from '@/components/storefront/Footer'
+import WhatsAppFab from '@/components/storefront/WhatsAppFab'
 
 export default async function StoreLayout({ children }) {
   const settings = await getAllSettings()
@@ -20,6 +21,7 @@ export default async function StoreLayout({ children }) {
         <Footer settings={settings} />
         <CartDrawer />
         <Toast />
+        <WhatsAppFab />
       </CartProvider>
     </SettingsProvider>
   )

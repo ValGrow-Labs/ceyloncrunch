@@ -74,7 +74,7 @@ export default function Navbar() {
       {/* Mobile dropdown */}
       {mobileOpen && (
         <div style={{
-          position: 'fixed', top: 64, left: 0, right: 0, zIndex: 800,
+          position: 'fixed', top: 80, left: 0, right: 0, zIndex: 800,
           background: 'rgba(250,246,239,0.98)', backdropFilter: 'blur(12px)',
           borderBottom: '1px solid var(--border)', padding: '16px 24px 24px',
           display: 'flex', flexDirection: 'column', gap: 4,
