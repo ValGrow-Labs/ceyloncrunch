@@ -2,7 +2,6 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase-server'
 import { getAllSettings } from '@/lib/settings'
 import ProductCard from '@/components/storefront/ProductCard'
-import NewsletterForm from '@/components/storefront/NewsletterForm'
 import { iconByName } from '@/components/storefront/Icons'
 import Stars from '@/components/storefront/Stars'
 
@@ -25,7 +24,6 @@ export default async function HomePage() {
   const bestsellersSection = settings.bestsellers_section || {}
   const categoriesSection  = settings.categories_section || {}
   const aboutStrip      = settings.about_strip || {}
-  const newsletterSection = settings.newsletter_section || {}
   const store           = settings.store || {}
   const currency        = store.currency_symbol || store.currency || 'LKR'
 
@@ -316,24 +314,6 @@ export default async function HomePage() {
               <div style={{ fontSize: 12, color: 'var(--ink-soft)', fontWeight: 500 }}>"Quality you can taste"</div>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════
-          NEWSLETTER
-      ═══════════════════════════════════════════════ */}
-      <section style={{ background: 'var(--cream-dark)', padding: 'clamp(56px,8vw,88px) clamp(16px,4vw,48px)', textAlign: 'center' }}>
-        <div style={{ maxWidth: 560, margin: '0 auto' }}>
-          <p style={{ fontSize: 12, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--brown)', fontWeight: 600, marginBottom: 16 }}>
-            {newsletterSection.eyebrow || 'Stay Connected'}
-          </p>
-          <h2 style={{ fontFamily: 'Playfair Display,serif', fontSize: 'clamp(26px,3.5vw,40px)', fontWeight: 700, color: 'var(--green-dark)', marginBottom: 16 }}>
-            {newsletterSection.headline || 'For Moments That Matter'}
-          </h2>
-          <p style={{ fontSize: 16, color: 'var(--muted)', lineHeight: 1.7, marginBottom: 36 }}>
-            {newsletterSection.body || 'Harvest updates, new batches, and quiet notes from the land. No noise — only what is worth your time.'}
-          </p>
-          <NewsletterForm buttonLabel={newsletterSection.button_label || 'Subscribe'} />
         </div>
       </section>
 
