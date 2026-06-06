@@ -47,6 +47,12 @@ export default function Footer({ settings }) {
                 </div>
               ))}
             </div>
+            <div>
+              <div style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--gold)', marginBottom: 16, fontWeight: 600 }}>Policies</div>
+              <div style={{ marginBottom: 10 }}><Link href="/refund-policy" style={{ fontSize: 14 }}>Refund Policy</Link></div>
+              <div style={{ marginBottom: 10 }}><Link href="/privacy-policy" style={{ fontSize: 14 }}>Privacy Policy</Link></div>
+              <div style={{ marginBottom: 10 }}><Link href="/terms-and-conditions" style={{ fontSize: 14 }}>Terms & Conditions</Link></div>
+            </div>
           </div>
 
           <div style={{ textAlign: 'right' }}>
