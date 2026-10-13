@@ -144,20 +144,30 @@ export const Footer: React.FC = () => {
             </ul>
           </div>
 
-          {/* Follow Us & Direct Contact */}
+          {/* Contact */}
           <div className="space-y-3">
             <span className="font-sans text-xs font-bold uppercase tracking-wider text-[#C9A84C] block">
-              Follow Us
+              CONTACT
             </span>
             <ul className="space-y-2 text-sm text-[#C4C4C4]">
               <li>
                 <a
-                  href="https://wa.me/94779443867"
+                  href="tel:+94779443867"
+                  className="hover:text-[#C9A84C] transition-colors flex items-center gap-1.5"
+                  title="Call Ceylon Crunch"
+                >
+                  <span>Phone: +94 77 944 3867</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://wa.me/94779443867?text=Hello%20Ceylon%20Crunch"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-[#C9A84C] transition-colors"
+                  className="hover:text-[#C9A84C] transition-colors flex items-center gap-1.5"
+                  title="WhatsApp Ceylon Crunch"
                 >
-                  WhatsApp: +94 77 944 3867
+                  <span>WhatsApp: +94 77 944 3867</span>
                 </a>
               </li>
               <li>
@@ -165,7 +175,7 @@ export const Footer: React.FC = () => {
                   href="mailto:ceyloncrunch26@gmail.com"
                   className="hover:text-[#C9A84C] transition-colors"
                 >
-                  Email: ceyloncrunch26@gmail.com
+                  ceyloncrunch26@gmail.com
                 </a>
               </li>
               <li className="pt-1">Colombo, Sri Lanka</li>

@@ -62,35 +62,67 @@ export const Contact: React.FC = () => {
         {/* Contact Info Column */}
         <div className="md:col-span-1 space-y-4">
           <div className="bg-white border border-[#EADFD0] rounded-2xl p-5 shadow-2xs space-y-4 text-xs text-[#424843]">
-            <div className="flex items-start gap-3">
-              <MessageCircle className="w-4 h-4 text-[#8B5E3C] shrink-0 mt-0.5" />
-              <div>
-                <span className="font-bold text-[#1F3D2B] block">WhatsApp</span>
-                <a href="https://wa.me/94771234567" className="hover:text-[#1F3D2B]">
-                  +94 77 123 4567
-                </a>
+            {/* Phone Row - Click to open dialer */}
+            <a
+              href="tel:+94779443867"
+              className="flex items-start gap-3 p-2.5 -mx-1.5 rounded-xl bg-[#FAF8F4] hover:bg-[#F2ECE3] border border-[#EADFD0]/80 transition-all group cursor-pointer"
+              title="Click to call Ceylon Crunch"
+            >
+              <div className="w-8 h-8 rounded-full bg-white group-hover:bg-[#1F3D2B] group-hover:text-white flex items-center justify-center text-[#1F3D2B] shadow-2xs shrink-0 transition-colors">
+                <Phone className="w-4 h-4" />
               </div>
-            </div>
+              <div className="flex-1 min-w-0">
+                <span className="font-bold text-[#1F3D2B] block text-xs">Direct Phone</span>
+                <span className="text-xs font-semibold text-[#8B5E3C] group-hover:text-[#1F3D2B] underline decoration-dotted">
+                  +94 77 944 3867
+                </span>
+                <span className="text-[10px] text-[#2E7D4F] block font-medium mt-0.5">
+                  ● Tap to call directly
+                </span>
+              </div>
+            </a>
 
-            <div className="flex items-start gap-3">
-              <Phone className="w-4 h-4 text-[#8B5E3C] shrink-0 mt-0.5" />
-              <div>
-                <span className="font-bold text-[#1F3D2B] block">Phone</span>
-                <a href="tel:+94112345678" className="hover:text-[#1F3D2B]">
-                  +94 11 234 5678
-                </a>
+            {/* WhatsApp Row - Click to open WhatsApp */}
+            <a
+              href="https://wa.me/94779443867?text=Hello%20Ceylon%20Crunch%20Team"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-start gap-3 p-2.5 -mx-1.5 rounded-xl bg-[#FAF8F4] hover:bg-[#F2ECE3] border border-[#EADFD0]/80 transition-all group cursor-pointer"
+              title="Click to chat on WhatsApp"
+            >
+              <div className="w-8 h-8 rounded-full bg-white group-hover:bg-[#25D366] group-hover:text-white flex items-center justify-center text-[#25D366] shadow-2xs shrink-0 transition-colors">
+                <MessageCircle className="w-4 h-4" />
               </div>
-            </div>
+              <div className="flex-1 min-w-0">
+                <span className="font-bold text-[#1F3D2B] block text-xs">WhatsApp</span>
+                <span className="text-xs font-semibold text-[#8B5E3C] group-hover:text-[#1F3D2B] underline decoration-dotted">
+                  +94 77 944 3867
+                </span>
+                <span className="text-[10px] text-[#2E7D4F] block font-medium mt-0.5">
+                  ● Tap to chat live
+                </span>
+              </div>
+            </a>
 
-            <div className="flex items-start gap-3">
-              <Mail className="w-4 h-4 text-[#8B5E3C] shrink-0 mt-0.5" />
-              <div>
-                <span className="font-bold text-[#1F3D2B] block">Email</span>
-                <a href="mailto:hello@ceyloncrunch.lk" className="hover:text-[#1F3D2B]">
-                  hello@ceyloncrunch.lk
-                </a>
+            {/* Email Row - Click to open mail client */}
+            <a
+              href="mailto:ceyloncrunch26@gmail.com"
+              className="flex items-start gap-3 p-2.5 -mx-1.5 rounded-xl bg-[#FAF8F4] hover:bg-[#F2ECE3] border border-[#EADFD0]/80 transition-all group cursor-pointer"
+              title="Click to send email"
+            >
+              <div className="w-8 h-8 rounded-full bg-white group-hover:bg-[#1F3D2B] group-hover:text-white flex items-center justify-center text-[#8B5E3C] shadow-2xs shrink-0 transition-colors">
+                <Mail className="w-4 h-4" />
               </div>
-            </div>
+              <div className="flex-1 min-w-0">
+                <span className="font-bold text-[#1F3D2B] block text-xs">Email</span>
+                <span className="text-xs font-semibold text-[#8B5E3C] group-hover:text-[#1F3D2B] underline decoration-dotted truncate block">
+                  ceyloncrunch26@gmail.com
+                </span>
+                <span className="text-[10px] text-[#6B6B6B] block mt-0.5">
+                  ● Tap to send message
+                </span>
+              </div>
+            </a>
 
             <div className="pt-2 border-t border-[#EADFD0]/80 space-y-1">
               <span className="font-bold text-[#1F3D2B] block">Hours</span>
@@ -105,15 +137,26 @@ export const Contact: React.FC = () => {
             </div>
           </div>
 
-          <a
-            href="https://wa.me/94771234567?text=Hello%20Ceylon%20Crunch%20Team"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-full py-3 px-4 rounded-full bg-[#25D366] text-white text-xs font-semibold flex items-center justify-center gap-2 shadow-xs hover:brightness-105 transition-all"
-          >
-            <MessageCircle className="w-4 h-4" />
-            <span>Chat on WhatsApp</span>
-          </a>
+          {/* Quick Direct Action Buttons */}
+          <div className="flex flex-col gap-2">
+            <a
+              href="tel:+94779443867"
+              className="w-full py-3 px-4 rounded-full bg-[#1F3D2B] hover:bg-[#162C1F] text-white text-xs font-semibold flex items-center justify-center gap-2 shadow-xs transition-all active:scale-95"
+            >
+              <Phone className="w-4 h-4" />
+              <span>Call Us: +94 77 944 3867</span>
+            </a>
+
+            <a
+              href="https://wa.me/94779443867?text=Hello%20Ceylon%20Crunch%20Team"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full py-3 px-4 rounded-full bg-[#25D366] text-white text-xs font-semibold flex items-center justify-center gap-2 shadow-xs hover:brightness-105 transition-all active:scale-95"
+            >
+              <MessageCircle className="w-4 h-4" />
+              <span>Chat on WhatsApp</span>
+            </a>
+          </div>
         </div>
 
         {/* Contact Form Column */}
