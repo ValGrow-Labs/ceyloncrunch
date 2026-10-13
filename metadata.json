@@ -1,0 +1,8 @@
+{
+  "name": "Ceylon Crunch - Artisan Provisions",
+  "description": "Artisanal Sri Lankan roasted nuts, dried fruits, dates, seeds, spices, and curated gift hampers. From Nature to Your Doorstep.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

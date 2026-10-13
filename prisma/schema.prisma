@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  slug        String   @unique
+  name        String
+  category    String
+  origin      String   @default("Sri Lanka")
+  description String?
+  images      Json     @default("[]")
+  variants    Json     @default("[]")
+  isFeatured  Boolean  @default(false) @map("is_featured")
+  isActive    Boolean  @default(true)  @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt      @map("updated_at")
+
+  @@map("products")
+}
+
+model Order {
+  id              String   @id
+  customerName    String   @map("customer_name")
+  customerPhone   String   @map("customer_phone")
+  customerEmail   String?  @map("customer_email")
+  shippingAddress Json     @map("shipping_address")
+  items           Json
+  subtotal        Decimal
+  deliveryFee     Decimal  @map("delivery_fee")
+  total           Decimal
+  paymentMethod   String   @map("payment_method")
+  paymentStatus   String   @default("pending") @map("payment_status")
+  paymentSlipUrl  String?  @map("payment_slip_url")
+  status          String   @default("placed")
+  waybill         String?
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  @@map("orders")
+}
