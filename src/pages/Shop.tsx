@@ -127,7 +127,7 @@ export const Shop: React.FC = () => {
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             placeholder="Search products..."
-            className="w-full bg-transparent border-0 outline-none text-sm text-[#1F3D2B] placeholder:text-[#6B6B6B]/70 pr-8"
+            className="w-full bg-transparent border-0 outline-none text-base sm:text-sm text-[#1F3D2B] placeholder:text-[#6B6B6B]/70 pr-8"
           />
           {searchInput && (
             <button
@@ -300,7 +300,7 @@ export const Shop: React.FC = () => {
 
       {/* Main Product Catalog Grid (2-col on mobile, 4-col on desktop) */}
       {filteredProducts.length > 0 ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3.5 lg:gap-5">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
           {filteredProducts.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}

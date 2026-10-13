@@ -327,7 +327,7 @@ export const CategoryPage: React.FC = () => {
       </div>
 
       {/* Two-Column on mobile, Four-Column on desktop */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3.5 lg:gap-5 mb-10">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5 mb-10">
         {filteredProducts.map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}

@@ -91,8 +91,8 @@ export const Home: React.FC = () => {
 
   return (
     <div className="flex flex-col w-full space-y-12 lg:space-y-16 pb-12">
-      {/* 1. FULL-WIDTH HERO & TRUST BANNER (No Gaps, Responsive at all widths) */}
-      <section className="w-screen relative left-1/2 -translate-x-1/2 -mt-5 lg:-mt-9 border-b border-[#EADFD0] bg-[#FAF8F4] overflow-hidden">
+      {/* 1. FULL-WIDTH HERO & TRUST BANNER (Responsive across all viewports, no scrollbar jitter) */}
+      <section className="-mx-4 sm:-mx-6 lg:-mx-8 w-[calc(100%+2rem)] sm:w-[calc(100%+3rem)] lg:w-[calc(100%+4rem)] -mt-4 sm:-mt-5 lg:-mt-9 border-b border-[#EADFD0] bg-[#FAF8F4] overflow-hidden">
         {/* Top Hero Area */}
         <div className="relative isolate w-full overflow-hidden bg-[#FBF7F0]">
           <motion.img
@@ -105,11 +105,11 @@ export const Home: React.FC = () => {
             className="absolute inset-0 w-full h-full object-cover object-[78%_center] sm:object-[72%_center] lg:object-[80%_center]"
           />
           {/* Subtle readability gradient on small screens only */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#FBF7F0]/95 via-[#FBF7F0]/70 to-transparent sm:via-[#FBF7F0]/30 sm:to-transparent pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#FBF7F0]/95 via-[#FBF7F0]/75 to-transparent sm:via-[#FBF7F0]/30 sm:to-transparent pointer-events-none" />
 
-          <div className="relative z-10 max-w-[1440px] mx-auto flex items-center min-h-[460px] sm:min-h-[440px] md:min-h-[480px] lg:min-h-[520px]">
+          <div className="relative z-10 max-w-[1440px] mx-auto flex items-center min-h-[420px] xs:min-h-[460px] sm:min-h-[440px] md:min-h-[480px] lg:min-h-[520px]">
             {/* Hero Copy */}
-            <div className="w-full px-5 sm:pl-8 sm:pr-4 md:pl-12 lg:pl-20 lg:pr-6 py-12 sm:py-10 lg:py-16 flex flex-col items-center text-center sm:items-start sm:text-left space-y-3.5 sm:space-y-4 lg:space-y-5">
+            <div className="w-full px-4 xs:px-5 sm:pl-8 sm:pr-4 md:pl-12 lg:pl-20 lg:pr-6 py-10 xs:py-12 sm:py-10 lg:py-16 flex flex-col items-center text-center sm:items-start sm:text-left space-y-3 sm:space-y-4 lg:space-y-5">
               {/* Eyebrow */}
               <motion.div
                 initial={{ opacity: 0, y: 16 }}
@@ -130,7 +130,7 @@ export const Home: React.FC = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
-                className="font-serif text-3xl sm:text-[36px] md:text-[44px] lg:text-[54px] font-bold text-[#0F3822] tracking-tight leading-[1.08] uppercase"
+                className="font-serif text-2xl xs:text-3xl sm:text-[36px] md:text-[44px] lg:text-[54px] font-bold text-[#0F3822] tracking-tight leading-[1.1] uppercase"
               >
                 Good Products. <br />
                 <span className="text-[#B5741E]">
@@ -153,7 +153,7 @@ export const Home: React.FC = () => {
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.44 }}
-                className="flex flex-wrap items-center justify-center sm:justify-start gap-2.5 sm:gap-3 pt-1"
+                className="flex flex-col xs:flex-row items-stretch xs:items-center justify-center sm:justify-start gap-2.5 sm:gap-3 pt-1 w-full xs:w-auto"
               >
                 <Link
                   to="/shop"
@@ -191,8 +191,8 @@ export const Home: React.FC = () => {
         </div>
 
         {/* Bottom 4-Column Feature / Trust Strip */}
-        <div className="bg-[#FAF8F4] px-4 sm:px-8 lg:px-16 py-5 sm:py-6 border-t border-[#EFECE6]/80">
-          <div className="max-w-[1440px] mx-auto grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-0 md:divide-x divide-[#E2DDD2]">
+        <div className="bg-[#FAF8F4] px-3 xs:px-4 sm:px-8 lg:px-16 py-4 xs:py-5 sm:py-6 border-t border-[#EFECE6]/80">
+          <div className="max-w-[1440px] mx-auto grid grid-cols-2 md:grid-cols-4 gap-3 xs:gap-4 md:gap-0 md:divide-x divide-[#E2DDD2]">
             {trustFeatures.map((feat, idx) => {
               const Icon = feat.icon;
               return (
@@ -201,16 +201,16 @@ export const Home: React.FC = () => {
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.45, delay: 0.35 + idx * 0.1 }}
-                  className="group flex items-center gap-3.5 md:justify-center md:px-4 lg:px-6"
+                  className="group flex items-center gap-2.5 xs:gap-3.5 md:justify-center md:px-4 lg:px-6"
                 >
-                  <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#E6ECE2] group-hover:bg-[#1B5132] group-hover:text-white flex items-center justify-center text-[#1B5132] shrink-0 transition-all duration-300 group-hover:scale-110 shadow-2xs">
+                  <div className="w-9 h-9 xs:w-10 xs:h-10 sm:w-11 sm:h-11 rounded-full bg-[#E6ECE2] group-hover:bg-[#1B5132] group-hover:text-white flex items-center justify-center text-[#1B5132] shrink-0 transition-all duration-300 group-hover:scale-110 shadow-2xs">
                     <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
                   </div>
-                  <div>
-                    <span className={`font-sans text-xs sm:text-sm font-bold ${feat.titleColor} block leading-snug`}>
+                  <div className="min-w-0">
+                    <span className={`font-sans text-[11px] xs:text-xs sm:text-sm font-bold ${feat.titleColor} block leading-snug truncate`}>
                       {feat.title}
                     </span>
-                    <span className="font-sans text-[10px] sm:text-[11px] text-[#6B6B6B] block mt-0.5">
+                    <span className="font-sans text-[10px] sm:text-[11px] text-[#6B6B6B] block mt-0.5 truncate">
                       {feat.subtitle}
                     </span>
                   </div>
@@ -566,12 +566,12 @@ export const Home: React.FC = () => {
         <p className="text-xs sm:text-sm text-[#4A4A4A] max-w-lg mx-auto">
           Follow Ceylon Crunch for new products, offers, recipes, serving ideas and more.
         </p>
-        <div className="flex items-center justify-center gap-3 pt-2">
+        <div className="flex flex-col xs:flex-row items-center justify-center gap-2.5 sm:gap-3 pt-2">
           <a
             href="https://instagram.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="h-10 px-6 rounded-full bg-[#FAF8F4] border border-[#EADFD0] hover:border-[#1F3D2B] text-xs font-semibold text-[#1F3D2B] inline-flex items-center gap-2 transition-colors"
+            className="w-full xs:w-auto h-10 px-6 rounded-full bg-[#FAF8F4] border border-[#EADFD0] hover:border-[#1F3D2B] text-xs font-semibold text-[#1F3D2B] inline-flex items-center justify-center gap-2 transition-colors"
           >
             <span>Follow Us on Instagram</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -580,7 +580,7 @@ export const Home: React.FC = () => {
             href="https://wa.me/94779443867"
             target="_blank"
             rel="noopener noreferrer"
-            className="h-10 px-6 rounded-full bg-[#25D366] text-white text-xs font-semibold inline-flex items-center gap-2 hover:bg-[#1EBE5D] transition-colors"
+            className="w-full xs:w-auto h-10 px-6 rounded-full bg-[#25D366] text-white text-xs font-semibold inline-flex items-center justify-center gap-2 hover:bg-[#1EBE5D] transition-colors"
           >
             <span>WhatsApp Channel</span>
           </a>

@@ -696,37 +696,37 @@ export const ProductDetail: React.FC = () => {
       )}
 
       {/* Sticky Bottom Action Bar for Mobile (< 1024px) */}
-      <div className="lg:hidden fixed bottom-16 left-0 right-0 z-40 px-4 pb-2 pointer-events-none">
+      <div className="lg:hidden fixed bottom-[calc(4rem+env(safe-area-inset-bottom,0px))] left-0 right-0 z-40 px-3 xs:px-4 pb-2 pointer-events-none">
         <div className="bg-white/95 backdrop-blur-xl rounded-2xl border border-[#EADFD0] shadow-[0_12px_36px_rgba(31,61,43,0.18)] p-2.5 flex items-center gap-2 pointer-events-auto">
           {/* Mini total */}
-          <div className="flex flex-col pl-2 min-w-[85px]">
+          <div className="flex flex-col pl-1 xs:pl-2 min-w-[70px] xs:min-w-[85px]">
             <span className="text-[10px] text-[#6B6B6B] font-medium leading-none">Total</span>
-            <span className="font-serif text-base font-bold text-[#1F3D2B] tabular-nums mt-0.5">
+            <span className="font-serif text-sm xs:text-base font-bold text-[#1F3D2B] tabular-nums mt-0.5 truncate">
               {currentVariant ? formatRs(currentVariant.price * quantity) : '—'}
             </span>
           </div>
 
           {/* Action buttons */}
-          <div className="flex items-center gap-2 flex-1">
+          <div className="flex items-center gap-1.5 xs:gap-2 flex-1 min-w-0">
             <button
               type="button"
               onClick={handleAddToCart}
               disabled={!currentVariant || currentVariant.stock <= 0}
-              className={`h-11 flex-1 rounded-full text-xs font-semibold flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition-all ${
+              className={`h-10 xs:h-11 flex-1 rounded-full text-[11px] xs:text-xs font-semibold flex items-center justify-center gap-1 xs:gap-1.5 shadow-sm active:scale-95 transition-all truncate px-2 ${
                 !currentVariant || currentVariant.stock <= 0
                   ? 'bg-[#f0eded] text-[#6B6B6B]'
                   : 'bg-[#1F3D2B] text-white'
               }`}
             >
-              <ShoppingBag className="w-4 h-4" />
-              <span>Add to Cart</span>
+              <ShoppingBag className="w-3.5 h-3.5 xs:w-4 xs:h-4 shrink-0" />
+              <span className="truncate">Add to Cart</span>
             </button>
 
             <button
               type="button"
               onClick={handleBuyNow}
               disabled={!currentVariant || currentVariant.stock <= 0}
-              className={`h-11 px-4 rounded-full text-xs font-semibold flex items-center justify-center active:scale-95 transition-all whitespace-nowrap ${
+              className={`h-10 xs:h-11 px-3 xs:px-4 rounded-full text-[11px] xs:text-xs font-semibold flex items-center justify-center active:scale-95 transition-all whitespace-nowrap shrink-0 ${
                 !currentVariant || currentVariant.stock <= 0
                   ? 'bg-[#f0eded] text-[#6B6B6B]'
                   : 'bg-[#ffdcc5] text-[#301400]'

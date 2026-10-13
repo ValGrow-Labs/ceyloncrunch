@@ -75,21 +75,21 @@ export const Header: React.FC = () => {
     <>
       <header className="fixed top-0 left-0 w-full z-40 pt-safe bg-[#FBF7F0]/95 backdrop-blur-xl border-b border-[#EADFD0] shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
         {/* Top Free Island Delivery Banner */}
-        <div className="bg-[#1F3D2B] text-[#FBF7F0] px-4 py-1.5 text-center">
-          <p className="font-sans text-[11px] lg:text-xs font-medium tracking-wide">
+        <div className="bg-[#1F3D2B] text-[#FBF7F0] px-3 sm:px-4 py-1.5 text-center">
+          <p className="font-sans text-[10px] sm:text-[11px] lg:text-xs font-medium tracking-wide line-clamp-1 sm:line-clamp-none">
             Free island-wide delivery on orders over Rs. 5,000 · Small-Batch Freshness Guaranteed
           </p>
         </div>
 
         {/* Main Navigation Bar */}
-        <div className="max-w-[1320px] mx-auto h-16 px-4 lg:px-8 flex items-center justify-between gap-4 relative">
-          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+        <div className="max-w-[1320px] mx-auto h-15 sm:h-16 px-3 sm:px-4 lg:px-8 flex items-center justify-between gap-2 sm:gap-4 relative">
+          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
             {/* Mobile Menu Trigger */}
             <button
               type="button"
               onClick={() => setIsMenuOpen(true)}
               aria-label="Open Navigation Menu"
-              className="lg:hidden w-10 h-10 rounded-full flex items-center justify-center text-[#424843] hover:text-[#1F3D2B] transition-colors"
+              className="lg:hidden w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-[#424843] hover:text-[#1F3D2B] transition-colors"
             >
               <Menu className="w-5 h-5" />
             </button>
@@ -99,7 +99,7 @@ export const Header: React.FC = () => {
               <img
                 src="/logo.png"
                 alt="Ceylon Crunch - From Nature To Your Doorstep"
-                className="h-11 sm:h-12 lg:h-13 w-auto object-contain group-hover:scale-[1.03] transition-transform duration-300"
+                className="h-9 sm:h-11 lg:h-13 w-auto object-contain group-hover:scale-[1.03] transition-transform duration-300"
               />
             </Link>
           </div>
@@ -436,16 +436,22 @@ export const Header: React.FC = () => {
               </div>
             </div>
 
-            {/* Quick WhatsApp Concierge in drawer */}
-            <div className="pt-4 border-t border-[#EADFD0]">
+            {/* Quick Contact & WhatsApp Concierge in drawer */}
+            <div className="pt-4 border-t border-[#EADFD0] flex flex-col gap-2">
               <a
-                href="https://wa.me/94718882345"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full py-3 rounded-full bg-[#25D366] text-white text-xs font-semibold flex items-center justify-center gap-2 shadow-sm"
+                href="tel:+94779443867"
+                className="w-full py-2.5 rounded-full bg-[#1F3D2B] hover:bg-[#162C1F] text-white text-xs font-semibold flex items-center justify-center gap-2 shadow-sm transition-colors active:scale-98"
               >
                 <Phone className="w-3.5 h-3.5" />
-                <span>WhatsApp: +94 71 888 2345</span>
+                <span>Call Us: +94 77 944 3867</span>
+              </a>
+              <a
+                href="https://wa.me/94779443867?text=Hello%20Ceylon%20Crunch"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full py-2.5 rounded-full bg-[#25D366] hover:bg-[#1EBE5D] text-white text-xs font-semibold flex items-center justify-center gap-2 shadow-sm transition-colors active:scale-98"
+              >
+                <span>WhatsApp: +94 77 944 3867</span>
               </a>
             </div>
           </div>

@@ -163,7 +163,7 @@ export const Checkout: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col w-full pb-36 lg:pb-16 max-w-4xl mx-auto">
+    <div className="flex flex-col w-full pb-44 lg:pb-24 max-w-4xl mx-auto">
       {/* Top Navigation & Step Indicator */}
       <div className="flex items-center justify-between py-2 mb-3">
         <Link
@@ -654,7 +654,7 @@ export const Checkout: React.FC = () => {
         </section>
 
         {/* Sticky Bottom Bar for Checkout */}
-        <div className="fixed bottom-0 lg:bottom-4 left-0 w-full z-40 bg-white/95 lg:bg-white lg:max-w-xl lg:left-1/2 lg:-translate-x-1/2 backdrop-blur-md px-4 py-3 border-t lg:border border-[#EADFD0] shadow-[0_-8px_24px_rgba(0,0,0,0.08)] lg:rounded-2xl">
+        <div className="fixed bottom-0 lg:bottom-4 left-0 w-full z-40 bg-white/95 lg:bg-white lg:max-w-xl lg:left-1/2 lg:-translate-x-1/2 backdrop-blur-md px-4 py-3 pb-safe border-t lg:border border-[#EADFD0] shadow-[0_-8px_24px_rgba(0,0,0,0.08)] lg:rounded-2xl">
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between">
               <div className="flex flex-col">

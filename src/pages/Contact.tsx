@@ -179,7 +179,7 @@ export const Contact: React.FC = () => {
                     if (errors.name) setErrors({ ...errors, name: undefined });
                   }}
                   placeholder="e.g. Ayesha de Silva"
-                  className="w-full h-11 px-3.5 bg-[#f6f3f2] border border-[#EADFD0] rounded-xl text-xs sm:text-sm text-[#1F3D2B] focus:bg-white focus:outline-none focus:border-[#1F3D2B]"
+                  className="w-full h-11 px-3.5 bg-[#f6f3f2] border border-[#EADFD0] rounded-xl text-base sm:text-sm text-[#1F3D2B] focus:bg-white focus:outline-none focus:border-[#1F3D2B]"
                 />
                 {errors.name && <p className="text-xs text-[#B3261E] mt-0.5">{errors.name}</p>}
               </div>
@@ -199,7 +199,7 @@ export const Contact: React.FC = () => {
                       if (errors.email) setErrors({ ...errors, email: undefined });
                     }}
                     placeholder="ayesha@example.com"
-                    className="w-full h-11 px-3.5 bg-[#f6f3f2] border border-[#EADFD0] rounded-xl text-xs sm:text-sm text-[#1F3D2B] focus:bg-white focus:outline-none focus:border-[#1F3D2B]"
+                    className="w-full h-11 px-3.5 bg-[#f6f3f2] border border-[#EADFD0] rounded-xl text-base sm:text-sm text-[#1F3D2B] focus:bg-white focus:outline-none focus:border-[#1F3D2B]"
                   />
                   {errors.email && <p className="text-xs text-[#B3261E] mt-0.5">{errors.email}</p>}
                 </div>
@@ -213,7 +213,7 @@ export const Contact: React.FC = () => {
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="077 123 4567"
-                    className="w-full h-11 px-3.5 bg-[#f6f3f2] border border-[#EADFD0] rounded-xl text-xs sm:text-sm text-[#1F3D2B] focus:bg-white focus:outline-none focus:border-[#1F3D2B]"
+                    className="w-full h-11 px-3.5 bg-[#f6f3f2] border border-[#EADFD0] rounded-xl text-base sm:text-sm text-[#1F3D2B] focus:bg-white focus:outline-none focus:border-[#1F3D2B]"
                   />
                 </div>
               </div>
@@ -226,7 +226,7 @@ export const Contact: React.FC = () => {
                 <select
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
-                  className="w-full h-11 px-3.5 bg-[#f6f3f2] border border-[#EADFD0] rounded-xl text-xs sm:text-sm text-[#1F3D2B] focus:bg-white focus:outline-none focus:border-[#1F3D2B]"
+                  className="w-full h-11 px-3.5 bg-[#f6f3f2] border border-[#EADFD0] rounded-xl text-base sm:text-sm text-[#1F3D2B] focus:bg-white focus:outline-none focus:border-[#1F3D2B]"
                 >
                   <option value="General Inquiries">General Inquiries</option>
                   <option value="Corporate & Wedding Hampers">Corporate & Wedding Hampers</option>
@@ -249,7 +249,7 @@ export const Contact: React.FC = () => {
                     if (errors.message) setErrors({ ...errors, message: undefined });
                   }}
                   placeholder="How can we assist with your provisions or celebration requests?"
-                  className="w-full p-3 bg-[#f6f3f2] border border-[#EADFD0] rounded-xl text-xs sm:text-sm text-[#1F3D2B] focus:bg-white focus:outline-none focus:border-[#1F3D2B] resize-none"
+                  className="w-full p-3 bg-[#f6f3f2] border border-[#EADFD0] rounded-xl text-base sm:text-sm text-[#1F3D2B] focus:bg-white focus:outline-none focus:border-[#1F3D2B] resize-none"
                 />
                 {errors.message && <p className="text-xs text-[#B3261E] mt-0.5">{errors.message}</p>}
               </div>

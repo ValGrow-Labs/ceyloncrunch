@@ -81,23 +81,23 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, compact = fal
         )}
       </Link>
 
-      <div className="p-3.5 flex flex-col flex-1 justify-between bg-white">
+      <div className="p-2.5 sm:p-3.5 flex flex-col flex-1 justify-between bg-white">
         <Link to={`/product/${product.slug}`} className="block">
-          <span className="text-[11px] font-medium tracking-wider text-[#8B5E3C] uppercase block truncate mb-0.5">
+          <span className="text-[10px] sm:text-[11px] font-medium tracking-wider text-[#8B5E3C] uppercase block truncate mb-0.5">
             {product.subtitle || product.category.replace('-', ' ')}
           </span>
-          <h3 className="font-serif text-[15px] leading-snug text-[#1F3D2B] font-semibold line-clamp-1 group-hover:text-[#B5741E] transition-colors duration-200">
+          <h3 className="font-serif text-sm sm:text-[15px] leading-snug text-[#1F3D2B] font-semibold line-clamp-1 group-hover:text-[#B5741E] transition-colors duration-200">
             {product.name}
           </h3>
-          <p className="text-[11px] text-[#6B6B6B] mt-0.5 line-clamp-1">
+          <p className="text-[10px] sm:text-[11px] text-[#6B6B6B] mt-0.5 line-clamp-1">
             {product.origin}
           </p>
         </Link>
 
-        <div className="flex items-center justify-between pt-3 mt-1.5 border-t border-[#EADFD0]/60">
-          <div>
-            <span className="text-[10px] text-[#6B6B6B] block leading-none font-medium">From</span>
-            <span className="font-sans font-bold text-[#1F3D2B] text-[15px] tabular-nums">
+        <div className="flex items-center justify-between gap-1.5 pt-2.5 sm:pt-3 mt-1.5 border-t border-[#EADFD0]/60">
+          <div className="min-w-0 flex-1">
+            <span className="text-[9px] sm:text-[10px] text-[#6B6B6B] block leading-none font-medium">From</span>
+            <span className="font-sans font-bold text-[#1F3D2B] text-xs sm:text-[15px] tabular-nums truncate block">
               {formatRs(price)}
             </span>
           </div>
@@ -109,22 +109,22 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, compact = fal
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.88 }}
               aria-label={`Add ${product.name} to cart`}
-              className={`w-9 h-9 rounded-full flex items-center justify-center transition-colors shadow-sm ${
+              className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center shrink-0 transition-colors shadow-sm ${
                 justAdded
                   ? 'bg-[#2E7D4F] text-white'
                   : 'bg-[#1F3D2B] hover:bg-[#B5741E] text-white'
               }`}
             >
-              {justAdded ? <Check className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+              {justAdded ? <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
             </motion.button>
           ) : (
             <button
               type="button"
               disabled
               aria-label={`${product.name} is out of stock`}
-              className="w-9 h-9 rounded-full bg-[#f0eded] text-[#6B6B6B] flex items-center justify-center cursor-not-allowed opacity-70"
+              className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#f0eded] text-[#6B6B6B] flex items-center justify-center shrink-0 cursor-not-allowed opacity-70"
             >
-              <Lock className="w-3.5 h-3.5" />
+              <Lock className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
             </button>
           )}
         </div>

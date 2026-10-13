@@ -168,10 +168,10 @@ export const Cart: React.FC = () => {
             {cart.map((item) => (
               <div
                 key={item.variantId}
-                className="bg-white border border-[#EADFD0] rounded-2xl p-3.5 sm:p-4 shadow-[0_4px_20px_-2px_rgba(139,94,60,0.06)] flex gap-3.5 items-center transition-all"
+                className="bg-white border border-[#EADFD0] rounded-2xl p-3 sm:p-4 shadow-[0_4px_20px_-2px_rgba(139,94,60,0.06)] flex gap-3 sm:gap-3.5 items-center transition-all"
               >
                 {/* Thumbnail */}
-                <div className="relative w-20 h-20 rounded-xl overflow-hidden shrink-0 bg-[#f6f3f2] border border-[#EADFD0]">
+                <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden shrink-0 bg-[#f6f3f2] border border-[#EADFD0]">
                   <img
                     src={item.image}
                     alt={item.productName}
@@ -184,7 +184,7 @@ export const Cart: React.FC = () => {
                   <div className="flex justify-between items-start gap-1">
                     <Link
                       to={`/product/${item.slug}`}
-                      className="font-serif text-sm sm:text-base font-semibold text-[#1F3D2B] hover:text-[#8B5E3C] truncate leading-snug"
+                      className="font-serif text-xs xs:text-sm sm:text-base font-semibold text-[#1F3D2B] hover:text-[#8B5E3C] truncate leading-snug"
                     >
                       {item.productName}
                     </Link>
@@ -192,39 +192,39 @@ export const Cart: React.FC = () => {
                       type="button"
                       onClick={() => removeFromCart(item.variantId)}
                       aria-label={`Remove ${item.productName}`}
-                      className="text-[#6B6B6B] hover:text-[#B3261E] p-1 transition-colors"
+                      className="text-[#6B6B6B] hover:text-[#B3261E] p-1 transition-colors shrink-0"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
 
-                  <p className="text-xs text-[#6B6B6B] mt-0.5">{item.variantWeight}</p>
+                  <p className="text-[11px] sm:text-xs text-[#6B6B6B] mt-0.5">{item.variantWeight}</p>
 
-                  <div className="flex justify-between items-center mt-3">
+                  <div className="flex justify-between items-center gap-2 mt-2.5 sm:mt-3">
                     {/* Stepper */}
-                    <div className="flex items-center bg-[#f6f3f2] border border-[#EADFD0] rounded-full px-2 py-0.5">
+                    <div className="flex items-center bg-[#f6f3f2] border border-[#EADFD0] rounded-full px-1.5 sm:px-2 py-0.5">
                       <button
                         type="button"
                         onClick={() => updateQuantity(item.variantId, item.quantity - 1)}
-                        className="w-6 h-6 flex items-center justify-center text-[#2B2B2B] hover:text-[#1F3D2B]"
+                        className="w-7 h-7 flex items-center justify-center text-[#2B2B2B] hover:text-[#1F3D2B] active:scale-90 transition-transform"
                         aria-label="Decrease quantity"
                       >
                         <Minus className="w-3.5 h-3.5" />
                       </button>
-                      <span className="font-sans text-xs font-bold px-2.5 text-[#1F3D2B] tabular-nums">
+                      <span className="font-sans text-xs font-bold px-2 text-[#1F3D2B] tabular-nums">
                         {item.quantity}
                       </span>
                       <button
                         type="button"
                         onClick={() => updateQuantity(item.variantId, item.quantity + 1)}
-                        className="w-6 h-6 flex items-center justify-center text-[#2B2B2B] hover:text-[#1F3D2B]"
+                        className="w-7 h-7 flex items-center justify-center text-[#2B2B2B] hover:text-[#1F3D2B] active:scale-90 transition-transform"
                         aria-label="Increase quantity"
                       >
                         <Plus className="w-3.5 h-3.5" />
                       </button>
                     </div>
 
-                    <span className="font-sans font-bold text-sm sm:text-base text-[#1F3D2B] tabular-nums">
+                    <span className="font-sans font-bold text-xs xs:text-sm sm:text-base text-[#1F3D2B] tabular-nums truncate">
                       {formatRs(item.price * item.quantity)}
                     </span>
                   </div>

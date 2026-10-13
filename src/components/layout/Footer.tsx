@@ -21,7 +21,7 @@ export const Footer: React.FC = () => {
         </div>
 
         {/* Navigation Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 items-start">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 items-start">
           {/* Shop */}
           <div className="space-y-3">
             <span className="font-sans text-xs font-bold uppercase tracking-wider text-[#C9A84C] block">
@@ -156,18 +156,7 @@ export const Footer: React.FC = () => {
                   className="hover:text-[#C9A84C] transition-colors flex items-center gap-1.5"
                   title="Call Ceylon Crunch"
                 >
-                  <span>Phone: +94 77 944 3867</span>
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://wa.me/94779443867?text=Hello%20Ceylon%20Crunch"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-[#C9A84C] transition-colors flex items-center gap-1.5"
-                  title="WhatsApp Ceylon Crunch"
-                >
-                  <span>WhatsApp: +94 77 944 3867</span>
+                  <span>+94 77 944 3867</span>
                 </a>
               </li>
               <li>
@@ -214,7 +203,7 @@ export const Footer: React.FC = () => {
               <Video className="w-4 h-4" />
             </a>
           </div>
-          <p>© 2026 Ceylon Crunch. All rights reserved. Handcrafted in Sri Lanka.</p>
+          <p className="text-center sm:text-right">© 2026 Ceylon Crunch. All rights reserved. Handcrafted in Sri Lanka.</p>
         </div>
 
         {/* Developer Credit */}

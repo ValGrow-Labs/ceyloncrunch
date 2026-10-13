@@ -1,9 +1,15 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { useStore } from '../../lib/store';
 
 export const MobileTabBar: React.FC = () => {
   const { itemCount } = useStore();
+  const location = useLocation();
+
+  // Hide on checkout funnel to avoid obscuring the primary Place Order action bar
+  if (location.pathname.startsWith('/checkout') || location.pathname.includes('/confirmed')) {
+    return null;
+  }
 
   const navItems = [
     { to: '/', label: 'Home', icon: 'home' },
