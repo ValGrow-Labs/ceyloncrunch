@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase-server'
+import { getOrder } from '@/lib/orders'
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url)
@@ -8,10 +8,21 @@ export async function GET(request) {
 
   if (!id || !email) return NextResponse.json({ error: 'Order ID and email required' }, { status: 400 })
 
-  const supabase = await createClient()
-  const { data, error } = await supabase.from('orders').select('id, status, total, created_at, payment_method, city, customer_name')
-    .eq('id', id).eq('customer_email', email).single()
+  const order = await getOrder(id)
+  if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 })
 
-  if (error || !data) return NextResponse.json({ error: 'Order not found' }, { status: 404 })
-  return NextResponse.json(data)
+  if (order.customer_email && order.customer_email.toLowerCase() !== email.toLowerCase()) {
+    return NextResponse.json({ error: 'Order not found' }, { status: 404 })
+  }
+
+  return NextResponse.json({
+    id: order.id,
+    order_number: order.order_number,
+    status: order.status,
+    total: order.total,
+    created_at: order.created_at,
+    payment_method: order.payment_method,
+    city: order.city,
+    customer_name: order.customer_name,
+  })
 }

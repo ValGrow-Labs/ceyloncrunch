@@ -12,27 +12,23 @@ export default async function AdminLayout({ children }) {
   // Login page renders its own full-page layout — no sidebar needed
   if (!user) {
     return (
-      <html lang="en" suppressHydrationWarning>
-        <body suppressHydrationWarning style={{ margin: 0, fontFamily: 'DM Sans, sans-serif' }}>
-          {children}
-        </body>
-      </html>
+      <div style={{ margin: 0, fontFamily: 'DM Sans, sans-serif', minHeight: '100vh' }}>
+        {children}
+      </div>
     )
   }
 
   const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single()
 
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body suppressHydrationWarning style={{ margin: 0, fontFamily: 'DM Sans, sans-serif', background: '#f4f4f5' }}>
-        <AdminSidebar profile={profile} />
-        <div className="admin-content" style={{ marginLeft: 240, minHeight: '100vh' }}>
-          <AdminTopBar profile={profile} />
-          <div style={{ padding: 24 }}>
-            {children}
-          </div>
+    <div style={{ margin: 0, fontFamily: 'DM Sans, sans-serif', background: '#f4f4f5', minHeight: '100vh' }}>
+      <AdminSidebar profile={profile} />
+      <div className="admin-content" style={{ marginLeft: 240, minHeight: '100vh' }}>
+        <AdminTopBar profile={profile} />
+        <div style={{ padding: 24 }}>
+          {children}
         </div>
-      </body>
-    </html>
+      </div>
+    </div>
   )
 }

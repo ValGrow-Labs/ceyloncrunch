@@ -102,11 +102,18 @@ export default function CartDrawer() {
               <span>Total</span>
               <span style={{ color: 'var(--green)' }}>{currency} {total.toLocaleString()}</span>
             </div>
-            <Link href="/checkout" onClick={() => setDrawerOpen(false)} style={{ display: 'block' }}>
-              <button className="btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '15px', fontSize: 16, borderRadius: 14 }}>
-                Proceed to Checkout →
-              </button>
-            </Link>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <Link href="/checkout" onClick={() => setDrawerOpen(false)} style={{ display: 'block' }}>
+                <button className="btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '14px', fontSize: 15, borderRadius: 14, fontWeight: 700 }}>
+                  PROCEED TO CHECKOUT →
+                </button>
+              </Link>
+              <Link href="/cart" onClick={() => setDrawerOpen(false)} style={{ display: 'block' }}>
+                <button className="btn-outline" style={{ width: '100%', justifyContent: 'center', padding: '9px', fontSize: 13, borderRadius: 14, borderWidth: '1.5px' }}>
+                  View Full Cart
+                </button>
+              </Link>
+            </div>
           </div>
         )}
       </div>

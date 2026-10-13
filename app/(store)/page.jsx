@@ -3,141 +3,308 @@ import { createClient } from '@/lib/supabase-server'
 import { getAllSettings } from '@/lib/settings'
 import ProductCard from '@/components/storefront/ProductCard'
 import NewsletterForm from '@/components/storefront/NewsletterForm'
-import { iconByName } from '@/components/storefront/Icons'
+import { IconLeaf, IconCheck, IconTruck, IconBox, IconStar } from '@/components/storefront/Icons'
 import Stars from '@/components/storefront/Stars'
+import { FALLBACK_PRODUCTS } from '@/lib/fallback-data'
 
 export async function generateMetadata() {
   const settings = await getAllSettings()
   const seo = settings.seo || {}
   return {
-    title: seo.title || 'Ceylon Crunch | Healthy Crunch for Every Home',
-    description: seo.description || 'Premium Sri Lankan nuts and healthy snacks.',
+    title: seo.title || 'Ceylon Crunch | Good Products. Carefully Chosen.',
+    description: seo.description || 'Quality nuts, dried fruits, dates, seeds and more — selected with care and delivered to your doorstep across Sri Lanka.',
+  }
+}
+
+async function withTimeout(promise, ms = 1500) {
+  let timer
+  const timeout = new Promise((_, reject) => {
+    timer = setTimeout(() => reject(new Error('timeout')), ms)
+  })
+  try {
+    return await Promise.race([promise, timeout])
+  } finally {
+    clearTimeout(timer)
   }
 }
 
 export default async function HomePage() {
-  const [settings, supabase] = await Promise.all([getAllSettings(), createClient()])
-  const { data: products } = await supabase.from('products').select('*').eq('active', true).order('rating', { ascending: false })
-  const allProducts = products || []
+  const settings = await getAllSettings()
+  let allProducts = FALLBACK_PRODUCTS
 
-  const hero            = settings.hero || {}
-  const featuresRaw     = settings.features || []
-  const bestsellersSection = settings.bestsellers_section || {}
-  const categoriesSection  = settings.categories_section || {}
-  const aboutStrip      = settings.about_strip || {}
-  const newsletterSection = settings.newsletter_section || {}
-  const store           = settings.store || {}
-  const currency        = store.currency_symbol || store.currency || 'LKR'
+  try {
+    const supabase = await createClient()
+    const { data: products } = await withTimeout(
+      supabase.from('products').select('*').eq('active', true).order('rating', { ascending: false })
+    )
+    if (products && products.length > 0) {
+      allProducts = products
+    }
+  } catch {
+    // Graceful fallback to seeded products
+  }
 
-  const featured = allProducts.filter(p => p.badge === 'Bestseller' || p.badge === 'Popular').slice(0, 3)
-  const heroProduct = allProducts.find(p => p.badge === 'Bestseller') || allProducts[0]
-  const displayFeatured = featured.length >= 3 ? featured : allProducts.slice(0, 3)
+  const store = settings.store || {}
+  const currency = store.currency_symbol || store.currency || 'LKR'
+  const footer = settings.footer || {}
+  const social = footer.social || {}
+  const followUrl = social.instagram || social.facebook || (social.whatsapp ? `https://wa.me/${social.whatsapp.replace(/\D/g, '')}` : 'https://instagram.com')
 
-  const categories = categoriesSection.items || [
-    { name: 'Roasted Nuts',     img: '/img/product-1.jpg' },
-    { name: 'Raw Nuts',         img: '/img/product-4.jpg' },
-    { name: 'Mixed Trails',     img: '/img/product-3.jpg' },
-    { name: 'Specialty Snacks', img: '/img/product-5.jpg' },
+  // Popular Picks: top 4 products
+  const popularPicks = allProducts.slice(0, 4)
+
+  // Hero showcase product (Roasted Cashews or first product)
+  const heroProduct = allProducts.find(p => p.slug === 'roasted-cashews') || allProducts[0]
+
+  // Category cards for Section 6
+  const categories = [
+    {
+      name: 'Nuts',
+      desc: 'Almonds, cashews, pistachios, walnuts and more.',
+      img: '/img/product-1.jpg',
+      href: '/shop?category=Nuts',
+    },
+    {
+      name: 'Dried Fruits',
+      desc: 'Naturally sweet and convenient for everyday snacking.',
+      img: '/img/product-7.jpg',
+      href: '/shop?category=Dried+Fruits',
+    },
+    {
+      name: 'Dates',
+      desc: 'A selection of dates for snacking, sharing and gifting.',
+      img: '/img/product-10.jpg',
+      href: '/shop?category=Dates',
+    },
+    {
+      name: 'Seeds',
+      desc: 'Simple additions to your everyday meals.',
+      img: '/img/product-12.jpg',
+      href: '/shop?category=Seeds',
+    },
+    {
+      name: 'Healthy Snacks',
+      desc: 'Easy choices for home, work and on the go.',
+      img: '/img/product-5.jpg',
+      href: '/shop?category=Healthy+Snacks',
+    },
+    {
+      name: 'Gifts & Hampers',
+      desc: 'Thoughtful options for every occasion.',
+      img: '/img/product-3.jpg',
+      href: '/shop?category=Gifts+%26+Hampers',
+    },
   ]
 
-  const marqueeItems = allProducts.map(p => p.name)
+  // Occasions for Section 8
+  const occasions = [
+    { title: 'Birthdays', note: 'Curated celebration boxes', icon: '🎁' },
+    { title: 'Weddings & Nikah', note: 'Elegant favors & guest trays', icon: '✨' },
+    { title: 'Corporate Gifts', note: 'Professional client hampers', icon: '💼' },
+    { title: 'Thank-You Gifts', note: 'Warm tokens of gratitude', icon: '🌿' },
+    { title: 'Festive Gifting', note: 'Avurudu, Eid & seasonal packs', icon: '🌟' },
+    { title: 'Return Gifts', note: 'Memorable event giveaways', icon: '🎀' },
+  ]
 
   return (
     <main>
 
       {/* ═══════════════════════════════════════════════
-          HERO — split layout
+          2. HERO SECTION
       ═══════════════════════════════════════════════ */}
       <section className="grain" style={{
-        position: 'relative', overflow: 'hidden',
-        background: 'linear-gradient(135deg, var(--cream) 0%, var(--cream-dark) 60%, #e0d4c0 100%)',
-        minHeight: '90vh', display: 'flex', alignItems: 'center',
+        position: 'relative',
+        overflow: 'hidden',
+        background: 'linear-gradient(135deg, var(--cream) 0%, var(--cream-dark) 55%, #dfd3bd 100%)',
+        minHeight: '88vh',
+        display: 'flex',
+        alignItems: 'center',
       }}>
-        <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${hero.bg_image || '/img/hero-bg.jpg'})`, backgroundSize: 'cover', backgroundPosition: 'center', opacity: (hero.bg_opacity ?? 0.52) * 0.4 }} />
+        {/* Subtle background photo overlay */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundImage: 'url(/img/hero-bg.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          opacity: 0.16,
+          mixBlendMode: 'multiply',
+        }} />
 
-        <div className="hero-split" style={{ maxWidth: 1200, margin: '0 auto', padding: 'clamp(60px,8vw,80px) clamp(16px,4vw,48px)', display: 'grid', gridTemplateColumns: '1fr 480px', gap: 64, alignItems: 'center', width: '100%', position: 'relative', zIndex: 1 }}>
+        <div className="hero-split" style={{
+          maxWidth: 1200,
+          margin: '0 auto',
+          padding: 'clamp(56px,7vw,88px) clamp(16px,4vw,48px)',
+          display: 'grid',
+          gridTemplateColumns: '1.15fr 0.85fr',
+          gap: 56,
+          alignItems: 'center',
+          width: '100%',
+          position: 'relative',
+          zIndex: 1,
+        }}>
 
-          {/* Left: text */}
+          {/* Left: Heading & Call to Actions */}
           <div>
-            <span className="animate-fadeUp" style={{ display: 'inline-block', fontSize: 12, letterSpacing: '0.2em', textTransform: 'uppercase', background: 'var(--green)', color: '#fff', padding: '5px 16px', borderRadius: 50, fontWeight: 700, marginBottom: 24 }}>
-              {hero.eyebrow || 'Ceylon Crunch — Established 2026'}
-            </span>
+            {/* Brand Tagline */}
+            <div className="animate-fadeUp" style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+              padding: '6px 16px',
+              borderRadius: 50,
+              background: 'rgba(30,86,49,0.08)',
+              border: '1px solid rgba(30,86,49,0.18)',
+              color: 'var(--green-dark)',
+              fontSize: 13,
+              fontWeight: 600,
+              letterSpacing: '0.04em',
+              marginBottom: 24,
+            }}>
+              <span style={{ color: 'var(--gold)', fontSize: 14 }}>✦</span>
+              From Nature to Your Doorstep.
+            </div>
 
-            <h1 className="animate-fadeUp-2" style={{ fontSize: 'clamp(40px,5.5vw,76px)', fontWeight: 700, lineHeight: 1.07, color: 'var(--green-dark)', marginBottom: 28, letterSpacing: '-0.01em' }}>
-              {hero.headline || 'In a world that rushes,'}<br />
-              <em style={{ color: 'var(--brown)', fontStyle: 'italic', backgroundImage: 'linear-gradient(135deg, var(--brown) 0%, var(--gold) 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                {hero.headline_italic || 'we take it slow.'}
-              </em>
+            {/* Primary Brand Message */}
+            <h1 className="animate-fadeUp-2" style={{
+              fontSize: 'clamp(38px,5.2vw,70px)',
+              fontWeight: 700,
+              lineHeight: 1.1,
+              color: 'var(--green-dark)',
+              marginBottom: 24,
+              letterSpacing: '-0.02em',
+            }}>
+              GOOD PRODUCTS.<br />
+              <span style={{
+                color: 'var(--brown)',
+                display: 'inline-block',
+                fontStyle: 'normal',
+                letterSpacing: '-0.01em',
+              }}>
+                CAREFULLY CHOSEN.
+              </span>
             </h1>
 
-            <p className="animate-fadeUp-3" style={{ fontSize: 18, color: 'var(--ink-soft)', lineHeight: 1.8, maxWidth: 520, marginBottom: 40, fontWeight: 300 }}>
-              {hero.subtext || 'Sourced from authentic growers. Honest food for moments that matter.'}
+            {/* Supporting Text */}
+            <p className="animate-fadeUp-3" style={{
+              fontSize: 'clamp(16px,1.8vw,19px)',
+              color: 'var(--ink-soft)',
+              lineHeight: 1.75,
+              maxWidth: 540,
+              marginBottom: 36,
+              fontWeight: 400,
+            }}>
+              Quality nuts, dried fruits, dates, seeds and more — selected with care and delivered to your doorstep.
             </p>
 
-            <div className="animate-fadeUp-4" style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginBottom: 48 }}>
-              <Link href={hero.primary_cta_link || '/shop'}>
-                <button className="btn-primary" style={{ padding: '16px 36px', fontSize: 16 }}>{hero.primary_cta || 'Shop the Collection'}</button>
+            {/* Hero Action Buttons */}
+            <div className="animate-fadeUp-4" style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginBottom: 44 }}>
+              <Link href="/shop">
+                <button className="btn-primary" style={{ padding: '15px 36px', fontSize: 16 }}>
+                  SHOP NOW
+                </button>
               </Link>
-              <Link href={hero.secondary_cta_link || '/about'}>
-                <button className="btn-outline" style={{ padding: '15px 32px', fontSize: 16 }}>{hero.secondary_cta || 'Our Story'}</button>
+              <Link href="/about">
+                <button className="btn-outline" style={{ padding: '14px 32px', fontSize: 16 }}>
+                  OUR STORY
+                </button>
               </Link>
             </div>
 
-            {/* Trust signals */}
-            <div style={{ display: 'flex', gap: 32, flexWrap: 'wrap' }}>
+            {/* Trust Signals */}
+            <div style={{
+              display: 'flex',
+              gap: 28,
+              flexWrap: 'wrap',
+              paddingTop: 24,
+              borderTop: '1px solid rgba(0,0,0,0.08)',
+            }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <Stars rating={4.8} size={16} />
-                <span style={{ fontSize: 13, color: 'var(--ink-soft)', fontWeight: 500 }}>4.8 avg rating</span>
+                <Stars rating={4.8} size={15} />
+                <span style={{ fontSize: 13, color: 'var(--ink)', fontWeight: 600 }}>4.8 Rating</span>
               </div>
-              <div style={{ fontSize: 13, color: 'var(--ink-soft)', display: 'flex', alignItems: 'center', gap: 6 }}>
-                <span style={{ fontSize: 18 }}>🏝</span> Island-wide delivery
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--ink-soft)', fontWeight: 500 }}>
+                <span style={{ color: 'var(--green)', fontSize: 16 }}>✓</span>
+                Island-Wide Delivery
               </div>
-              <div style={{ fontSize: 13, color: 'var(--ink-soft)', display: 'flex', alignItems: 'center', gap: 6 }}>
-                <span style={{ fontSize: 18 }}>🌿</span> 100% Natural
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--ink-soft)', fontWeight: 500 }}>
+                <span style={{ color: 'var(--gold)', fontSize: 16 }}>★</span>
+                100% Wholesome & Fresh
               </div>
             </div>
           </div>
 
-          {/* Right: hero product card */}
+          {/* Right: Premium Hero Showcase Card */}
           {heroProduct && (
             <div className="hero-product-col" style={{ position: 'relative' }}>
-              {/* Decorative ring */}
-              <div style={{ position: 'absolute', inset: -20, borderRadius: '50%', border: '1.5px dashed var(--gold)', opacity: 0.3, borderStyle: 'dashed' }} />
-
-              <div style={{ borderRadius: 28, overflow: 'hidden', boxShadow: '0 32px 80px rgba(30,86,49,0.18)', position: 'relative', background: '#fff' }}>
-                <img src={heroProduct.image_url || '/img/product-1.jpg'} alt={heroProduct.name}
-                  style={{ width: '100%', height: 400, objectFit: 'cover', display: 'block' }} />
-
-                {/* Floating badge */}
-                <div style={{ position: 'absolute', top: 20, left: 20 }}>
-                  {heroProduct.badge && (
-                    <span className={`badge badge-${heroProduct.badge_type}`} style={{ fontSize: 12, padding: '5px 14px' }}>
-                      {heroProduct.badge}
+              <div style={{
+                borderRadius: 24,
+                overflow: 'hidden',
+                background: '#fff',
+                boxShadow: '0 24px 60px rgba(30,86,49,0.14)',
+                border: '1px solid var(--border)',
+                position: 'relative',
+              }}>
+                <div style={{ position: 'relative', height: 360, overflow: 'hidden' }}>
+                  <img
+                    src={heroProduct.image_url || '/img/product-1.jpg'}
+                    alt={heroProduct.name}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                  <div style={{
+                    position: 'absolute',
+                    inset: 0,
+                    background: 'linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 60%)',
+                  }} />
+                  <span className="badge badge-green" style={{ position: 'absolute', top: 18, left: 18 }}>
+                    Customer Favourite
+                  </span>
+                  <div style={{ position: 'absolute', bottom: 18, left: 20, right: 20, color: '#fff' }}>
+                    <span style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.12em', opacity: 0.85 }}>
+                      {heroProduct.category}
                     </span>
-                  )}
+                    <h3 style={{ fontSize: 22, fontWeight: 700, color: '#fff', marginTop: 2 }}>
+                      {heroProduct.name}
+                    </h3>
+                  </div>
                 </div>
 
-                {/* Bottom card */}
-                <div style={{ padding: '20px 24px', background: '#fff' }}>
-                  <div style={{ fontSize: 12, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>{heroProduct.category}</div>
-                  <div style={{ fontFamily: 'Playfair Display,serif', fontSize: 20, fontWeight: 700, color: 'var(--green-dark)', marginBottom: 8 }}>{heroProduct.name}</div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <div style={{ padding: '20px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#fff' }}>
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
                       <Stars rating={heroProduct.rating} size={14} />
-                      <span style={{ fontSize: 12, color: 'var(--muted)' }}>{heroProduct.rating} ({heroProduct.reviews})</span>
+                      <span style={{ fontSize: 12, color: 'var(--muted)' }}>({heroProduct.reviews} reviews)</span>
                     </div>
-                    <span style={{ fontFamily: 'Playfair Display,serif', fontSize: 22, fontWeight: 700, color: 'var(--green)' }}>{currency} {heroProduct.price.toLocaleString()}</span>
+                    <div style={{ fontFamily: 'Playfair Display,serif', fontSize: 22, fontWeight: 700, color: 'var(--green)' }}>
+                      {currency} {heroProduct.price.toLocaleString()}
+                    </div>
                   </div>
+                  <Link href={`/shop/${heroProduct.slug}`}>
+                    <button className="btn-primary" style={{ padding: '10px 22px', fontSize: 14 }}>
+                      View Product
+                    </button>
+                  </Link>
                 </div>
               </div>
 
-              {/* Floating stat pill */}
-              <div style={{ position: 'absolute', bottom: -18, left: -24, background: 'var(--green)', color: '#fff', borderRadius: 60, padding: '12px 20px', boxShadow: '0 8px 24px rgba(30,86,49,0.3)', display: 'flex', alignItems: 'center', gap: 10 }}>
-                <span style={{ fontSize: 22 }}>🌿</span>
-                <div>
-                  <div style={{ fontSize: 16, fontWeight: 700, lineHeight: 1 }}>{allProducts.length}+</div>
-                  <div style={{ fontSize: 11, opacity: 0.8 }}>Products</div>
-                </div>
+              {/* Floating Quality Stamp */}
+              <div style={{
+                position: 'absolute',
+                top: -16,
+                right: -16,
+                background: 'var(--cream)',
+                border: '1.5px solid var(--gold)',
+                borderRadius: 50,
+                padding: '8px 16px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                boxShadow: '0 6px 18px rgba(0,0,0,0.08)',
+                fontSize: 12,
+                fontWeight: 600,
+                color: 'var(--brown)',
+              }}>
+                <span>🌿</span> Fresh Harvest
               </div>
             </div>
           )}
@@ -145,192 +312,740 @@ export default async function HomePage() {
       </section>
 
       {/* ═══════════════════════════════════════════════
-          MARQUEE — scrolling product names
+          3. CUSTOMER FAVOURITES
       ═══════════════════════════════════════════════ */}
-      <div style={{ background: 'var(--green)', padding: '14px 0', overflow: 'hidden', borderTop: '2px solid var(--green-dark)', borderBottom: '2px solid var(--green-dark)' }}>
-        <div style={{ display: 'flex', gap: 0, animation: 'marquee 28s linear infinite', whiteSpace: 'nowrap', width: 'max-content' }}>
-          {[...marqueeItems, ...marqueeItems, ...marqueeItems].map((name, i) => (
-            <span key={i} style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.85)', letterSpacing: '0.06em', textTransform: 'uppercase', padding: '0 28px', display: 'inline-flex', alignItems: 'center', gap: 28 }}>
-              {name}
-              <span style={{ color: 'var(--gold)', fontSize: 10 }}>✦</span>
-            </span>
-          ))}
-        </div>
-        <style>{`@keyframes marquee { from { transform: translateX(0) } to { transform: translateX(-33.333%) } }`}</style>
-      </div>
-
-      {/* ═══════════════════════════════════════════════
-          FEATURES STRIP
-      ═══════════════════════════════════════════════ */}
-      {featuresRaw.length > 0 && (
-        <section style={{ background: 'var(--cream-dark)', padding: 'clamp(32px,5vw,48px) clamp(16px,4vw,48px)' }}>
-          <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px,1fr))', gap: 32 }}>
-            {featuresRaw.map((f, i) => (
-              <div key={i} style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
-                <div style={{ width: 42, height: 42, borderRadius: 12, background: 'var(--green)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  {iconByName(f.icon, { color: '#fff', size: 20 })}
-                </div>
-                <div>
-                  <div style={{ fontWeight: 700, fontSize: 15, color: 'var(--green-dark)', marginBottom: 3 }}>{f.title}</div>
-                  <div style={{ color: 'var(--muted)', fontSize: 13, lineHeight: 1.55 }}>{f.text}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* ═══════════════════════════════════════════════
-          FEATURED — top 3 editorial cards
-      ═══════════════════════════════════════════════ */}
-      <section style={{ padding: 'clamp(56px,8vw,96px) clamp(16px,4vw,48px) clamp(40px,6vw,64px)', maxWidth: 1200, margin: '0 auto' }}>
-        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 52, flexWrap: 'wrap', gap: 16 }}>
+      <section style={{
+        padding: 'clamp(56px,8vw,92px) clamp(16px,4vw,48px)',
+        maxWidth: 1200,
+        margin: '0 auto',
+      }}>
+        <div style={{
+          display: 'flex',
+          alignItems: 'flex-end',
+          justifyContent: 'space-between',
+          marginBottom: 44,
+          flexWrap: 'wrap',
+          gap: 16,
+        }}>
           <div>
-            <p style={{ fontSize: 12, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--brown)', fontWeight: 600, marginBottom: 10 }}>
-              {bestsellersSection.eyebrow || 'Trusted Favourites'}
+            <p style={{
+              fontSize: 12,
+              letterSpacing: '0.18em',
+              textTransform: 'uppercase',
+              color: 'var(--brown)',
+              fontWeight: 700,
+              marginBottom: 8,
+            }}>
+              OUR FAVOURITES
             </p>
-            <h2 style={{ fontSize: 'clamp(28px,4vw,48px)', fontWeight: 700, color: 'var(--green-dark)', lineHeight: 1.1 }}>
-              {bestsellersSection.headline || 'Chosen for Character'}
+            <h2 style={{
+              fontSize: 'clamp(28px,4vw,44px)',
+              fontWeight: 700,
+              color: 'var(--green-dark)',
+              lineHeight: 1.15,
+            }}>
+              Popular Picks
             </h2>
+            <p style={{ fontSize: 15, color: 'var(--muted)', marginTop: 8, maxWidth: 500 }}>
+              A selection of products our customers love.
+            </p>
           </div>
-          <Link href="/shop" style={{ fontSize: 14, color: 'var(--green)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}>
-            View all {allProducts.length} products →
+
+          <Link href="/shop" style={{
+            fontSize: 15,
+            color: 'var(--green)',
+            fontWeight: 600,
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+            transition: 'color 0.2s',
+          }}>
+            VIEW ALL PRODUCTS →
           </Link>
         </div>
 
-        {/* Editorial 3-col feature layout */}
-        <div className="featured-3col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 24, marginBottom: 64 }}>
-          {displayFeatured.map((product, i) => (
-            <Link key={product.id} href={`/shop/${product.slug}`} style={{ textDecoration: 'none' }}>
-              <div className="card-hover" style={{ borderRadius: 24, overflow: 'hidden', background: '#fff', boxShadow: '0 4px 20px rgba(0,0,0,0.07)' }}>
-                <div style={{ position: 'relative', height: 280 }}>
-                  <img src={product.image_url || '/img/placeholder.jpg'} alt={product.name}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.45) 0%, transparent 55%)' }} />
-                  {product.badge && (
-                    <span className={`badge badge-${product.badge_type}`} style={{ position: 'absolute', top: 16, left: 16 }}>{product.badge}</span>
-                  )}
-                  <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '20px' }}>
-                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.75)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>{product.category}</div>
-                    <div style={{ fontFamily: 'Playfair Display,serif', fontSize: 19, fontWeight: 700, color: '#fff', lineHeight: 1.25 }}>{product.name}</div>
-                  </div>
-                </div>
-                <div style={{ padding: '18px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 2 }}>
-                      <Stars rating={product.rating} size={12} />
-                      <span style={{ fontSize: 11, color: 'var(--muted)' }}>{product.rating}</span>
-                    </div>
-                    <div style={{ fontFamily: 'Playfair Display,serif', fontSize: 18, fontWeight: 700, color: 'var(--green)' }}>{currency} {product.price.toLocaleString()}</div>
-                  </div>
-                  <div style={{ fontSize: 12, color: 'var(--muted)', textAlign: 'right' }}>
-                    {product.variants?.map(v => typeof v === 'string' ? v : v.size).join(' · ')}
-                  </div>
-                </div>
-              </div>
-            </Link>
+        {/* Product Grid */}
+        <div className="prod-grid" style={{ marginBottom: 40 }}>
+          {popularPicks.map((product) => (
+            <ProductCard key={product.id} product={product} />
           ))}
         </div>
 
-        {/* Full product grid */}
-        <div style={{ textAlign: 'center', marginBottom: 40 }}>
-          <p style={{ fontSize: 12, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--brown)', fontWeight: 600, marginBottom: 10 }}>The Full Collection</p>
-          <h2 style={{ fontSize: 'clamp(24px,3.5vw,36px)', fontWeight: 700, color: 'var(--green-dark)' }}>Curated with character, not volume.</h2>
-        </div>
-        <div className="prod-grid">
-          {allProducts.map(p => <ProductCard key={p.id} product={p} />)}
-        </div>
-        <div style={{ textAlign: 'center', marginTop: 48 }}>
-          <Link href="/shop"><button className="btn-outline" style={{ padding: '14px 40px', fontSize: 16 }}>Browse & Filter All Products</button></Link>
+        {/* Bottom CTA */}
+        <div style={{ textAlign: 'center' }}>
+          <Link href="/shop">
+            <button className="btn-outline" style={{ padding: '13px 36px', fontSize: 15 }}>
+              VIEW ALL PRODUCTS →
+            </button>
+          </Link>
         </div>
       </section>
 
       {/* ═══════════════════════════════════════════════
-          CATEGORIES
+          4. WHY CEYLON CRUNCH
       ═══════════════════════════════════════════════ */}
-      <section style={{ padding: '0 clamp(16px,4vw,48px) clamp(56px,8vw,96px)', maxWidth: 1200, margin: '0 auto' }}>
-        <div style={{ textAlign: 'center', marginBottom: 44 }}>
-          <p style={{ fontSize: 12, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--brown)', fontWeight: 600, marginBottom: 10 }}>
-            {categoriesSection.eyebrow || 'Browse by Type'}
-          </p>
-          <h2 style={{ fontSize: 'clamp(26px,3.5vw,40px)', fontWeight: 700, color: 'var(--green-dark)' }}>
-            {categoriesSection.headline || 'Find Your Crunch'}
-          </h2>
-        </div>
-        {/* 2+2 asymmetric grid */}
-        <div className="categories-grid-asym" style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr 1fr 1.4fr', gridTemplateRows: '320px', gap: 16 }}>
-          {categories.slice(0, 4).map((c, i) => (
-            <Link key={c.name} href="/shop" style={{ borderRadius: 20, overflow: 'hidden', position: 'relative', display: 'block', textDecoration: 'none' }}>
-              <img src={c.img} alt={c.name} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.5s ease', display: 'block' }} />
-              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.05) 60%, transparent 100%)', transition: 'opacity 0.3s' }} />
-              <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '28px 24px' }}>
-                <h3 style={{ color: '#fff', fontFamily: 'Playfair Display,serif', fontSize: 21, fontWeight: 600, marginBottom: 4 }}>{c.name}</h3>
-                <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Explore →</span>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════
-          ABOUT STRIP
-      ═══════════════════════════════════════════════ */}
-      <section style={{ background: 'var(--green-dark)', padding: 'clamp(56px,8vw,96px) clamp(16px,4vw,48px)', position: 'relative', overflow: 'hidden' }}>
-        {/* Background texture */}
-        <div style={{ position: 'absolute', inset: 0, backgroundImage: 'url(/img/hero-bg.jpg)', backgroundSize: 'cover', backgroundPosition: 'center', opacity: 0.06 }} />
-        <div className="about-strip-grid" style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, alignItems: 'center', position: 'relative', zIndex: 1 }}>
-          <div>
-            <p style={{ fontSize: 12, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--gold-light)', fontWeight: 600, marginBottom: 16 }}>
-              {aboutStrip.eyebrow || 'About Us'}
+      <section style={{
+        background: 'var(--cream-dark)',
+        padding: 'clamp(60px,8vw,96px) clamp(16px,4vw,48px)',
+        borderTop: '1px solid var(--border)',
+        borderBottom: '1px solid var(--border)',
+      }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+          {/* Section Header */}
+          <div style={{ textAlign: 'center', maxWidth: 680, margin: '0 auto 52px' }}>
+            <p style={{
+              fontSize: 12,
+              letterSpacing: '0.2em',
+              textTransform: 'uppercase',
+              color: 'var(--brown)',
+              fontWeight: 700,
+              marginBottom: 10,
+            }}>
+              WHY CEYLON CRUNCH
             </p>
-            <h2 style={{ fontSize: 'clamp(28px,3.5vw,46px)', fontWeight: 700, color: '#fff', marginBottom: 24, lineHeight: 1.15 }}>
-              {aboutStrip.headline || 'Food That Earns Its Place at the Table'}
+            <h2 style={{
+              fontSize: 'clamp(28px,3.8vw,44px)',
+              fontWeight: 700,
+              color: 'var(--green-dark)',
+              lineHeight: 1.2,
+              marginBottom: 16,
+            }}>
+              Simple Choices. Better Ingredients.
             </h2>
-            <p style={{ fontSize: 17, color: 'rgba(255,255,255,0.7)', lineHeight: 1.85, marginBottom: 36, fontWeight: 300 }}>
-              {aboutStrip.body || 'Across Sri Lanka, there are still growers who know when a nut is ready without checking a calendar. We built this brand for them. And for you.'}
+            <p style={{ fontSize: 16, color: 'var(--ink-soft)', lineHeight: 1.8 }}>
+              We believe good food starts with good ingredients.<br />
+              From everyday snacking to gifting, we carefully select our products for quality, freshness and taste.
             </p>
-            {aboutStrip.stats && (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 24, marginBottom: 40, paddingTop: 32, borderTop: '1px solid rgba(255,255,255,0.12)' }}>
-                {aboutStrip.stats.map((s, i) => (
-                  <div key={i}>
-                    <div style={{ fontFamily: 'Playfair Display,serif', fontSize: 36, fontWeight: 700, color: 'var(--gold)' }}>{s.value}</div>
-                    <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', marginTop: 4, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{s.label}</div>
-                  </div>
-                ))}
-              </div>
-            )}
-            <Link href={aboutStrip.cta_link || '/about'}>
-              <button style={{ padding: '14px 34px', background: 'var(--gold)', color: '#fff', border: 'none', borderRadius: 50, fontSize: 15, fontWeight: 600, cursor: 'pointer' }}>
-                {aboutStrip.cta_label || 'Read Our Story'}
-              </button>
-            </Link>
           </div>
-          <div className="about-strip-img" style={{ borderRadius: 24, overflow: 'hidden', height: 460, position: 'relative' }}>
-            <img src={aboutStrip.image_url || '/img/product-12.jpg'} alt="Ceylon Crunch" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(30,86,49,0.3) 0%, transparent 60%)' }} />
-            {/* Floating review pill */}
-            <div style={{ position: 'absolute', top: 28, right: 28, background: 'rgba(255,255,255,0.95)', borderRadius: 16, padding: '14px 18px', backdropFilter: 'blur(8px)', boxShadow: '0 8px 24px rgba(0,0,0,0.12)' }}>
-              <div style={{ display: 'flex', gap: 3, marginBottom: 4 }}>
-                {[1,2,3,4,5].map(i => <span key={i} style={{ color: 'var(--gold)', fontSize: 14 }}>★</span>)}
+
+          {/* Three Premium Feature Cards */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+            gap: 28,
+          }}>
+            {/* CARD 1 */}
+            <div className="card-hover" style={{
+              background: '#fff',
+              borderRadius: 20,
+              padding: '36px 30px',
+              border: '1px solid var(--border)',
+              display: 'flex',
+              flexDirection: 'column',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.04)',
+            }}>
+              <div style={{
+                width: 52,
+                height: 52,
+                borderRadius: 14,
+                background: 'rgba(30,86,49,0.1)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'var(--green)',
+                marginBottom: 22,
+              }}>
+                <IconLeaf size={26} color="var(--green)" />
               </div>
-              <div style={{ fontSize: 12, color: 'var(--ink-soft)', fontWeight: 500 }}>"Quality you can taste"</div>
+              <h3 style={{
+                fontSize: 21,
+                fontWeight: 600,
+                color: 'var(--green-dark)',
+                marginBottom: 10,
+              }}>
+                Carefully Selected
+              </h3>
+              <p style={{ fontSize: 15, color: 'var(--muted)', lineHeight: 1.7 }}>
+                Products chosen with attention to quality and freshness.
+              </p>
+            </div>
+
+            {/* CARD 2 */}
+            <div className="card-hover" style={{
+              background: '#fff',
+              borderRadius: 20,
+              padding: '36px 30px',
+              border: '1px solid var(--border)',
+              display: 'flex',
+              flexDirection: 'column',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.04)',
+            }}>
+              <div style={{
+                width: 52,
+                height: 52,
+                borderRadius: 14,
+                background: 'rgba(201,168,76,0.14)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'var(--gold)',
+                marginBottom: 22,
+              }}>
+                <IconCheck size={26} color="var(--gold)" />
+              </div>
+              <h3 style={{
+                fontSize: 21,
+                fontWeight: 600,
+                color: 'var(--green-dark)',
+                marginBottom: 10,
+              }}>
+                Quality You Can Trust
+              </h3>
+              <p style={{ fontSize: 15, color: 'var(--muted)', lineHeight: 1.7 }}>
+                We focus on products we are happy to put our name behind.
+              </p>
+            </div>
+
+            {/* CARD 3 */}
+            <div className="card-hover" style={{
+              background: '#fff',
+              borderRadius: 20,
+              padding: '36px 30px',
+              border: '1px solid var(--border)',
+              display: 'flex',
+              flexDirection: 'column',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.04)',
+            }}>
+              <div style={{
+                width: 52,
+                height: 52,
+                borderRadius: 14,
+                background: 'rgba(123,63,0,0.1)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'var(--brown)',
+                marginBottom: 22,
+              }}>
+                <IconTruck size={26} color="var(--brown)" />
+              </div>
+              <h3 style={{
+                fontSize: 21,
+                fontWeight: 600,
+                color: 'var(--green-dark)',
+                marginBottom: 10,
+              }}>
+                Delivered With Care
+              </h3>
+              <p style={{ fontSize: 15, color: 'var(--muted)', lineHeight: 1.7 }}>
+                Packed carefully and delivered across Sri Lanka.
+              </p>
             </div>
           </div>
         </div>
       </section>
 
       {/* ═══════════════════════════════════════════════
-          NEWSLETTER
+          5. OUR COLLECTION
       ═══════════════════════════════════════════════ */}
-      <section style={{ background: 'var(--cream-dark)', padding: 'clamp(56px,8vw,88px) clamp(16px,4vw,48px)', textAlign: 'center' }}>
-        <div style={{ maxWidth: 560, margin: '0 auto' }}>
-          <p style={{ fontSize: 12, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--brown)', fontWeight: 600, marginBottom: 16 }}>
-            {newsletterSection.eyebrow || 'Stay Connected'}
+      <section style={{
+        padding: 'clamp(60px,8vw,96px) clamp(16px,4vw,48px)',
+        maxWidth: 1200,
+        margin: '0 auto',
+      }}>
+        <div style={{
+          display: 'flex',
+          alignItems: 'flex-end',
+          justifyContent: 'space-between',
+          marginBottom: 44,
+          flexWrap: 'wrap',
+          gap: 20,
+        }}>
+          <div>
+            <p style={{
+              fontSize: 12,
+              letterSpacing: '0.18em',
+              textTransform: 'uppercase',
+              color: 'var(--brown)',
+              fontWeight: 700,
+              marginBottom: 8,
+            }}>
+              OUR COLLECTION
+            </p>
+            <h2 style={{
+              fontSize: 'clamp(28px,4vw,44px)',
+              fontWeight: 700,
+              color: 'var(--green-dark)',
+              lineHeight: 1.15,
+            }}>
+              Something for Every Taste.
+            </h2>
+            <p style={{ fontSize: 15, color: 'var(--muted)', marginTop: 8, maxWidth: 540 }}>
+              Explore our selection of nuts, dried fruits, dates, seeds and other wholesome foods.
+            </p>
+          </div>
+
+          <Link href="/shop">
+            <button className="btn-primary" style={{ padding: '13px 30px', fontSize: 14 }}>
+              SHOP ALL PRODUCTS
+            </button>
+          </Link>
+        </div>
+
+        {/* Editorial Product Showcase Cards */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+          gap: 24,
+        }}>
+          {allProducts.slice(0, 4).map((p) => (
+            <Link key={p.id} href={`/shop/${p.slug}`} style={{ textDecoration: 'none' }}>
+              <div className="card-hover" style={{
+                borderRadius: 22,
+                overflow: 'hidden',
+                background: '#fff',
+                border: '1px solid var(--border)',
+                display: 'flex',
+                flexDirection: 'column',
+                height: '100%',
+              }}>
+                <div style={{ position: 'relative', height: 240, overflow: 'hidden' }}>
+                  <img
+                    src={p.image_url || '/img/product-1.jpg'}
+                    alt={p.name}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                  <div style={{
+                    position: 'absolute',
+                    inset: 0,
+                    background: 'linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 60%)',
+                  }} />
+                  {p.badge && (
+                    <span className={`badge badge-${p.badge_type}`} style={{ position: 'absolute', top: 12, left: 12 }}>
+                      {p.badge}
+                    </span>
+                  )}
+                  <span style={{
+                    position: 'absolute',
+                    top: 12,
+                    right: 12,
+                    background: 'rgba(255,255,255,0.92)',
+                    fontSize: 11,
+                    padding: '3px 10px',
+                    borderRadius: 50,
+                    fontWeight: 600,
+                    color: 'var(--ink)',
+                  }}>
+                    {p.category}
+                  </span>
+                  <div style={{ position: 'absolute', bottom: 12, left: 16, right: 16, color: '#fff' }}>
+                    <div style={{ fontFamily: 'Playfair Display,serif', fontSize: 18, fontWeight: 700 }}>
+                      {p.name}
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ padding: '16px 18px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 'auto' }}>
+                  <div>
+                    <span style={{ fontSize: 11, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Price</span>
+                    <div style={{ fontFamily: 'Playfair Display,serif', fontSize: 18, fontWeight: 700, color: 'var(--green)' }}>
+                      {currency} {p.price.toLocaleString()}
+                    </div>
+                  </div>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--green)' }}>
+                    Explore →
+                  </span>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════
+          6. SHOP BY CATEGORY
+      ═══════════════════════════════════════════════ */}
+      <section style={{
+        padding: 'clamp(60px,8vw,96px) clamp(16px,4vw,48px)',
+        maxWidth: 1200,
+        margin: '0 auto',
+        borderTop: '1px solid var(--border)',
+      }}>
+        <div style={{ textAlign: 'center', maxWidth: 640, margin: '0 auto 48px' }}>
+          <p style={{
+            fontSize: 12,
+            letterSpacing: '0.2em',
+            textTransform: 'uppercase',
+            color: 'var(--brown)',
+            fontWeight: 700,
+            marginBottom: 8,
+          }}>
+            SHOP BY CATEGORY
           </p>
-          <h2 style={{ fontFamily: 'Playfair Display,serif', fontSize: 'clamp(26px,3.5vw,40px)', fontWeight: 700, color: 'var(--green-dark)', marginBottom: 28 }}>
-            {newsletterSection.headline || 'For Moments That Matter'}
+          <h2 style={{
+            fontSize: 'clamp(28px,4vw,44px)',
+            fontWeight: 700,
+            color: 'var(--green-dark)',
+            lineHeight: 1.15,
+          }}>
+            Find What You Need.
           </h2>
-          <NewsletterForm buttonLabel={newsletterSection.button_label || 'Subscribe'} />
+        </div>
+
+        {/* 6 Category Cards Grid */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+          gap: 24,
+        }}>
+          {categories.map((cat) => (
+            <Link key={cat.name} href={cat.href} style={{ textDecoration: 'none' }}>
+              <div className="card-hover" style={{
+                borderRadius: 22,
+                overflow: 'hidden',
+                background: '#fff',
+                border: '1px solid var(--border)',
+                height: 280,
+                position: 'relative',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'flex-end',
+              }}>
+                <img
+                  src={cat.img}
+                  alt={cat.name}
+                  style={{
+                    position: 'absolute',
+                    inset: 0,
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                  }}
+                />
+                {/* Gradient overlay */}
+                <div style={{
+                  position: 'absolute',
+                  inset: 0,
+                  background: 'linear-gradient(to top, rgba(22,61,35,0.92) 0%, rgba(22,61,35,0.4) 50%, rgba(0,0,0,0.1) 100%)',
+                }} />
+
+                {/* Content */}
+                <div style={{ position: 'relative', zIndex: 1, padding: '24px 24px 26px', color: '#fff' }}>
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    marginBottom: 6,
+                  }}>
+                    <h3 style={{
+                      fontFamily: 'Playfair Display,serif',
+                      fontSize: 22,
+                      fontWeight: 700,
+                      color: '#fff',
+                    }}>
+                      {cat.name}
+                    </h3>
+                    <span style={{
+                      fontSize: 12,
+                      fontWeight: 600,
+                      color: 'var(--gold-light)',
+                      letterSpacing: '0.08em',
+                      textTransform: 'uppercase',
+                    }}>
+                      Browse →
+                    </span>
+                  </div>
+                  <p style={{
+                    fontSize: 14,
+                    color: 'rgba(255,255,255,0.85)',
+                    lineHeight: 1.5,
+                  }}>
+                    {cat.desc}
+                  </p>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════
+          7. ABOUT CEYLON CRUNCH
+      ═══════════════════════════════════════════════ */}
+      <section style={{
+        background: 'var(--green-dark)',
+        padding: 'clamp(64px,8vw,104px) clamp(16px,4vw,48px)',
+        position: 'relative',
+        overflow: 'hidden',
+        color: '#fff',
+      }}>
+        {/* Subtle background texture */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          backgroundImage: 'url(/img/hero-bg.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          opacity: 0.08,
+        }} />
+
+        <div className="about-strip-grid" style={{
+          maxWidth: 1100,
+          margin: '0 auto',
+          display: 'grid',
+          gridTemplateColumns: '1.1fr 0.9fr',
+          gap: 64,
+          alignItems: 'center',
+          position: 'relative',
+          zIndex: 1,
+        }}>
+          <div>
+            <p style={{
+              fontSize: 12,
+              letterSpacing: '0.2em',
+              textTransform: 'uppercase',
+              color: 'var(--gold)',
+              fontWeight: 700,
+              marginBottom: 16,
+            }}>
+              ABOUT CEYLON CRUNCH
+            </p>
+            <h2 style={{
+              fontSize: 'clamp(30px,4vw,48px)',
+              fontWeight: 700,
+              color: '#fff',
+              marginBottom: 24,
+              lineHeight: 1.15,
+            }}>
+              Good Food, Carefully Chosen.
+            </h2>
+            <div style={{ fontSize: 16, color: 'rgba(255,255,255,0.82)', lineHeight: 1.85, marginBottom: 36, display: 'flex', flexDirection: 'column', gap: 14 }}>
+              <p>
+                Ceylon Crunch was created with a simple idea: make quality nuts, dried fruits and wholesome foods easier to enjoy.
+              </p>
+              <p>
+                We carefully select our products, pack them with care and bring them straight to your doorstep.
+              </p>
+              <p>
+                Whether you're buying for yourself, your family, your workplace or someone special, we want every order to be a good one.
+              </p>
+            </div>
+
+            <Link href="/about">
+              <button style={{
+                padding: '14px 34px',
+                background: 'var(--gold)',
+                color: '#fff',
+                border: 'none',
+                borderRadius: 50,
+                fontSize: 15,
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'background 0.2s, transform 0.15s',
+              }}>
+                READ OUR STORY
+              </button>
+            </Link>
+          </div>
+
+          {/* Visual food imagery card */}
+          <div className="about-strip-img" style={{
+            borderRadius: 24,
+            overflow: 'hidden',
+            height: 440,
+            position: 'relative',
+            boxShadow: '0 24px 60px rgba(0,0,0,0.25)',
+          }}>
+            <img
+              src="/img/product-12.jpg"
+              alt="Ceylon Crunch selection"
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            />
+            <div style={{
+              position: 'absolute',
+              inset: 0,
+              background: 'linear-gradient(135deg, rgba(30,86,49,0.3) 0%, transparent 60%)',
+            }} />
+            <div style={{
+              position: 'absolute',
+              bottom: 24,
+              left: 24,
+              right: 24,
+              background: 'rgba(250,246,239,0.96)',
+              borderRadius: 18,
+              padding: '16px 20px',
+              backdropFilter: 'blur(8px)',
+              color: 'var(--ink)',
+            }}>
+              <div style={{ fontFamily: 'Playfair Display,serif', fontSize: 16, fontWeight: 700, color: 'var(--green-dark)', marginBottom: 2 }}>
+                From Nature to Your Doorstep.
+              </div>
+              <div style={{ fontSize: 12, color: 'var(--muted)' }}>
+                Carefully packed for freshness and taste.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════
+          8. GIFTING SECTION
+      ═══════════════════════════════════════════════ */}
+      <section id="gifting" style={{
+        padding: 'clamp(64px,8vw,100px) clamp(16px,4vw,48px)',
+        maxWidth: 1200,
+        margin: '0 auto',
+      }}>
+        <div style={{ textAlign: 'center', maxWidth: 640, margin: '0 auto 48px' }}>
+          <p style={{
+            fontSize: 12,
+            letterSpacing: '0.2em',
+            textTransform: 'uppercase',
+            color: 'var(--brown)',
+            fontWeight: 700,
+            marginBottom: 8,
+          }}>
+            FOR EVERY OCCASION
+          </p>
+          <h2 style={{
+            fontSize: 'clamp(28px,4vw,44px)',
+            fontWeight: 700,
+            color: 'var(--green-dark)',
+            lineHeight: 1.15,
+            marginBottom: 14,
+          }}>
+            Something Worth Sharing.
+          </h2>
+          <p style={{ fontSize: 16, color: 'var(--ink-soft)', lineHeight: 1.75 }}>
+            From simple gifts to carefully prepared hampers, Ceylon Crunch makes it easy to share something good.
+          </p>
+        </div>
+
+        {/* Occasion Cards */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+          gap: 20,
+          marginBottom: 44,
+        }}>
+          {occasions.map((occ) => (
+            <div key={occ.title} className="card-hover" style={{
+              background: '#fff',
+              border: '1px solid var(--border)',
+              borderRadius: 18,
+              padding: '24px 22px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 16,
+              boxShadow: '0 2px 12px rgba(0,0,0,0.03)',
+            }}>
+              <span style={{ fontSize: 28, flexShrink: 0 }}>{occ.icon}</span>
+              <div>
+                <h3 style={{ fontSize: 17, fontWeight: 700, color: 'var(--green-dark)', marginBottom: 2 }}>
+                  {occ.title}
+                </h3>
+                <p style={{ fontSize: 13, color: 'var(--muted)' }}>
+                  {occ.note}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Gifting CTA */}
+        <div style={{ textAlign: 'center' }}>
+          <Link href="/shop?category=Gifts+%26+Hampers">
+            <button className="btn-primary" style={{ padding: '15px 38px', fontSize: 15 }}>
+              EXPLORE GIFTING
+            </button>
+          </Link>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════
+          9. CONNECT SECTION
+      ═══════════════════════════════════════════════ */}
+      <section style={{
+        background: 'var(--cream-dark)',
+        padding: 'clamp(64px,8vw,96px) clamp(16px,4vw,48px)',
+        borderTop: '1px solid var(--border)',
+        borderBottom: '1px solid var(--border)',
+        textAlign: 'center',
+      }}>
+        <div style={{ maxWidth: 600, margin: '0 auto' }}>
+          <p style={{
+            fontSize: 12,
+            letterSpacing: '0.2em',
+            textTransform: 'uppercase',
+            color: 'var(--brown)',
+            fontWeight: 700,
+            marginBottom: 10,
+          }}>
+            STAY CONNECTED
+          </p>
+          <h2 style={{
+            fontSize: 'clamp(28px,3.8vw,42px)',
+            fontWeight: 700,
+            color: 'var(--green-dark)',
+            lineHeight: 1.2,
+            marginBottom: 16,
+          }}>
+            Fresh Products. New Ideas. Updates.
+          </h2>
+          <p style={{ fontSize: 16, color: 'var(--ink-soft)', lineHeight: 1.75, marginBottom: 32 }}>
+            Follow Ceylon Crunch for new products, offers, recipes, serving ideas and more.
+          </p>
+
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 14, flexWrap: 'wrap', marginBottom: 36 }}>
+            <a
+              href={followUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <button className="btn-primary" style={{ padding: '13px 32px', fontSize: 15 }}>
+                FOLLOW US
+              </button>
+            </a>
+          </div>
+
+          {/* Newsletter Form */}
+          <div style={{
+            background: '#fff',
+            borderRadius: 20,
+            padding: '28px 24px',
+            border: '1px solid var(--border)',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.04)',
+          }}>
+            <p style={{ fontSize: 14, color: 'var(--muted)', marginBottom: 16, fontWeight: 500 }}>
+              Or subscribe with your email to receive direct seasonal updates:
+            </p>
+            <NewsletterForm buttonLabel="Subscribe" />
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════
+          10. FINAL CTA
+      ═══════════════════════════════════════════════ */}
+      <section style={{
+        padding: 'clamp(72px,9vw,112px) clamp(16px,4vw,48px)',
+        textAlign: 'center',
+        background: 'linear-gradient(135deg, var(--cream) 0%, #ece2cf 100%)',
+        position: 'relative',
+      }}>
+        <div style={{ maxWidth: 640, margin: '0 auto' }}>
+          <h2 style={{
+            fontSize: 'clamp(30px,4.5vw,50px)',
+            fontWeight: 700,
+            color: 'var(--green-dark)',
+            lineHeight: 1.15,
+            marginBottom: 16,
+          }}>
+            Ready to Find Your Favourites?
+          </h2>
+          <p style={{
+            fontSize: 'clamp(16px,2vw,19px)',
+            color: 'var(--ink-soft)',
+            lineHeight: 1.7,
+            marginBottom: 36,
+          }}>
+            Shop quality nuts, dried fruits, dates, seeds and more.
+          </p>
+          <Link href="/shop">
+            <button className="btn-primary" style={{ padding: '16px 42px', fontSize: 16 }}>
+              SHOP NOW
+            </button>
+          </Link>
         </div>
       </section>
 

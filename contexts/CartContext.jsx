@@ -5,11 +5,14 @@ const CartCtx = createContext(null)
 
 function cartReducer(state, action) {
   switch (action.type) {
+    case 'HYDRATE':
+      return Array.isArray(action.payload) ? action.payload : []
     case 'ADD': {
+      const addQty = action.item.qty || 1
       const key = `${action.item.id}-${action.item.variant}`
       const existing = state.find(i => `${i.id}-${i.variant}` === key)
-      if (existing) return state.map(i => `${i.id}-${i.variant}` === key ? { ...i, qty: i.qty + 1 } : i)
-      return [...state, { ...action.item, qty: 1 }]
+      if (existing) return state.map(i => `${i.id}-${i.variant}` === key ? { ...i, qty: i.qty + addQty } : i)
+      return [...state, { ...action.item, qty: addQty }]
     }
     case 'REMOVE':
       return state.filter(i => `${i.id}-${i.variant}` !== action.key)
@@ -23,18 +26,33 @@ function cartReducer(state, action) {
 }
 
 export function CartProvider({ children, storeSettings }) {
-  const init = () => { try { return JSON.parse(localStorage.getItem('cc_cart')) || [] } catch { return [] } }
-  const [cart, dispatch] = useReducer(cartReducer, [], init)
+  const [cart, dispatch] = useReducer(cartReducer, [])
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [toast, setToast] = useState(null)
+  const [mounted, setMounted] = useState(false)
 
   const currency = storeSettings?.currency_symbol || storeSettings?.currency || 'LKR'
   const freeThreshold = storeSettings?.free_delivery_threshold ?? 0
   const deliveryFee = storeSettings?.delivery_fee ?? 350
 
   useEffect(() => {
-    try { localStorage.setItem('cc_cart', JSON.stringify(cart)) } catch {}
-  }, [cart])
+    try {
+      const saved = localStorage.getItem('cc_cart')
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          dispatch({ type: 'HYDRATE', payload: parsed })
+        }
+      }
+    } catch {}
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (mounted) {
+      try { localStorage.setItem('cc_cart', JSON.stringify(cart)) } catch {}
+    }
+  }, [cart, mounted])
 
   const addToCart = (item) => {
     dispatch({ type: 'ADD', item })
@@ -58,6 +76,7 @@ export function CartProvider({ children, storeSettings }) {
       toast, addToCart, showToast,
       subtotal, delivery, total, itemCount,
       currency, freeThreshold, deliveryFee,
+      isHydrated: mounted,
     }}>
       {children}
     </CartCtx.Provider>
