@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Instagram, Facebook, Video } from 'lucide-react';
+import { Instagram, Facebook } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   return (
@@ -176,7 +176,7 @@ export const Footer: React.FC = () => {
         <div className="pt-6 border-t border-[#3A3A3A] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#C4C4C4]">
           <div className="flex items-center gap-3">
             <a
-              href="https://instagram.com"
+              href="https://www.instagram.com/ceyloncrunch_lk?rpxt=MTFtbnNwcTU3ZTZnNQ%3D%3D&utm_source=qr"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Instagram"
@@ -185,7 +185,7 @@ export const Footer: React.FC = () => {
               <Instagram className="w-4 h-4" />
             </a>
             <a
-              href="https://facebook.com"
+              href="https://www.facebook.com/share/1ENWdAdxez/"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Facebook"
@@ -194,13 +194,29 @@ export const Footer: React.FC = () => {
               <Facebook className="w-4 h-4" />
             </a>
             <a
-              href="https://tiktok.com"
+              href="https://www.tiktok.com/@ceyloncrunchlk?_r=1&_t=ZS-9APNpLNJ9l8"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="TikTok"
               className="w-8 h-8 rounded-full bg-white border border-[#EADFD0] flex items-center justify-center text-[#1F3D2B] hover:bg-[#1F3D2B] hover:text-white transition-all shadow-2xs"
             >
-              <Video className="w-4 h-4" />
+              <svg
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+                className="w-4 h-4"
+              >
+                <path
+                  d="M14.5 3v11.2a3.3 3.3 0 1 1-2.3-3.15V7.9a6.1 6.1 0 1 0 5.2 6V8.6c1.25.9 2.8 1.4 4.4 1.4V6.8c-2.4 0-4.4-1.5-4.9-3.8z"
+                  fill="#25F4EE"
+                  transform="translate(-1 0.5)"
+                />
+                <path
+                  d="M14.5 3v11.2a3.3 3.3 0 1 1-2.3-3.15V7.9a6.1 6.1 0 1 0 5.2 6V8.6c1.25.9 2.8 1.4 4.4 1.4V6.8c-2.4 0-4.4-1.5-4.9-3.8z"
+                  fill="#FE2C55"
+                  transform="translate(0.7 -0.3)"
+                />
+                <path d="M14.5 3v11.2a3.3 3.3 0 1 1-2.3-3.15V7.9a6.1 6.1 0 1 0 5.2 6V8.6c1.25.9 2.8 1.4 4.4 1.4V6.8c-2.4 0-4.4-1.5-4.9-3.8z" fill="currentColor" />
+              </svg>
             </a>
           </div>
           <p className="text-center sm:text-right">© 2026 Ceylon Crunch. All rights reserved. Handcrafted in Sri Lanka.</p>

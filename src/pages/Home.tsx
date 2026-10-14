@@ -568,7 +568,7 @@ export const Home: React.FC = () => {
         </p>
         <div className="flex flex-col xs:flex-row items-center justify-center gap-2.5 sm:gap-3 pt-2">
           <a
-            href="https://instagram.com"
+            href="https://www.instagram.com/ceyloncrunch_lk?rpxt=MTFtbnNwcTU3ZTZnNQ%3D%3D&utm_source=qr"
             target="_blank"
             rel="noopener noreferrer"
             className="w-full xs:w-auto h-10 px-6 rounded-full bg-[#FAF8F4] border border-[#EADFD0] hover:border-[#1F3D2B] text-xs font-semibold text-[#1F3D2B] inline-flex items-center justify-center gap-2 transition-colors"
