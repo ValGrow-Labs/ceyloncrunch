@@ -320,7 +320,7 @@ export const Header: React.FC = () => {
                       onClick={() => setIsMenuOpen(false)}
                       className="flex items-center justify-between py-1 hover:text-[#8B5E3C] transition-colors"
                     >
-                      <span>Single-Origin Nuts</span>
+                      <span>Nuts</span>
                       <ArrowRight className="w-3.5 h-3.5 text-[#8B5E3C]" />
                     </Link>
                   </li>
@@ -330,7 +330,7 @@ export const Header: React.FC = () => {
                       onClick={() => setIsMenuOpen(false)}
                       className="flex items-center justify-between py-1 hover:text-[#8B5E3C] transition-colors"
                     >
-                      <span>Sun-Dried Fruits</span>
+                      <span>Dried Fruits</span>
                       <ArrowRight className="w-3.5 h-3.5 text-[#8B5E3C]" />
                     </Link>
                   </li>
@@ -340,7 +340,7 @@ export const Header: React.FC = () => {
                       onClick={() => setIsMenuOpen(false)}
                       className="flex items-center justify-between py-1 hover:text-[#8B5E3C] transition-colors"
                     >
-                      <span>Oasis Dates</span>
+                      <span>Dates</span>
                       <ArrowRight className="w-3.5 h-3.5 text-[#8B5E3C]" />
                     </Link>
                   </li>
@@ -350,7 +350,37 @@ export const Header: React.FC = () => {
                       onClick={() => setIsMenuOpen(false)}
                       className="flex items-center justify-between py-1 hover:text-[#8B5E3C] transition-colors"
                     >
-                      <span>Seeds & Botanicals</span>
+                      <span>Seeds</span>
+                      <ArrowRight className="w-3.5 h-3.5 text-[#8B5E3C]" />
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/category/berries"
+                      onClick={() => setIsMenuOpen(false)}
+                      className="flex items-center justify-between py-1 hover:text-[#8B5E3C] transition-colors"
+                    >
+                      <span>Berries</span>
+                      <ArrowRight className="w-3.5 h-3.5 text-[#8B5E3C]" />
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/category/exotic-nuts"
+                      onClick={() => setIsMenuOpen(false)}
+                      className="flex items-center justify-between py-1 hover:text-[#8B5E3C] transition-colors"
+                    >
+                      <span>Exotic Nuts</span>
+                      <ArrowRight className="w-3.5 h-3.5 text-[#8B5E3C]" />
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/category/mixes"
+                      onClick={() => setIsMenuOpen(false)}
+                      className="flex items-center justify-between py-1 hover:text-[#8B5E3C] transition-colors"
+                    >
+                      <span>Mixes</span>
                       <ArrowRight className="w-3.5 h-3.5 text-[#8B5E3C]" />
                     </Link>
                   </li>

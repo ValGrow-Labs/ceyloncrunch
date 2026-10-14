@@ -117,7 +117,7 @@ export const Shop: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col w-full pb-16">
+    <div className="flex flex-col w-full pt-4 pb-16">
       {/* Search Field */}
       <div className="relative w-full mb-6">
         <div className="relative flex items-center w-full h-12 bg-white rounded-full border border-[#EADFD0] shadow-[0_4px_20px_-2px_rgba(139,94,60,0.06)] px-4 focus-within:border-[#1F3D2B] focus-within:ring-1 focus-within:ring-[#1F3D2B]">

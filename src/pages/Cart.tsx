@@ -40,7 +40,7 @@ export const Cart: React.FC = () => {
 
   if (cart.length === 0) {
     return (
-      <div className="flex flex-col w-full pb-20">
+      <div className="flex flex-col w-full pt-4 pb-20">
         <div className="flex items-center justify-between py-2 mb-4">
           <Link
             to="/shop"
@@ -90,7 +90,7 @@ export const Cart: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col w-full pb-20">
+    <div className="flex flex-col w-full pt-4 pb-20">
       {/* Top Return Link */}
       <div className="flex items-center justify-between py-2 mb-3">
         <Link

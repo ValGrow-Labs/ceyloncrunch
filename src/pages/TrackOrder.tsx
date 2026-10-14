@@ -64,7 +64,7 @@ export const TrackOrder: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col w-full pb-24 max-w-2xl mx-auto">
+    <div className="flex flex-col w-full pt-4 pb-24 max-w-2xl mx-auto">
       {/* Top Navigation & Return Link */}
       <div className="flex items-center justify-between mb-3">
         <Link
