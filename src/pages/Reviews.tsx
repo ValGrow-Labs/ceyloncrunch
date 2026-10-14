@@ -13,68 +13,7 @@ interface ReviewItem {
   comment: string;
 }
 
-const INITIAL_REVIEWS: ReviewItem[] = [
-  {
-    id: 'rev-1',
-    name: 'Dilshan Perera',
-    location: 'Colombo 07',
-    rating: 5,
-    date: 'March 2026',
-    verified: true,
-    product: 'Woodfire Jumbo Cashews',
-    comment: 'The quality of the cashews is exceptional. Fresh, crunchy, and not overly salted like store-bought brands. Prompt delivery to Colombo within 24 hours.',
-  },
-  {
-    id: 'rev-2',
-    name: 'Fathima Rizwan',
-    location: 'Kandy',
-    rating: 5,
-    date: 'March 2026',
-    verified: true,
-    product: 'Royal Medjool Dates',
-    comment: 'Succulent, naturally sweet dates. Beautiful packaging. Ordered 3 packs for Ramadan sharing and our family was thoroughly pleased.',
-  },
-  {
-    id: 'rev-3',
-    name: 'Naveen Senanayake',
-    location: 'Galle',
-    rating: 5,
-    date: 'February 2026',
-    verified: true,
-    product: 'Raw Pumpkin & Chia Seeds',
-    comment: 'Clean seeds without any debris or bitter aftertaste. I use them daily in my breakfast oats. Highly recommended for daily health.',
-  },
-  {
-    id: 'rev-4',
-    name: 'Apeksha Jayasinghe',
-    location: 'Rajagiriya',
-    rating: 5,
-    date: 'February 2026',
-    verified: true,
-    product: 'Sun-Dried Aegean Figs',
-    comment: 'Very hard to find good quality figs in Sri Lanka that are not dried out. These are soft, clean, and naturally sweet.',
-  },
-  {
-    id: 'rev-5',
-    name: 'Kavinda Wickramasinghe',
-    location: 'Kurunegala',
-    rating: 4,
-    date: 'January 2026',
-    verified: true,
-    product: 'Ceylon Spices & Nut Hamper',
-    comment: 'Ordered as a corporate gift chest. The wood presentation and handwritten card added a really thoughtful touch.',
-  },
-  {
-    id: 'rev-6',
-    name: 'Shalini De Silva',
-    location: 'Mount Lavinia',
-    rating: 5,
-    date: 'January 2026',
-    verified: true,
-    product: 'Dry Roasted California Almonds',
-    comment: 'Crisp snap, zero oiliness, and very consistent kernel size. Will definitely order on a monthly subscription basis.',
-  },
-];
+const INITIAL_REVIEWS: ReviewItem[] = [];
 
 export const Reviews: React.FC = () => {
   const [reviews, setReviews] = useState<ReviewItem[]>(INITIAL_REVIEWS);
@@ -157,45 +96,55 @@ export const Reviews: React.FC = () => {
       </div>
 
       {/* Reviews Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
-        {reviews.map((rev) => (
-          <div
-            key={rev.id}
-            className="bg-white border border-[#EADFD0] rounded-2xl p-5 sm:p-6 shadow-2xs flex flex-col justify-between space-y-4"
-          >
-            <div className="space-y-2.5">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1 text-[#D9A441]">
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      className={`w-3.5 h-3.5 ${i < rev.rating ? 'fill-current' : 'text-[#EADFD0]'}`}
-                    />
-                  ))}
+      {reviews.length === 0 ? (
+        <div className="bg-white border border-[#EADFD0] rounded-2xl p-10 text-center space-y-3">
+          <MessageSquare className="w-10 h-10 text-[#8B5E3C] mx-auto opacity-40" />
+          <h3 className="font-serif text-lg font-bold text-[#1F3D2B]">No reviews yet</h3>
+          <p className="text-xs sm:text-sm text-[#6B6B6B] max-w-sm mx-auto">
+            Be the first to share your experience with our artisan provisions!
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
+          {reviews.map((rev) => (
+            <div
+              key={rev.id}
+              className="bg-white border border-[#EADFD0] rounded-2xl p-5 sm:p-6 shadow-2xs flex flex-col justify-between space-y-4"
+            >
+              <div className="space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1 text-[#D9A441]">
+                    {[...Array(5)].map((_, i) => (
+                      <Star
+                        key={i}
+                        className={`w-3.5 h-3.5 ${i < rev.rating ? 'fill-current' : 'text-[#EADFD0]'}`}
+                      />
+                    ))}
+                  </div>
+                  <span className="text-[11px] text-[#6B6B6B]">{rev.date}</span>
                 </div>
-                <span className="text-[11px] text-[#6B6B6B]">{rev.date}</span>
+
+                <p className="text-xs sm:text-sm text-[#2B2B2B] leading-relaxed">
+                  "{rev.comment}"
+                </p>
               </div>
 
-              <p className="text-xs sm:text-sm text-[#2B2B2B] leading-relaxed">
-                "{rev.comment}"
-              </p>
-            </div>
-
-            <div className="pt-3 border-t border-[#EADFD0]/60 flex items-center justify-between text-xs">
-              <div>
-                <span className="font-bold text-[#1F3D2B] block">{rev.name}</span>
-                <span className="text-[11px] text-[#6B6B6B]">{rev.location}</span>
-              </div>
-              {rev.verified && (
-                <div className="flex items-center gap-1 text-[11px] font-semibold text-[#2E7D4F]">
-                  <CheckCircle2 className="w-3.5 h-3.5" />
-                  <span>Verified Order</span>
+              <div className="pt-3 border-t border-[#EADFD0]/60 flex items-center justify-between text-xs">
+                <div>
+                  <span className="font-bold text-[#1F3D2B] block">{rev.name}</span>
+                  <span className="text-[11px] text-[#6B6B6B]">{rev.location}</span>
                 </div>
-              )}
+                {rev.verified && (
+                  <div className="flex items-center gap-1 text-[11px] font-semibold text-[#2E7D4F]">
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    <span>Verified Order</span>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       {/* Leave Review Modal */}
       <AnimatePresence>

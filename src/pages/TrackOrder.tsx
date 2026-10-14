@@ -26,8 +26,8 @@ export const TrackOrder: React.FC = () => {
   const urlPhone = searchParams.get('phone') || '';
 
   // Local lookup form inputs
-  const [orderInput, setOrderInput] = useState(urlOrder || 'CC-000123');
-  const [phoneInput, setPhoneInput] = useState(urlPhone || '77 123 4567');
+  const [orderInput, setOrderInput] = useState(urlOrder || '');
+  const [phoneInput, setPhoneInput] = useState(urlPhone || '');
   const [hasSearched, setHasSearched] = useState(Boolean(urlOrder && urlPhone));
 
   const [copiedWaybill, setCopiedWaybill] = useState(false);
@@ -169,29 +169,6 @@ export const TrackOrder: React.FC = () => {
               <span>Track Order Now</span>
             </button>
           </form>
-
-          {/* Quick Demo Seed Order Helper Chips */}
-          <div className="pt-3 border-t border-[#EADFD0]">
-            <span className="text-[11px] uppercase tracking-wider font-bold text-[#8B5E3C] block mb-2">
-              Try Seeded Demo Orders:
-            </span>
-            <div className="flex flex-wrap gap-2">
-              {orders.slice(0, 3).map((o) => (
-                <button
-                  key={o.id}
-                  type="button"
-                  onClick={() => {
-                    setOrderInput(o.id);
-                    setPhoneInput(o.customer.phone.replace('+94', '').trim());
-                    setHasSearched(true);
-                  }}
-                  className="px-3 py-1.5 rounded-full bg-[#f6f3f2] hover:bg-[#EADFD0] border border-[#EADFD0] text-xs font-medium text-[#1F3D2B] transition-colors"
-                >
-                  #{o.id} ({o.status})
-                </button>
-              ))}
-            </div>
-          </div>
         </div>
       ) : activeOrder ? (
         /* VIEW B: ACTIVE TRACKING (DISPATCHED / ACTIVE STATUS) VIEW */

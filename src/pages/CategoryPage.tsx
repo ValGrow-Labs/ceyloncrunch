@@ -32,10 +32,10 @@ export const CategoryPage: React.FC = () => {
             'Choose from a selection of nuts in different varieties, sizes and flavours.',
           subFilters: [
             { id: 'all', label: 'All Nuts' },
-            { id: 'walnuts', label: 'Walnuts (Akhrot)' },
-            { id: 'almonds', label: 'Almonds (Badam)' },
-            { id: 'cashews', label: 'Cashew (Kaju)' },
-            { id: 'pistachios', label: 'Pistachio (Pista)' },
+            { id: 'walnuts', label: 'Walnuts' },
+            { id: 'almonds', label: 'Almonds' },
+            { id: 'cashews', label: 'Cashew' },
+            { id: 'pistachios', label: 'Pistachio' },
           ],
         };
       case 'dried-fruits':
@@ -47,11 +47,11 @@ export const CategoryPage: React.FC = () => {
             'Naturally sweet and convenient for everyday snacking, baking and sharing.',
           subFilters: [
             { id: 'all', label: 'All Dried Fruits' },
-            { id: 'raisins', label: 'Raisins (Kishmish)' },
-            { id: 'figs', label: 'Dried Figs (Anjeer)' },
-            { id: 'apricots', label: 'Dried Apricots (Khubani)' },
+            { id: 'raisins', label: 'Raisins' },
+            { id: 'figs', label: 'Dried Figs' },
+            { id: 'apricots', label: 'Dried Apricots' },
             { id: 'kiwi', label: 'Dried Kiwi' },
-            { id: 'prunes', label: 'Dried Prunes (Aaloobukhaara)' },
+            { id: 'prunes', label: 'Dried Prunes' },
           ],
         };
       case 'dates':
@@ -63,8 +63,8 @@ export const CategoryPage: React.FC = () => {
             'A selection of dates for snacking, sharing and gifting.',
           subFilters: [
             { id: 'all', label: 'All Dates' },
-            { id: 'wet-dates', label: 'Wet Dates (Khajur)' },
-            { id: 'dry-dates', label: 'Dry Dates (Chuara)' },
+            { id: 'wet-dates', label: 'Wet Dates' },
+            { id: 'dry-dates', label: 'Dry Dates' },
           ],
         };
       case 'seeds':
@@ -80,7 +80,7 @@ export const CategoryPage: React.FC = () => {
             { id: 'pumpkin', label: 'Pumpkin Seeds' },
             { id: 'sunflower', label: 'Sunflower Seeds' },
             { id: 'flax', label: 'Flax Seeds' },
-            { id: 'makhana', label: 'Fox Nuts (Phool Makhana)' },
+            { id: 'makhana', label: 'Fox Nuts' },
           ],
         };
       case 'berries':
@@ -327,11 +327,17 @@ export const CategoryPage: React.FC = () => {
       </div>
 
       {/* Two-Column on mobile, Four-Column on desktop */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5 mb-10">
-        {filteredProducts.map((product) => (
-          <ProductCard key={product.id} product={product} />
-        ))}
-      </div>
+      {filteredProducts.length > 0 ? (
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5 mb-10">
+          {filteredProducts.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+        </div>
+      ) : (
+        <div className="bg-white border border-[#EADFD0] rounded-2xl p-8 text-center text-[#6B6B6B] text-sm mb-10">
+          No products found in this category yet.
+        </div>
+      )}
 
       {/* Ethical Harvest Commitment Banner */}
       <EthicalHarvestBanner />

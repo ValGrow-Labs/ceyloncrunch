@@ -1,341 +1,56 @@
 -- ==============================================================================
--- CEYLON CRUNCH - INITIAL CATALOG SEED DATA
+-- CEYLON CRUNCH - CATALOG SEED SCRIPT (32 DRIED FRUITS & SEEDS)
 -- Run this script in: Supabase Dashboard > SQL Editor > New Query > Run
 -- ==============================================================================
 
-DO $$
-DECLARE
-  v_prod_id uuid;
-BEGIN
-  -- Insert product if not exists
-  SELECT id INTO v_prod_id FROM public.products WHERE slug = 'walnuts-akhrot';
-  IF v_prod_id IS NULL THEN
-    INSERT INTO public.products (
-      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count, images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
-    ) VALUES (
-      'walnuts-akhrot',
-      'Walnuts (Akhrot)',
-      'Premium Butterfly Halves · Cold-Cracked',
-      'nuts',
-      'Raw & Pure',
-      'High-Altitude Cold-Cracked Orchards',
-      'Sun-dried raw whole halves',
-      4.9,
-      38,
-      ARRAY['https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b2/Walnuts_-_whole_and_open_with_halved_kernel.jpg/960px-Walnuts_-_whole_and_open_with_halved_kernel.jpg', 'https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?auto=format&fit=crop&w=900&q=80'],
-      'Crisp, intact walnut halves (Akhrot) with mild natural sweetness and zero bitterness. Rich in plant omega-3 fatty acids and antioxidants.',
-      ARRAY['Carefully cracked by hand to preserve complete butterfly halves. Sourced from pristine high-altitude orchards and vacuum-packed for freshness.'],
-      '100% Raw Walnut Kernels (Akhrot)',
-      'Store in an airtight container in a cool, dry pantry or refrigerate after opening.',
-      '6 Months',
-      'Contains tree nuts (walnuts).',
-      true
-    ) RETURNING id INTO v_prod_id;
-  END IF;
-
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '100g') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '100g', 878, 1014, 20);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '250g') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '250g', 1950, 2243, 15);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '500g') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '500g', 3705, 4193, 10);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '1kg') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '1kg', 7118, 7995, 6);
-  END IF;
-END $$;
+-- Clear old products first (optional, ensures clean state)
+TRUNCATE TABLE public.product_variants, public.products CASCADE;
 
 DO $$
 DECLARE
   v_prod_id uuid;
 BEGIN
-  -- Insert product if not exists
-  SELECT id INTO v_prod_id FROM public.products WHERE slug = 'almonds-badam';
+  SELECT id INTO v_prod_id FROM public.products WHERE slug = 'black-raisins';
   IF v_prod_id IS NULL THEN
     INSERT INTO public.products (
-      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count, images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
+      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count,
+      images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
     ) VALUES (
-      'almonds-badam',
-      'Almonds (Badam)',
-      'King Size Whole Kernels · Sun-Ripened',
-      'nuts',
-      'Best Seller',
-      'Sun-Ripened Hand-Sorted Orchards',
-      'Natural whole unblanched kernels',
-      4.9,
-      54,
-      ARRAY['https://images.unsplash.com/photo-1508061253366-f7da158b6d46?auto=format&fit=crop&w=900&q=80', 'https://thumb.wikimedia.org/wikipedia/commons/thumb/3/37/Almonds_-_in_shell%2C_shell_cracked_open%2C_shelled%2C_blanched.jpg/960px-Almonds_-_in_shell%2C_shell_cracked_open%2C_shelled%2C_blanched.jpg'],
-      'Sun-ripened whole raw almonds (Badam) with delicate golden-brown skin. Crunchy, naturally sweet, and packed with Vitamin E and plant protein.',
-      ARRAY['Selected for uniform jumbo kernel size and sweet nutty crunch. Ideal for overnight soaking, daily snacking, or artisanal baking.'],
-      '100% Whole Almond Kernels (Badam)',
-      'Keep sealed in a cool, dry place away from sunlight.',
-      '8 Months',
-      'Contains tree nuts (almonds).',
-      true
-    ) RETURNING id INTO v_prod_id;
-  END IF;
-
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '100g') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '100g', 608, 702, 20);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '250g') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '250g', 1350, 1552, 15);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '500g') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '500g', 2565, 2903, 10);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '1kg') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '1kg', 4928, 5535, 6);
-  END IF;
-END $$;
-
-DO $$
-DECLARE
-  v_prod_id uuid;
-BEGIN
-  -- Insert product if not exists
-  SELECT id INTO v_prod_id FROM public.products WHERE slug = 'cashew-kaju';
-  IF v_prod_id IS NULL THEN
-    INSERT INTO public.products (
-      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count, images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
-    ) VALUES (
-      'cashew-kaju',
-      'Cashew (Kaju)',
-      'Single-Estate W210 Jumbo · Ceylon Harvest',
-      'nuts',
-      'Ceylon Signature',
-      'Puttalam & Mannar Belt, Sri Lanka',
-      'Slow-cured whole ivory king kernels',
-      5,
-      72,
-      ARRAY['https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a5/Bowl_of_Cashews_and_Almonds_%2848140118636%29.jpg/960px-Bowl_of_Cashews_and_Almonds_%2848140118636%29.jpg', 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=900&q=80'],
-      'Handpicked Grade-W210 jumbo Sri Lankan cashews (Kaju). Naturally creamy, buttery, and unmatched in crunch.',
-      ARRAY['Harvested from smallholder orchards in Puttalam, Sri Lanka. Hand-graded for 100% whole ivory kernels with rich natural sweetness.'],
-      '100% Pure Ceylon Whole Cashews (Kaju)',
-      'Store in an airtight glass jar or resealed kraft pouch.',
-      '6 Months',
-      'Contains tree nuts (cashews).',
-      true
-    ) RETURNING id INTO v_prod_id;
-  END IF;
-
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '100g') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '100g', 653, 754, 20);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '250g') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '250g', 1450, 1667, 15);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '500g') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '500g', 2755, 3118, 10);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '1kg') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '1kg', 5293, 5945, 6);
-  END IF;
-END $$;
-
-DO $$
-DECLARE
-  v_prod_id uuid;
-BEGIN
-  -- Insert product if not exists
-  SELECT id INTO v_prod_id FROM public.products WHERE slug = 'pistachio-pista';
-  IF v_prod_id IS NULL THEN
-    INSERT INTO public.products (
-      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count, images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
-    ) VALUES (
-      'pistachio-pista',
-      'Pistachio (Pista)',
-      'Roasted & Lightly Salted · Naturally Split',
-      'nuts',
-      'Harvest Fresh',
-      'Emerald Kernel Reserve',
-      'Pan-toasted in-shell with Hambantota sea salt',
-      4.9,
-      41,
-      ARRAY['https://images.unsplash.com/photo-1525059696034-4967a8e1dca2?auto=format&fit=crop&w=900&q=80', 'https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b5/Pistachio_vera.jpg/960px-Pistachio_vera.jpg'],
-      'Vibrant green open-shell roasted pistachios (Pista) finished with a whisper of pure sea salt crystals.',
-      ARRAY['Sorted for naturally split shells and large emerald-purple kernels with a rich, savoury-sweet roast.'],
-      'Pistachios (Pista), Pure Sea Salt',
-      'Keep in an airtight container away from moisture.',
-      '6 Months',
-      'Contains tree nuts (pistachios).',
-      true
-    ) RETURNING id INTO v_prod_id;
-  END IF;
-
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '100g') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '100g', 1170, 1352, 20);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '250g') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '250g', 2600, 2990, 15);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '500g') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '500g', 4940, 5590, 10);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '1kg') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '1kg', 9490, 10660, 6);
-  END IF;
-END $$;
-
-DO $$
-DECLARE
-  v_prod_id uuid;
-BEGIN
-  -- Insert product if not exists
-  SELECT id INTO v_prod_id FROM public.products WHERE slug = 'raisins-kishmish';
-  IF v_prod_id IS NULL THEN
-    INSERT INTO public.products (
-      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count, images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
-    ) VALUES (
-      'raisins-kishmish',
-      'Raisins (Kishmish)',
-      'Sun-Dried Golden & Long Green · Seedless',
+      'black-raisins',
+      'Black Raisins',
+      'Naturally Sweet & Seedless · Sun-Dried',
       'dried-fruits',
-      'Sun-Cured',
-      'Sun-Drenched Vineyard Harvest',
-      'Naturally shade-dried seedless grapes',
-      4.8,
-      29,
-      ARRAY['https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7d/Raisins_01.jpg/960px-Raisins_01.jpg'],
-      'Plump, honey-sweet seedless golden raisins (Kishmish), naturally dried without artificial glazing or added sugar.',
-      ARRAY['Soft, juicy, and bursting with natural grape nectar. Perfect for festive Sri Lankan biryanis, cakes, oats, and healthy snacking.'],
-      '100% Seedless Sun-Dried Raisins (Kishmish)',
-      'Store in a cool, dry pantry.',
-      '8 Months',
-      'Naturally gluten-free. Packed in a facility that handles tree nuts.',
-      false
-    ) RETURNING id INTO v_prod_id;
-  END IF;
-
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '100g') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '100g', 383, 442, 20);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '250g') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '250g', 850, 977, 15);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '500g') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '500g', 1615, 1828, 10);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '1kg') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '1kg', 3103, 3485, 6);
-  END IF;
-END $$;
-
-DO $$
-DECLARE
-  v_prod_id uuid;
-BEGIN
-  -- Insert product if not exists
-  SELECT id INTO v_prod_id FROM public.products WHERE slug = 'dried-figs-anjeer';
-  IF v_prod_id IS NULL THEN
-    INSERT INTO public.products (
-      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count, images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
-    ) VALUES (
-      'dried-figs-anjeer',
-      'Dried Figs (Anjeer)',
-      'Whole Sun-Cured Rings · High Fibre',
-      'dried-fruits',
-      'Best Seller',
-      'Traditional Sun-Dried Orchards',
-      'Sun-cured whole tender figs',
+      'Sun-Dried',
+      'Selected Mediterranean Vineyards',
+      'Sun-dried raw whole vine fruit',
       4.9,
-      34,
-      ARRAY['https://thumb.wikimedia.org/wikipedia/commons/thumb/2/28/Dried_figs_%282%29.jpg/960px-Dried_figs_%282%29.jpg', 'https://images.unsplash.com/photo-1601004890684-d8cbf643f5f2?auto=format&fit=crop&w=900&q=80'],
-      'Soft, honey-rich sun-dried figs (Anjeer) with crunchy seed centres. Naturally rich in calcium, iron, and dietary fibre.',
-      ARRAY['Cured under warm orchard sun without chemical bleaching. Delicious on their own, soaked overnight, or paired with walnuts and almonds.'],
-      '100% Whole Sun-Dried Figs (Anjeer)',
-      'Store in an airtight container; refrigerate in warm climates.',
-      '8 Months',
-      'Naturally gluten-free.',
-      false
-    ) RETURNING id INTO v_prod_id;
-  END IF;
-
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '100g') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '100g', 833, 962, 20);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '250g') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '250g', 1850, 2128, 15);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '500g') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '500g', 3515, 3978, 10);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '1kg') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '1kg', 6753, 7585, 6);
-  END IF;
-END $$;
-
-DO $$
-DECLARE
-  v_prod_id uuid;
-BEGIN
-  -- Insert product if not exists
-  SELECT id INTO v_prod_id FROM public.products WHERE slug = 'dried-apricots-khubani';
-  IF v_prod_id IS NULL THEN
-    INSERT INTO public.products (
-      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count, images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
-    ) VALUES (
-      'dried-apricots-khubani',
-      'Dried Apricots (Khubani)',
-      'Pitted Golden Halves · Tangy-Sweet',
-      'dried-fruits',
-      'Orchard Pick',
-      'Mountain Orchard Reserve',
-      'Sun-ripened whole pitted apricots',
-      4.8,
       24,
-      ARRAY['https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a9/Ab_food_04.jpg/960px-Ab_food_04.jpg'],
-      'Velvety, sun-dried golden apricots (Khubani) with a vibrant balance of floral sweetness and gentle orchard tang.',
-      ARRAY['Rich in beta-carotene, potassium, and dietary fibre. Hand-pitted and gently dried to preserve their soft, chewy bite.'],
-      '100% Sun-Dried Pitted Apricots (Khubani)',
-      'Store sealed in a cool, dry place.',
-      '8 Months',
-      'Naturally gluten-free.',
-      false
+      '{"/products/dried-fruits/black-raisins.jpeg"}',
+      'Naturally sun-dried plump black raisins with rich natural sweetness, succulent texture, and high iron and antioxidant content. Excellent for soaking, daily vitality, and wholesome baking.',
+      '{"Carefully harvested from sun-drenched vineyards and gently sun-dried to lock in natural sugars and dense minerals.","100% seedless with a luscious chew and clean finish without artificial additives."}',
+      '100% Sun-Dried Seedless Black Raisins',
+      'Store in an airtight container in a cool, dry pantry.',
+      '9 Months',
+      'Processed in a facility that handles tree nuts and seeds.',
+      true
     ) RETURNING id INTO v_prod_id;
   END IF;
 
   IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '100g') THEN
     INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '100g', 743, 858, 20);
+    VALUES (v_prod_id, '100g', 450, 518, 25);
   END IF;
   IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '250g') THEN
     INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '250g', 1650, 1897, 15);
+    VALUES (v_prod_id, '250g', 950, 1093, 20);
   END IF;
   IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '500g') THEN
     INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '500g', 3135, 3548, 10);
+    VALUES (v_prod_id, '500g', 1800, 2016, 15);
   END IF;
   IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '1kg') THEN
     INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '1kg', 6023, 6765, 6);
+    VALUES (v_prod_id, '1kg', 3450, 3795, 10);
   END IF;
 END $$;
 
@@ -343,47 +58,287 @@ DO $$
 DECLARE
   v_prod_id uuid;
 BEGIN
-  -- Insert product if not exists
+  SELECT id INTO v_prod_id FROM public.products WHERE slug = 'dried-apricots';
+  IF v_prod_id IS NULL THEN
+    INSERT INTO public.products (
+      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count,
+      images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
+    ) VALUES (
+      'dried-apricots',
+      'Dried Apricots',
+      'Tender Sun-Dried Mediterranean Apricots',
+      'dried-fruits',
+      'High Fibre',
+      'Sun-Drenched Mediterranean Orchards',
+      'Naturally sun-cured whole pitted fruit',
+      4.8,
+      31,
+      '{"/products/dried-fruits/dried-apricots.jpeg"}',
+      'Plump, golden-orange dried apricots with a delicate honeyed aroma, chewy bite, and rich vitamin A profile. A nourishing sweet snack for all ages.',
+      '{"Grown in mountain valleys where hot sunny days and cool nights produce unusually sweet, plump apricots.","Carefully hand-pitted and sun-dried to preserve soft, moist fruit centers."}',
+      '100% Whole Dried Apricots',
+      'Keep refrigerated or in cool dry storage.',
+      '8 Months',
+      'Processed in a facility that handles tree nuts.',
+      true
+    ) RETURNING id INTO v_prod_id;
+  END IF;
+
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '100g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '100g', 650, 747, 25);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '250g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '250g', 1450, 1667, 20);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '500g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '500g', 2750, 3080, 15);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '1kg') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '1kg', 5200, 5720, 10);
+  END IF;
+END $$;
+
+DO $$
+DECLARE
+  v_prod_id uuid;
+BEGIN
+  SELECT id INTO v_prod_id FROM public.products WHERE slug = 'dried-banana';
+  IF v_prod_id IS NULL THEN
+    INSERT INTO public.products (
+      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count,
+      images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
+    ) VALUES (
+      'dried-banana',
+      'Dried Natural Bananas',
+      'Chewy Sun-Cured Sweet Banana Slices',
+      'dried-fruits',
+      'Potassium Rich',
+      'Ceylon Tropical Plantations',
+      'Dehydrated raw sweet banana coins',
+      4.7,
+      19,
+      '{"/products/dried-fruits/dried-banana.jpeg"}',
+      'Naturally sweet dried banana slices prepared without added sugar or artificial preservatives. Excellent energy-boosting bite for workouts, trail walks, and breakfast bowls.',
+      '{"Harvested at peak ripeness from certified Sri Lankan tropical growers.","Retains concentrated potassium, dietary fibre, and natural fruit sugars."}',
+      '100% Ripe Dehydrated Bananas',
+      'Store in an airtight container in a cool pantry.',
+      '6 Months',
+      'All-natural fruit. Packaged in a facility handling tree nuts.',
+      false
+    ) RETURNING id INTO v_prod_id;
+  END IF;
+
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '100g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '100g', 420, 483, 25);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '250g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '250g', 890, 1023, 20);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '500g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '500g', 1700, 1904, 15);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '1kg') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '1kg', 3250, 3575, 10);
+  END IF;
+END $$;
+
+DO $$
+DECLARE
+  v_prod_id uuid;
+BEGIN
+  SELECT id INTO v_prod_id FROM public.products WHERE slug = 'dried-cherries';
+  IF v_prod_id IS NULL THEN
+    INSERT INTO public.products (
+      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count,
+      images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
+    ) VALUES (
+      'dried-cherries',
+      'Dried Cherries',
+      'Tart & Sweet Ruby Red Pitted Cherries',
+      'dried-fruits',
+      'Antioxidant Rich',
+      'Montmorency Valley Orchards',
+      'Sun-cured and infused whole berries',
+      4.9,
+      28,
+      '{"/products/dried-fruits/dried-cherries.jpeg"}',
+      'Vibrant, tangy-sweet dried ruby cherries bursting with natural flavour. Perfect for breakfast cereals, artisan sourdough baking, salads, and charcuterie boards.',
+      '{"Pitted carefully while fresh and gently dried to retain their intense crimson tone and juicy bite.","Naturally abundant in anthocyanins and restorative plant antioxidants."}',
+      'Dried Pitted Red Cherries, Natural Fruit Juice',
+      'Store in a cool dry space.',
+      '8 Months',
+      'May contain occasional pit fragments.',
+      true
+    ) RETURNING id INTO v_prod_id;
+  END IF;
+
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '100g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '100g', 850, 977, 25);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '250g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '250g', 1890, 2174, 20);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '500g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '500g', 3600, 4032, 15);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '1kg') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '1kg', 6900, 7590, 10);
+  END IF;
+END $$;
+
+DO $$
+DECLARE
+  v_prod_id uuid;
+BEGIN
+  SELECT id INTO v_prod_id FROM public.products WHERE slug = 'dried-cranberries';
+  IF v_prod_id IS NULL THEN
+    INSERT INTO public.products (
+      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count,
+      images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
+    ) VALUES (
+      'dried-cranberries',
+      'Dried Cranberries',
+      'Gently Infused Crisp Whole Berries',
+      'dried-fruits',
+      'Immunity Boost',
+      'Highland Pure Bogs',
+      'Air-dried whole plump cranberries',
+      4.8,
+      36,
+      '{"/products/dried-fruits/dried-cranberries.jpeg"}',
+      'Vibrant crimson dried cranberries with the classic sweet-tart balance. Excellent in oatmeals, trail mixes, festive salads, and holiday baking.',
+      '{"Picked from pristine cool climate bogs and gently infused to temper natural tartness.","Celebrated for urinary tract and gut microbiome wellness."}',
+      'Dried Whole Cranberries, Natural Apple Juice Concentrate',
+      'Store in cool pantry conditions.',
+      '9 Months',
+      'Packed in a facility handling tree nuts and seeds.',
+      false
+    ) RETURNING id INTO v_prod_id;
+  END IF;
+
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '100g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '100g', 590, 679, 25);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '250g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '250g', 1290, 1483, 20);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '500g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '500g', 2450, 2744, 15);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '1kg') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '1kg', 4650, 5115, 10);
+  END IF;
+END $$;
+
+DO $$
+DECLARE
+  v_prod_id uuid;
+BEGIN
+  SELECT id INTO v_prod_id FROM public.products WHERE slug = 'dried-figs';
+  IF v_prod_id IS NULL THEN
+    INSERT INTO public.products (
+      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count,
+      images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
+    ) VALUES (
+      'dried-figs',
+      'Dried Figs',
+      'Large Golden Garland Sun-Dried Figs',
+      'dried-fruits',
+      'Calcium & Iron',
+      'Aegean Basin Terraces',
+      'Naturally sun-dried whole figs',
+      5,
+      42,
+      '{"/products/dried-fruits/dried-figs.jpeg"}',
+      'Soft, chewy dried figs filled with natural crunchy seeds and luscious honey sweetness. Renowned for digestive vitality and exceptional calcium density.',
+      '{"Sun-dried on traditional wooden racks under Mediterranean sunshine.","Eaten whole or soaked overnight in warm water for traditional morning vitality."}',
+      '100% Whole Sun-Dried Figs (Anjeer)',
+      'Keep sealed in cool temperatures.',
+      '8 Months',
+      'Processed in a facility handling tree nuts.',
+      true
+    ) RETURNING id INTO v_prod_id;
+  END IF;
+
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '100g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '100g', 890, 1023, 25);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '250g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '250g', 1950, 2243, 20);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '500g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '500g', 3750, 4200, 15);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '1kg') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '1kg', 7200, 7920, 10);
+  END IF;
+END $$;
+
+DO $$
+DECLARE
+  v_prod_id uuid;
+BEGIN
   SELECT id INTO v_prod_id FROM public.products WHERE slug = 'dried-kiwi';
   IF v_prod_id IS NULL THEN
     INSERT INTO public.products (
-      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count, images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
+      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count,
+      images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
     ) VALUES (
       'dried-kiwi',
-      'Dried Kiwi',
-      'Emerald Green Slices · Tangy Tropical',
+      'Dried Kiwi Slices',
+      'Zesty Emerald Green Fruit Coins',
       'dried-fruits',
-      'Vitamin C Rich',
-      'Artisan Dehydrated Fruit Selection',
-      'Gently dehydrated emerald kiwi rings',
+      'Vitamin C Boost',
+      'Pristine Mountain Valleys',
+      'Low-heat dehydrated kiwi wheels',
       4.7,
-      19,
-      ARRAY['https://thumb.wikimedia.org/wikipedia/commons/thumb/6/68/Dried_kiwi_fruit_slices.jpg/960px-Dried_kiwi_fruit_slices.jpg'],
-      'Vibrant emerald slices of dehydrated kiwi fruit with tiny crunchy black seeds and a refreshing sweet-tart zing.',
-      ARRAY['Carefully sliced and slow-dried at low temperatures to preserve the jewel-green colour and bright tropical aroma.'],
-      'Kiwi Fruit, Natural Cane Sugar',
-      'Keep sealed in a cool, dry pantry.',
-      '6 Months',
-      'Gluten-free.',
+      15,
+      '{"/products/dried-fruits/dried-kiwi.jpeg"}',
+      'Bright and pleasantly tart dried kiwi rings with tiny crunchy seeds. Delicious gourmet fruit treat with remarkable vitamin C retention and striking presentation.',
+      '{"Sliced evenly from fresh, fully ripened kiwifruit and low-temperature dried to retain green chlorophyll and zingy flavor."}',
+      '100% Sliced Dehydrated Kiwi',
+      'Store away from direct moisture.',
+      '7 Months',
+      'May contain traces of tree nuts.',
       false
     ) RETURNING id INTO v_prod_id;
   END IF;
 
   IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '100g') THEN
     INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '100g', 653, 754, 20);
+    VALUES (v_prod_id, '100g', 550, 633, 25);
   END IF;
   IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '250g') THEN
     INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '250g', 1450, 1667, 15);
+    VALUES (v_prod_id, '250g', 1190, 1369, 20);
   END IF;
   IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '500g') THEN
     INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '500g', 2755, 3118, 10);
+    VALUES (v_prod_id, '500g', 2250, 2520, 15);
   END IF;
   IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '1kg') THEN
     INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '1kg', 5293, 5945, 6);
+    VALUES (v_prod_id, '1kg', 4250, 4675, 10);
   END IF;
 END $$;
 
@@ -391,95 +346,47 @@ DO $$
 DECLARE
   v_prod_id uuid;
 BEGIN
-  -- Insert product if not exists
-  SELECT id INTO v_prod_id FROM public.products WHERE slug = 'dried-prunes-aaloobukhaara';
+  SELECT id INTO v_prod_id FROM public.products WHERE slug = 'dried-mango';
   IF v_prod_id IS NULL THEN
     INSERT INTO public.products (
-      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count, images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
+      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count,
+      images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
     ) VALUES (
-      'dried-prunes-aaloobukhaara',
-      'Dried Prunes (Aaloobukhaara)',
-      'Succulent Pitted Plums · Gut Health',
+      'dried-mango',
+      'Dried Tropical Mango Strips',
+      'Chewy Sun-Ripened Sweet Alphonso & Willard Strips',
       'dried-fruits',
-      'Wellness Pick',
-      'Heirloom Plum Orchards',
-      'Tree-ripened sun-cured plums',
-      4.8,
-      21,
-      ARRAY['https://thumb.wikimedia.org/wikipedia/commons/thumb/9/97/Rosales_-_Dried_Prunus_domestica_d.jpg/960px-Rosales_-_Dried_Prunus_domestica_d.jpg'],
-      'Deep ruby-black pitted dried prunes (Aaloobukhaara) with rich plum sweetness and a soft, melt-in-the-mouth texture.',
-      ARRAY['Renowned for digestive wellness and antioxidant richness. Enjoy straight from the pouch or stewed with warm Ceylon cinnamon.'],
-      '100% Pitted Dried Prunes (Aaloobukhaara)',
-      'Refrigerate after opening for best texture.',
-      '8 Months',
-      'Naturally gluten-free.',
-      false
-    ) RETURNING id INTO v_prod_id;
-  END IF;
-
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '100g') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '100g', 698, 806, 20);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '250g') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '250g', 1550, 1782, 15);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '500g') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '500g', 2945, 3333, 10);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '1kg') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '1kg', 5658, 6355, 6);
-  END IF;
-END $$;
-
-DO $$
-DECLARE
-  v_prod_id uuid;
-BEGIN
-  -- Insert product if not exists
-  SELECT id INTO v_prod_id FROM public.products WHERE slug = 'wet-dates-khajur';
-  IF v_prod_id IS NULL THEN
-    INSERT INTO public.products (
-      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count, images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
-    ) VALUES (
-      'wet-dates-khajur',
-      'Wet Dates (Khajur)',
-      'Royal Medjool & Kimia · Soft & Caramelly',
-      'dates',
-      'Oasis Reserve',
-      'Heritage Date Palm Oasis',
-      'Tree-ripened soft honey dates',
+      '100% Natural',
+      'Ceylon Coastal & Dry Zone Groves',
+      'Solar-dehydrated mango spears',
       4.9,
-      46,
-      ARRAY['https://images.unsplash.com/photo-1549488344-1f9b8d2bd1f3?auto=format&fit=crop&w=900&q=80', 'https://thumb.wikimedia.org/wikipedia/commons/thumb/4/45/Dates005.jpg/960px-Dates005.jpg'],
-      'Succulent, glossy wet dates (Khajur) with tender mahogany flesh and rich notes of wild honey and toffee.',
-      ARRAY['Harvested fresh from the palm without glucose syrups or artificial preservatives. An instant natural energy booster.'],
-      '100% Whole Soft Wet Dates (Khajur)',
-      'Store in a cool pantry or refrigerate to preserve softness.',
-      '9 Months',
-      'Contains natural date pits.',
+      47,
+      '{"/products/dried-fruits/dried-mango.jpeg"}',
+      'Thick cut, vibrant sunshine-yellow dried mango slices packed with intense natural tropical sweetness and chewiness. Zero added sugar or colorings.',
+      '{"Sourced directly from local Sri Lankan orchards during peak harvest season.","Naturally full of beta-carotene, vitamin C, and wholesome fiber."}',
+      '100% Ripe Mango Strips',
+      'Store in an airtight jar in a cool place.',
+      '8 Months',
+      'All-natural fruit.',
       true
     ) RETURNING id INTO v_prod_id;
   END IF;
 
   IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '100g') THEN
     INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '100g', 608, 702, 20);
+    VALUES (v_prod_id, '100g', 620, 713, 25);
   END IF;
   IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '250g') THEN
     INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '250g', 1350, 1552, 15);
+    VALUES (v_prod_id, '250g', 1350, 1552, 20);
   END IF;
   IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '500g') THEN
     INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '500g', 2565, 2903, 10);
+    VALUES (v_prod_id, '500g', 2550, 2856, 15);
   END IF;
   IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '1kg') THEN
     INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '1kg', 4928, 5535, 6);
+    VALUES (v_prod_id, '1kg', 4800, 5280, 10);
   END IF;
 END $$;
 
@@ -487,47 +394,47 @@ DO $$
 DECLARE
   v_prod_id uuid;
 BEGIN
-  -- Insert product if not exists
-  SELECT id INTO v_prod_id FROM public.products WHERE slug = 'dry-dates-chuara';
+  SELECT id INTO v_prod_id FROM public.products WHERE slug = 'dried-papaya';
   IF v_prod_id IS NULL THEN
     INSERT INTO public.products (
-      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count, images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
+      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count,
+      images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
     ) VALUES (
-      'dry-dates-chuara',
-      'Dry Dates (Chuara)',
-      'Sun-Dehydrated Whole Dates · Traditional Vitality',
-      'dates',
-      'Traditional',
-      'Sun-Cured Desert Harvest',
-      'Naturally sun-hardened caramel dates',
-      4.8,
-      25,
-      ARRAY['https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1d/Dry_Dates_%28Debino%29.jpg/960px-Dry_Dates_%28Debino%29.jpg'],
-      'Nutrient-dense sun-dried dates (Chuara) with a firm, chewy bite and concentrated mineral sweetness.',
-      ARRAY['Traditionally prized for iron, calcium, and stamina. Ideal for simmering in warm spiced milk, homemade energy powders, or long-lasting pantry storage.'],
-      '100% Sun-Dried Whole Dates (Chuara)',
-      'Store in an airtight jar in a dry cupboard.',
-      '12 Months',
-      'Contains natural date pits.',
+      'dried-papaya',
+      'Dried Golden Papaya Spears',
+      'Tender Red Lady Papaya Spears',
+      'dried-fruits',
+      'Digestive Enzymes',
+      'Tropical Agro Orchards, Sri Lanka',
+      'Gently dehydrated papaya spears',
+      4.6,
+      18,
+      '{"/products/dried-fruits/dried-papaya.jpeg"}',
+      'Subtly sweet dried papaya spears rich in natural papain enzymes, beta carotene, and dietary fibre. A light, easy-to-digest tropical provision.',
+      '{"Dehydrated under hygienic low-temperature conditions to preserve wholesome fruit integrity."}',
+      '100% Ripe Papaya',
+      'Store in a dry cool place.',
+      '7 Months',
+      'Packaged in a nut-handling environment.',
       false
     ) RETURNING id INTO v_prod_id;
   END IF;
 
   IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '100g') THEN
     INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '100g', 495, 572, 20);
+    VALUES (v_prod_id, '100g', 480, 552, 25);
   END IF;
   IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '250g') THEN
     INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '250g', 1100, 1265, 15);
+    VALUES (v_prod_id, '250g', 1050, 1208, 20);
   END IF;
   IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '500g') THEN
     INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '500g', 2090, 2365, 10);
+    VALUES (v_prod_id, '500g', 1980, 2218, 15);
   END IF;
   IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '1kg') THEN
     INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '1kg', 4015, 4510, 6);
+    VALUES (v_prod_id, '1kg', 3750, 4125, 10);
   END IF;
 END $$;
 
@@ -535,47 +442,479 @@ DO $$
 DECLARE
   v_prod_id uuid;
 BEGIN
-  -- Insert product if not exists
+  SELECT id INTO v_prod_id FROM public.products WHERE slug = 'dried-peach';
+  IF v_prod_id IS NULL THEN
+    INSERT INTO public.products (
+      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count,
+      images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
+    ) VALUES (
+      'dried-peach',
+      'Dried Peach Halves',
+      'Velvety Sun-Dried Stone Fruit Halves',
+      'dried-fruits',
+      'Sweet & Tangy',
+      'Highland Fruit Foothills',
+      'Sun-dried pitted peach halves',
+      4.8,
+      22,
+      '{"/products/dried-fruits/dried-peach.jpeg"}',
+      'Large, luscious dried peach halves with a deep amber hue and aromatic stone-fruit fragrance. Full of natural sweetness, provitamin A, and potassium.',
+      '{"Whole peaches hand-halved and sun-cured naturally on orchard trays."}',
+      '100% Sun-Dried Pitted Peaches',
+      'Keep cool and dry.',
+      '8 Months',
+      'Processed in a facility handling tree nuts.',
+      false
+    ) RETURNING id INTO v_prod_id;
+  END IF;
+
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '100g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '100g', 690, 793, 25);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '250g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '250g', 1490, 1713, 20);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '500g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '500g', 2850, 3192, 15);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '1kg') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '1kg', 5400, 5940, 10);
+  END IF;
+END $$;
+
+DO $$
+DECLARE
+  v_prod_id uuid;
+BEGIN
+  SELECT id INTO v_prod_id FROM public.products WHERE slug = 'dried-pineapple';
+  IF v_prod_id IS NULL THEN
+    INSERT INTO public.products (
+      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count,
+      images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
+    ) VALUES (
+      'dried-pineapple',
+      'Dried Ceylon Pineapple Rings',
+      'Mauritius Gold Pineapple Wheels',
+      'dried-fruits',
+      'Enzyme Rich',
+      'Gampaha Valley, Sri Lanka',
+      'Solar-cured pineapple wheels',
+      4.9,
+      39,
+      '{"/products/dried-fruits/dried-pineapple.jpeg"}',
+      'Dehydrated slices of famous Sri Lankan Mauritius pineapples. Tangy, concentrated sweetness with natural bromelain enzyme benefits and satisfying chewy rings.',
+      '{"Grown in the fertile red soils of western Sri Lanka and sliced fresh within hours of harvest."}',
+      '100% Natural Dried Pineapple',
+      'Airtight container in pantry.',
+      '6 Months',
+      'All-natural fruit.',
+      true
+    ) RETURNING id INTO v_prod_id;
+  END IF;
+
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '100g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '100g', 580, 667, 25);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '250g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '250g', 1250, 1438, 20);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '500g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '500g', 2350, 2632, 15);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '1kg') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '1kg', 4450, 4895, 10);
+  END IF;
+END $$;
+
+DO $$
+DECLARE
+  v_prod_id uuid;
+BEGIN
+  SELECT id INTO v_prod_id FROM public.products WHERE slug = 'dried-plums';
+  IF v_prod_id IS NULL THEN
+    INSERT INTO public.products (
+      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count,
+      images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
+    ) VALUES (
+      'dried-plums',
+      'Dried Plums (Aaloobukhaara)',
+      'Sweet & Sour Sun-Cured Heritage Plums',
+      'dried-fruits',
+      'Traditional Taste',
+      'Pristine Himalayan Foothills',
+      'Naturally sun-cured whole plums',
+      4.7,
+      21,
+      '{"/products/dried-fruits/dried-plums.jpeg"}',
+      'Plump, juicy dried plums renowned across South Asian culinary traditions for refreshing sweet-sour chutneys, stews, biryanis, or direct wholesome snacking.',
+      '{"Hand-sorted for size, moisture, and classic tangy-sweet richness."}',
+      'Sun-Dried Plums (Aaloobukhaara)',
+      'Cool dry storage.',
+      '9 Months',
+      'Contains natural pits. Handle with care.',
+      false
+    ) RETURNING id INTO v_prod_id;
+  END IF;
+
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '100g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '100g', 520, 598, 25);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '250g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '250g', 1150, 1323, 20);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '500g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '500g', 2180, 2442, 15);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '1kg') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '1kg', 4100, 4510, 10);
+  END IF;
+END $$;
+
+DO $$
+DECLARE
+  v_prod_id uuid;
+BEGIN
+  SELECT id INTO v_prod_id FROM public.products WHERE slug = 'dried-strawberries';
+  IF v_prod_id IS NULL THEN
+    INSERT INTO public.products (
+      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count,
+      images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
+    ) VALUES (
+      'dried-strawberries',
+      'Whole Dried Strawberries',
+      'Intensely Sweet Nuwara Eliya Mountain Strawberries',
+      'dried-fruits',
+      'Artisan Harvest',
+      'Nuwara Eliya Highlands, Sri Lanka',
+      'Dehydrated whole alpine berries',
+      5,
+      45,
+      '{"/products/dried-fruits/dried-strawberries.jpeg"}',
+      'Exquisite whole dried strawberries with concentrated berry perfume, gentle tartness, and luxurious ruby color. Perfect for breakfast bowls, granola, and gifting.',
+      '{"Grown in the misty, cool mountains of Nuwara Eliya and gently dried to preserve their natural heart shape and aroma."}',
+      'Whole Dehydrated Strawberries',
+      'Keep tightly sealed in a cool pantry.',
+      '6 Months',
+      'All-natural fruit.',
+      true
+    ) RETURNING id INTO v_prod_id;
+  END IF;
+
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '100g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '100g', 950, 1093, 25);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '250g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '250g', 2100, 2415, 20);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '500g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '500g', 3980, 4458, 15);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '1kg') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '1kg', 7600, 8360, 10);
+  END IF;
+END $$;
+
+DO $$
+DECLARE
+  v_prod_id uuid;
+BEGIN
+  SELECT id INTO v_prod_id FROM public.products WHERE slug = 'gojiberries';
+  IF v_prod_id IS NULL THEN
+    INSERT INTO public.products (
+      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count,
+      images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
+    ) VALUES (
+      'gojiberries',
+      'Himalayan Goji Berries',
+      'Ancient Superfood Wolfberries · Sun-Dried',
+      'dried-fruits',
+      'Superfood',
+      'Tibetan Plateau Valleys',
+      'Sun-dried raw whole wolfberries',
+      4.9,
+      33,
+      '{"/products/dried-fruits/gojiberries.jpeg"}',
+      'Authentic nutrient-dense dried wolfberries with deep crimson color, gentle herbaceous sweetness, and extraordinary zeaxanthin and antioxidant levels.',
+      '{"Prized for millennia in traditional herbalism for supporting eye health, stamina, and cellular longevity."}',
+      '100% Raw Dried Goji Berries',
+      'Cool, dark, dry conditions.',
+      '10 Months',
+      'Packaged in a facility handling tree nuts.',
+      false
+    ) RETURNING id INTO v_prod_id;
+  END IF;
+
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '100g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '100g', 790, 908, 25);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '250g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '250g', 1750, 2012, 20);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '500g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '500g', 3350, 3752, 15);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '1kg') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '1kg', 6400, 7040, 10);
+  END IF;
+END $$;
+
+DO $$
+DECLARE
+  v_prod_id uuid;
+BEGIN
+  SELECT id INTO v_prod_id FROM public.products WHERE slug = 'golden-raisins';
+  IF v_prod_id IS NULL THEN
+    INSERT INTO public.products (
+      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count,
+      images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
+    ) VALUES (
+      'golden-raisins',
+      'Golden Raisins (Sultanas)',
+      'Honey-Sweet Seedless Golden Sultanas',
+      'dried-fruits',
+      'Clean & Tender',
+      'Valley Vineyards',
+      'Sun-cured seedless white grapes',
+      4.8,
+      29,
+      '{"/products/dried-fruits/golden-raisins.jpeg"}',
+      'Radiant golden raisins with soft, melt-in-the-mouth texture and honey-like sweetness. Essential for Sri Lankan biryanis, watalappam, yellow rice, and morning oats.',
+      '{"Carefully washed, stemmed, and sorted for consistent golden colour and plumpness."}',
+      '100% Seedless Golden Raisins',
+      'Airtight storage.',
+      '9 Months',
+      'Packaged in a facility handling tree nuts.',
+      false
+    ) RETURNING id INTO v_prod_id;
+  END IF;
+
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '100g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '100g', 440, 506, 25);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '250g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '250g', 920, 1058, 20);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '500g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '500g', 1750, 1960, 15);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '1kg') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '1kg', 3300, 3630, 10);
+  END IF;
+END $$;
+
+DO $$
+DECLARE
+  v_prod_id uuid;
+BEGIN
+  SELECT id INTO v_prod_id FROM public.products WHERE slug = 'pitted-prunes';
+  IF v_prod_id IS NULL THEN
+    INSERT INTO public.products (
+      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count,
+      images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
+    ) VALUES (
+      'pitted-prunes',
+      'Tender Pitted Prunes',
+      'Moist & Plump French D''Agen Dried Plums',
+      'dried-fruits',
+      'Digestive Health',
+      'Pristine Orchard Valleys',
+      'Steam-tenderized pitted dried plums',
+      4.9,
+      38,
+      '{"/products/dried-fruits/pitted-prunes.jpeg"}',
+      'Naturally sweet, tender, stone-free pitted prunes famous for promoting gut health and gentle digestion. Rich in sorbitol, potassium, and bone-strengthening vitamin K.',
+      '{"Pitted without tearing the fruit meat, leaving a plump, succulent prune ready to eat."}',
+      '100% Pitted Dried Prunes',
+      'Refrigerate after opening for peak freshness.',
+      '9 Months',
+      'May contain occasional pit fragments.',
+      true
+    ) RETURNING id INTO v_prod_id;
+  END IF;
+
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '100g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '100g', 620, 713, 25);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '250g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '250g', 1350, 1552, 20);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '500g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '500g', 2550, 2856, 15);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '1kg') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '1kg', 4850, 5335, 10);
+  END IF;
+END $$;
+
+DO $$
+DECLARE
+  v_prod_id uuid;
+BEGIN
+  SELECT id INTO v_prod_id FROM public.products WHERE slug = 'apricot-seeds';
+  IF v_prod_id IS NULL THEN
+    INSERT INTO public.products (
+      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count,
+      images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
+    ) VALUES (
+      'apricot-seeds',
+      'Sweet Apricot Kernels (Seeds)',
+      'Sun-Dried Natural Sweet Kernels',
+      'seeds',
+      'Nutrient Dense',
+      'Highland Mountain Orchards',
+      'Raw sun-dried sweet kernels',
+      4.8,
+      20,
+      '{"/products/seeds/apricot-seeds.jpeg"}',
+      'Crisp and almond-like sweet apricot kernels, rich in plant protein, dietary fiber, and healthy monounsaturated fatty acids. Delicious direct snack.',
+      '{"Selected strictly from sweet apricot varieties with zero bitterness."}',
+      '100% Sweet Apricot Kernels',
+      'Airtight cool pantry.',
+      '8 Months',
+      'Contains stone-fruit kernels.',
+      false
+    ) RETURNING id INTO v_prod_id;
+  END IF;
+
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '100g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '100g', 490, 564, 25);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '250g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '250g', 1080, 1242, 20);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '500g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '500g', 2050, 2296, 15);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '1kg') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '1kg', 3900, 4290, 10);
+  END IF;
+END $$;
+
+DO $$
+DECLARE
+  v_prod_id uuid;
+BEGIN
+  SELECT id INTO v_prod_id FROM public.products WHERE slug = 'black-seeds';
+  IF v_prod_id IS NULL THEN
+    INSERT INTO public.products (
+      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count,
+      images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
+    ) VALUES (
+      'black-seeds',
+      'Black Seeds (Nigella Sativa / Kalonji)',
+      'Blessed Seed · High Thymoquinone & Purity Tested',
+      'seeds',
+      'Immunity Vitality',
+      'Traditional Agro Holdings',
+      'Cleaned raw whole seeds',
+      5,
+      52,
+      '{"/products/seeds/black-seeds.jpeg"}',
+      'Revered for centuries across Ayurvedic and prophetic medicine. Aromatic, pitch-black seeds with intense herbal pungency and scientifically verified thymoquinone potency.',
+      '{"Carefully machine-cleaned and triple-sieved to remove dust and debris.","Enjoy whole with honey, brewed as herbal tea, or sprinkled over artisan breads."}',
+      '100% Pure Nigella Sativa Seeds (Kalonji)',
+      'Cool, dark dry container.',
+      '12 Months',
+      'Pure whole spice seed.',
+      true
+    ) RETURNING id INTO v_prod_id;
+  END IF;
+
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '100g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '100g', 380, 437, 25);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '250g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '250g', 790, 908, 20);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '500g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '500g', 1480, 1658, 15);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '1kg') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '1kg', 2800, 3080, 10);
+  END IF;
+END $$;
+
+DO $$
+DECLARE
+  v_prod_id uuid;
+BEGIN
   SELECT id INTO v_prod_id FROM public.products WHERE slug = 'chia-seeds';
   IF v_prod_id IS NULL THEN
     INSERT INTO public.products (
-      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count, images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
+      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count,
+      images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
     ) VALUES (
       'chia-seeds',
-      'Chia Seeds',
-      'Raw Black Superfood Seeds · Omega-3 & Fibre',
+      'Raw Organic Chia Seeds',
+      'Triple-Cleaned Black Salvia Hispanica Seeds',
       'seeds',
-      'Superfood',
-      'Cleaned Grade-A Botanical Harvest',
-      '100% raw unroasted seeds',
+      'Omega-3 & Fibre',
+      'South American Volcanic Soils',
+      'Raw unprocessed whole seeds',
       4.9,
-      37,
-      ARRAY['https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2f/Seed_of_chia_%28Salvia_hispanica%29Salvia_hispanica_group.jpg/960px-Seed_of_chia_%28Salvia_hispanica%29Salvia_hispanica_group.jpg'],
-      'Pure black and mottled chia seeds rich in plant-based Omega-3s, complete protein, and soluble fibre.',
-      ARRAY['Swells into a silky gel when soaked in coconut milk, water, or yoghurt. Perfect for chia puddings, smoothies, and overnight oats.'],
-      '100% Raw Chia Seeds (Salvia hispanica)',
-      'Keep sealed in a cool, dry cupboard.',
+      64,
+      '{"/products/seeds/chia-seeds.jpeg"}',
+      'Super-clean black chia seeds that swell into a rich gel. Provides immense plant omega-3s, soluble fibre, and lasting hydration for active lifestyles.',
+      '{"Certified 99.9% purity seed grade with zero grit or sediment.","Mix into water, smoothies, overnight puddings, or juices for sustained endurance."}',
+      '100% Whole Chia Seeds',
+      'Sealed in a dry, cool jar.',
       '12 Months',
-      'Naturally gluten-free.',
-      false
+      'Gluten-free seed.',
+      true
     ) RETURNING id INTO v_prod_id;
   END IF;
 
   IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '100g') THEN
     INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '100g', 428, 494, 20);
+    VALUES (v_prod_id, '100g', 420, 483, 25);
   END IF;
   IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '250g') THEN
     INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '250g', 950, 1093, 15);
+    VALUES (v_prod_id, '250g', 890, 1023, 20);
   END IF;
   IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '500g') THEN
     INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '500g', 1805, 2043, 10);
+    VALUES (v_prod_id, '500g', 1680, 1882, 15);
   END IF;
   IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '1kg') THEN
     INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '1kg', 3468, 3895, 6);
+    VALUES (v_prod_id, '1kg', 3150, 3465, 10);
   END IF;
 END $$;
 
@@ -583,95 +922,47 @@ DO $$
 DECLARE
   v_prod_id uuid;
 BEGIN
-  -- Insert product if not exists
-  SELECT id INTO v_prod_id FROM public.products WHERE slug = 'cucumber-seeds';
-  IF v_prod_id IS NULL THEN
-    INSERT INTO public.products (
-      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count, images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
-    ) VALUES (
-      'cucumber-seeds',
-      'Cucumber Seeds',
-      'Hulled Magaz Kernels · Cooling & Nutrient Rich',
-      'seeds',
-      'Pure Kernels',
-      'Artisan Hulled Seed Selection',
-      'Raw hulled ivory seed kernels',
-      4.7,
-      16,
-      ARRAY['https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e1/Cucumber_seeds.jpg/960px-Cucumber_seeds.jpg'],
-      'Delicate, creamy ivory cucumber seed kernels packed with cooling minerals, plant protein, and healthy fats.',
-      ARRAY['A classic addition to traditional thandai, sweets, smoothie bowls, and bakery toppings.'],
-      '100% Hulled Cucumber Seed Kernels',
-      'Store in an airtight container.',
-      '9 Months',
-      'Packed in a facility that handles nuts and seeds.',
-      false
-    ) RETURNING id INTO v_prod_id;
-  END IF;
-
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '100g') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '100g', 518, 598, 20);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '250g') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '250g', 1150, 1323, 15);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '500g') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '500g', 2185, 2473, 10);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '1kg') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '1kg', 4198, 4715, 6);
-  END IF;
-END $$;
-
-DO $$
-DECLARE
-  v_prod_id uuid;
-BEGIN
-  -- Insert product if not exists
   SELECT id INTO v_prod_id FROM public.products WHERE slug = 'flax-seeds';
   IF v_prod_id IS NULL THEN
     INSERT INTO public.products (
-      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count, images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
+      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count,
+      images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
     ) VALUES (
       'flax-seeds',
-      'Flax Seeds',
-      'Golden-Brown Alsi · Lightly Crisp & Nutty',
+      'Golden Flax Seeds (Alsi)',
+      'Cold-Grown Lignan & Omega-3 Powerhouse',
       'seeds',
       'Heart Healthy',
-      'Single-Origin Botanical Harvest',
-      'Cleaned raw whole flax seeds',
+      'Prairie Harvest Farms',
+      'Cleaned raw golden seeds',
       4.8,
-      28,
-      ARRAY['https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3d/Linum_usitatissimum_qtl1.jpg/960px-Linum_usitatissimum_qtl1.jpg'],
-      'Glossy golden-brown flax seeds (Alsi) loaded with lignans, dietary fibre, and essential alpha-linolenic acid (ALA).',
-      ARRAY['Enjoy lightly dry-toasted for a nutty crunch over salads and curries, or freshly ground into morning smoothies and rotis.'],
-      '100% Whole Flax Seeds (Linum usitatissimum)',
-      'Store in a cool, dark pantry.',
-      '12 Months',
-      'Naturally gluten-free.',
+      34,
+      '{"/products/seeds/flax-seeds.jpeg"}',
+      'Golden flax seeds with a clean nutty aroma. Exceptionally high in ALA omega-3 and lignans. Ideal for smoothies, fresh milling, rotis, and baking.',
+      '{"Golden varieties feature a milder, more delicate taste than brown flaxseeds."}',
+      '100% Whole Golden Flax Seeds',
+      'Store in a cool pantry or fridge.',
+      '10 Months',
+      'Gluten-free.',
       false
     ) RETURNING id INTO v_prod_id;
   END IF;
 
   IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '100g') THEN
     INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '100g', 293, 338, 20);
+    VALUES (v_prod_id, '100g', 320, 368, 25);
   END IF;
   IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '250g') THEN
     INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '250g', 650, 747, 15);
+    VALUES (v_prod_id, '250g', 690, 793, 20);
   END IF;
   IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '500g') THEN
     INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '500g', 1235, 1398, 10);
+    VALUES (v_prod_id, '500g', 1280, 1434, 15);
   END IF;
   IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '1kg') THEN
     INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '1kg', 2373, 2665, 6);
+    VALUES (v_prod_id, '1kg', 2390, 2629, 10);
   END IF;
 END $$;
 
@@ -679,47 +970,47 @@ DO $$
 DECLARE
   v_prod_id uuid;
 BEGIN
-  -- Insert product if not exists
-  SELECT id INTO v_prod_id FROM public.products WHERE slug = 'musk-melon-seeds';
+  SELECT id INTO v_prod_id FROM public.products WHERE slug = 'hemp-seeds';
   IF v_prod_id IS NULL THEN
     INSERT INTO public.products (
-      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count, images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
+      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count,
+      images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
     ) VALUES (
-      'musk-melon-seeds',
-      'Musk Melon Seeds',
-      'Sweet Cantaloupe Kernels · Protein Packed',
+      'hemp-seeds',
+      'Shelled Hemp Hearts (Seeds)',
+      'Raw Soft Nutty Hearts · Complete Plant Protein',
       'seeds',
-      'Culinary Grade',
-      'Sun-Cured Hulled Seed Reserve',
-      'Raw hulled sweet melon kernels',
-      4.8,
-      20,
-      ARRAY['https://thumb.wikimedia.org/wikipedia/commons/thumb/3/37/EGUSI_UNSHELLED.JPG/960px-EGUSI_UNSHELLED.JPG'],
-      'Plump, sweet musk melon seed kernels rich in magnesium, zinc, and plant-based protein.',
-      ARRAY['Delicious lightly toasted with a pinch of sea salt, blended into rich gravies, or sprinkled on artisan breads.'],
-      '100% Hulled Musk Melon Seeds',
-      'Keep in an airtight container.',
-      '9 Months',
-      'Seed product.',
-      false
+      'Complete Protein',
+      'Canadian Organic Valleys',
+      'Mechanically hulled raw hemp hearts',
+      5,
+      41,
+      '{"/products/seeds/hemp-seeds.jpeg"}',
+      'Tender, creamy shelled hemp hearts containing all 9 essential amino acids with an optimal 3:1 ratio of omega-6 to omega-3 fatty acids. Soft enough to eat by the spoonful.',
+      '{"Gently mechanically hulled without heat or chemical treatment to preserve live enzymes."}',
+      '100% Raw Shelled Hemp Hearts',
+      'Keep refrigerated after opening.',
+      '8 Months',
+      'Pure hulled seeds.',
+      true
     ) RETURNING id INTO v_prod_id;
   END IF;
 
   IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '100g') THEN
     INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '100g', 540, 624, 20);
+    VALUES (v_prod_id, '100g', 850, 977, 25);
   END IF;
   IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '250g') THEN
     INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '250g', 1200, 1380, 15);
+    VALUES (v_prod_id, '250g', 1950, 2243, 20);
   END IF;
   IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '500g') THEN
     INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '500g', 2280, 2580, 10);
+    VALUES (v_prod_id, '500g', 3700, 4144, 15);
   END IF;
   IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '1kg') THEN
     INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '1kg', 4380, 4920, 6);
+    VALUES (v_prod_id, '1kg', 7100, 7810, 10);
   END IF;
 END $$;
 
@@ -727,47 +1018,191 @@ DO $$
 DECLARE
   v_prod_id uuid;
 BEGIN
-  -- Insert product if not exists
+  SELECT id INTO v_prod_id FROM public.products WHERE slug = 'melon-seeds';
+  IF v_prod_id IS NULL THEN
+    INSERT INTO public.products (
+      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count,
+      images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
+    ) VALUES (
+      'melon-seeds',
+      'Musk Melon Seeds (Magaz)',
+      'White Hulled Cantaloupe Kernels',
+      'seeds',
+      'Cooling & Delicate',
+      'Sun-Warmed Agricultural Plains',
+      'Naturally hulled melon kernels',
+      4.7,
+      16,
+      '{"/products/seeds/melon-seeds.jpeg"}',
+      'Sweet, creamy hulled musk melon seeds used in traditional royal confectionery, creamy curries, dessert gravies, and cooling summer drinks.',
+      '{"Carefully washed, hulled, and sun-dried for a pure ivory white kernel."}',
+      '100% Hulled Musk Melon Seeds (Magaz)',
+      'Airtight jar in a cool cupboard.',
+      '9 Months',
+      'Hulled seed kernel.',
+      false
+    ) RETURNING id INTO v_prod_id;
+  END IF;
+
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '100g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '100g', 450, 518, 25);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '250g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '250g', 980, 1127, 20);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '500g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '500g', 1850, 2072, 15);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '1kg') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '1kg', 3500, 3850, 10);
+  END IF;
+END $$;
+
+DO $$
+DECLARE
+  v_prod_id uuid;
+BEGIN
+  SELECT id INTO v_prod_id FROM public.products WHERE slug = 'moringa-powder';
+  IF v_prod_id IS NULL THEN
+    INSERT INTO public.products (
+      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count,
+      images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
+    ) VALUES (
+      'moringa-powder',
+      'Pure Ceylon Moringa Leaf Powder',
+      'Shade-Dried Miracle Tree Supergreen',
+      'seeds',
+      'Ceylon Green Miracle',
+      'Dry Zone Groves, Sri Lanka',
+      'Low-temperature dehydrated and micro-milled',
+      4.9,
+      48,
+      '{"/products/seeds/moringa-powder.jpeg"}',
+      'Micro-milled vibrant green powder made from 100% organically grown Sri Lankan drumstick (murunga) leaves. Rich in bioavailable iron, calcium, and 46 antioxidants.',
+      '{"Shade-dried immediately upon harvest to prevent heat breakdown of vitamins.","Stir half a teaspoon into warm water, morning green juices, or dhal curries."}',
+      '100% Pure Moringa Oleifera Leaf Powder',
+      'Keep in an airtight tin away from direct sunlight.',
+      '12 Months',
+      'Pure single-origin leaf powder.',
+      true
+    ) RETURNING id INTO v_prod_id;
+  END IF;
+
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '100g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '100g', 490, 564, 25);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '250g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '250g', 1100, 1265, 20);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '500g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '500g', 2050, 2296, 15);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '1kg') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '1kg', 3900, 4290, 10);
+  END IF;
+END $$;
+
+DO $$
+DECLARE
+  v_prod_id uuid;
+BEGIN
+  SELECT id INTO v_prod_id FROM public.products WHERE slug = 'psyllium-husk';
+  IF v_prod_id IS NULL THEN
+    INSERT INTO public.products (
+      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count,
+      images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
+    ) VALUES (
+      'psyllium-husk',
+      'Whole Psyllium Husk (Isabgol)',
+      'Pure Dietary Soluble Fiber Flakes',
+      'seeds',
+      'Digestive Wellness',
+      'Selected Agro Fields',
+      'Milled seed husk flakes',
+      4.8,
+      37,
+      '{"/products/seeds/psyllium-husk.jpeg"}',
+      'Gentle, soluble dietary fibre flakes that support smooth digestion, regular bowel movements, and gut motility when mixed with warm water, juice, or curd.',
+      '{"99% grade white husk with high swelling capacity and zero grit."}',
+      '100% Pure Psyllium Husk (Plantago ovata)',
+      'Store in a dry pantry away from moisture.',
+      '14 Months',
+      'Drink with adequate water.',
+      false
+    ) RETURNING id INTO v_prod_id;
+  END IF;
+
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '100g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '100g', 550, 633, 25);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '250g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '250g', 1200, 1380, 20);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '500g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '500g', 2250, 2520, 15);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '1kg') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '1kg', 4200, 4620, 10);
+  END IF;
+END $$;
+
+DO $$
+DECLARE
+  v_prod_id uuid;
+BEGIN
   SELECT id INTO v_prod_id FROM public.products WHERE slug = 'pumpkin-seeds';
   IF v_prod_id IS NULL THEN
     INSERT INTO public.products (
-      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count, images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
+      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count,
+      images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
     ) VALUES (
       'pumpkin-seeds',
-      'Pumpkin Seeds',
-      'AA-Grade Emerald Pepitas · Zinc & Magnesium',
+      'Raw AAA Pepitas (Pumpkin Seeds)',
+      'Dark Green Jumbo Austrian Style Pepitas',
       'seeds',
-      'Best Seller',
-      'Selected Non-GMO Harvest',
-      'Raw hulled green pumpkin kernels',
-      4.9,
-      44,
-      ARRAY['https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2e/Pepita_de_calabaza.jpg/960px-Pepita_de_calabaza.jpg', 'https://images.unsplash.com/photo-1588681664899-f142ff2dc9b1?auto=format&fit=crop&w=900&q=80'],
-      'Dark emerald AA-grade pumpkin seeds (Pepitas) with a crisp, nutty bite. Naturally rich in zinc, magnesium, and tryptophan.',
-      ARRAY['Clean, hull-free green kernels ideal for daily immunity support, salad crunch, or homemade granola bars.'],
-      '100% Raw Hulled Pumpkin Seeds',
-      'Keep sealed in a cool, dry place.',
+      'Zinc & Magnesium',
+      'Certified Organic Plantations',
+      'Raw hulled dark green pepitas',
+      5,
+      58,
+      '{"/products/seeds/pumpkin-seeds.jpeg"}',
+      'Crisp, whole dark-green pumpkin seed kernels without hulls. Abundant in dietary zinc, magnesium, and restorative antioxidants for restorative sleep and vitality.',
+      '{"Naturally hull-less variety selected for its high oil density and sweet nutty flavor."}',
+      '100% Hulled Pumpkin Seeds (Pepitas)',
+      'Airtight dry glass container.',
       '9 Months',
-      'Naturally gluten-free.',
-      false
+      'Allergen-free natural seed.',
+      true
     ) RETURNING id INTO v_prod_id;
   END IF;
 
   IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '100g') THEN
     INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '100g', 563, 650, 20);
+    VALUES (v_prod_id, '100g', 540, 621, 25);
   END IF;
   IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '250g') THEN
     INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '250g', 1250, 1438, 15);
+    VALUES (v_prod_id, '250g', 1190, 1369, 20);
   END IF;
   IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '500g') THEN
     INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '500g', 2375, 2688, 10);
+    VALUES (v_prod_id, '500g', 2250, 2520, 15);
   END IF;
   IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '1kg') THEN
     INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '1kg', 4563, 5125, 6);
+    VALUES (v_prod_id, '1kg', 4250, 4675, 10);
   END IF;
 END $$;
 
@@ -775,47 +1210,47 @@ DO $$
 DECLARE
   v_prod_id uuid;
 BEGIN
-  -- Insert product if not exists
   SELECT id INTO v_prod_id FROM public.products WHERE slug = 'quinoa-seeds';
   IF v_prod_id IS NULL THEN
     INSERT INTO public.products (
-      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count, images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
+      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count,
+      images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
     ) VALUES (
       'quinoa-seeds',
-      'Quinoa Seeds',
-      'Pre-Washed White & Red Grain · Complete Protein',
+      'Royal Organic Quinoa Seeds',
+      'Saponin-Free Pre-Washed Andean Grains',
       'seeds',
-      'Complete Protein',
-      'High-Altitude Ancient Grain Harvest',
-      'Saponin-free triple-washed whole grain',
+      'Gluten-Free Grain',
+      'Altiplano Plateaus',
+      'De-saponified raw whole quinoa grain',
       4.8,
-      23,
-      ARRAY['https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d0/Chenopodium_quinoa_-red_faro-_MHNT.BOT.2007.43.66.jpg/960px-Chenopodium_quinoa_-red_faro-_MHNT.BOT.2007.43.66.jpg'],
-      'Fluffy, nutty quinoa seeds containing all nine essential amino acids. A wholesome, low-GI alternative to rice.',
-      ARRAY['Pre-washed to remove natural bitterness and cooks in just 15 minutes into light, nutrient-rich grains.'],
-      '100% Whole Quinoa Seeds',
-      'Store in a dry pantry container.',
+      26,
+      '{"/products/seeds/quinoa-seeds.jpeg"}',
+      'Wholesome complete-protein ancient seed grain. Pre-washed to eliminate bitterness and cooks into a light, fluffy, nutty rice alternative in 15 minutes.',
+      '{"Contains all nine essential amino acids with low glycemic impact."}',
+      '100% Organic Quinoa Seeds',
+      'Cool dry pantry storage.',
       '12 Months',
-      '100% gluten-free.',
+      'Gluten-free.',
       false
     ) RETURNING id INTO v_prod_id;
   END IF;
 
   IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '100g') THEN
     INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '100g', 495, 572, 20);
+    VALUES (v_prod_id, '100g', 450, 518, 25);
   END IF;
   IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '250g') THEN
     INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '250g', 1100, 1265, 15);
+    VALUES (v_prod_id, '250g', 980, 1127, 20);
   END IF;
   IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '500g') THEN
     INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '500g', 2090, 2365, 10);
+    VALUES (v_prod_id, '500g', 1850, 2072, 15);
   END IF;
   IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '1kg') THEN
     INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '1kg', 4015, 4510, 6);
+    VALUES (v_prod_id, '1kg', 3500, 3850, 10);
   END IF;
 END $$;
 
@@ -823,47 +1258,143 @@ DO $$
 DECLARE
   v_prod_id uuid;
 BEGIN
-  -- Insert product if not exists
+  SELECT id INTO v_prod_id FROM public.products WHERE slug = 'rosemary';
+  IF v_prod_id IS NULL THEN
+    INSERT INTO public.products (
+      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count,
+      images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
+    ) VALUES (
+      'rosemary',
+      'Aromatic Whole Dried Rosemary',
+      'Mountain-Grown Needle Leaves',
+      'seeds',
+      'Herb & Culinary',
+      'Sun-Drenched Mediterranean Terraces',
+      'Naturally air-dried whole needle leaves',
+      4.7,
+      17,
+      '{"/products/seeds/rosemary.jpeg"}',
+      'Pungent, piney dried rosemary needle leaves rich in rosmarinic acid and natural botanical oils. Ideal for herbal infusions, sourdough baking, roast potatoes, and marinades.',
+      '{"Hand-harvested prior to flowering for maximum essential oil density."}',
+      '100% Dried Whole Rosemary Leaves',
+      'Airtight spice jar away from light.',
+      '12 Months',
+      'Pure dried herb.',
+      false
+    ) RETURNING id INTO v_prod_id;
+  END IF;
+
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '100g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '100g', 390, 448, 25);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '250g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '250g', 850, 977, 20);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '500g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '500g', 1600, 1792, 15);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '1kg') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '1kg', 3000, 3300, 10);
+  END IF;
+END $$;
+
+DO $$
+DECLARE
+  v_prod_id uuid;
+BEGIN
+  SELECT id INTO v_prod_id FROM public.products WHERE slug = 'sesame-seeds';
+  IF v_prod_id IS NULL THEN
+    INSERT INTO public.products (
+      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count,
+      images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
+    ) VALUES (
+      'sesame-seeds',
+      'Black Sesame Seeds (Kala Til)',
+      'Unpolished Natural Black Sesame',
+      'seeds',
+      'Calcium Rich',
+      'Dry Zone Organic Allotments, Sri Lanka',
+      'Triple-sieved raw black sesame',
+      4.8,
+      29,
+      '{"/products/seeds/sesame-seeds.jpeg"}',
+      'Naturally unpolished black sesame seeds with an earthy aroma and deep mineral richness. High in plant calcium, iron, and lignans for hair and bone strength.',
+      '{"Grown traditionally in the dry agricultural zones of northern and eastern Sri Lanka."}',
+      '100% Natural Black Sesame Seeds',
+      'Sealed cool pantry.',
+      '10 Months',
+      'Contains sesame.',
+      false
+    ) RETURNING id INTO v_prod_id;
+  END IF;
+
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '100g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '100g', 360, 414, 25);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '250g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '250g', 790, 908, 20);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '500g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '500g', 1480, 1658, 15);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '1kg') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '1kg', 2800, 3080, 10);
+  END IF;
+END $$;
+
+DO $$
+DECLARE
+  v_prod_id uuid;
+BEGIN
   SELECT id INTO v_prod_id FROM public.products WHERE slug = 'sunflower-seeds';
   IF v_prod_id IS NULL THEN
     INSERT INTO public.products (
-      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count, images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
+      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count,
+      images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
     ) VALUES (
       'sunflower-seeds',
-      'Sunflower Seeds',
-      'Hulled Bakery Grade Kernels · Vitamin E Rich',
+      'Shelled Raw Sunflower Seeds',
+      'Tender Kernel Seeds · High Vitamin E',
       'seeds',
-      'Raw & Pure',
-      'Sun-Ripened Golden Fields',
-      'Raw hulled sunflower kernels',
-      4.8,
-      27,
-      ARRAY['https://thumb.wikimedia.org/wikipedia/commons/thumb/3/39/Sunflower_Seeds_Kaldari.jpg/960px-Sunflower_Seeds_Kaldari.jpg'],
-      'Sweet, mild, and crunchy hulled sunflower seed kernels packed with Vitamin E, selenium, and healthy plant fats.',
-      ARRAY['Ready to eat straight from the pouch or lightly toasted over breakfast bowls, soups, and multigrain loaves.'],
-      '100% Hulled Sunflower Seed Kernels',
-      'Store in a cool, dry place.',
+      'Vitamin E Rich',
+      'Rolling Sunflower Basins',
+      'Mechanically hulled raw kernel seeds',
+      4.9,
+      43,
+      '{"/products/seeds/sunflower-seeds.jpeg"}',
+      'Plump, grey-striped sunflower seed hearts with a pleasant buttery snap. Loaded with cellular protective vitamin E, selenium, and copper for heart health.',
+      '{"Triple cleaned and screened for intact, fresh kernels without bitter shells."}',
+      '100% Shelled Raw Sunflower Kernels',
+      'Keep dry and cool.',
       '9 Months',
-      'Gluten-free.',
-      false
+      'Packaged in a nut-handling environment.',
+      true
     ) RETURNING id INTO v_prod_id;
   END IF;
 
   IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '100g') THEN
     INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '100g', 338, 390, 20);
+    VALUES (v_prod_id, '100g', 380, 437, 25);
   END IF;
   IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '250g') THEN
     INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '250g', 750, 862, 15);
+    VALUES (v_prod_id, '250g', 820, 943, 20);
   END IF;
   IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '500g') THEN
     INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '500g', 1425, 1613, 10);
+    VALUES (v_prod_id, '500g', 1550, 1736, 15);
   END IF;
   IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '1kg') THEN
     INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '1kg', 2738, 3075, 6);
+    VALUES (v_prod_id, '1kg', 2950, 3245, 10);
   END IF;
 END $$;
 
@@ -871,479 +1402,47 @@ DO $$
 DECLARE
   v_prod_id uuid;
 BEGIN
-  -- Insert product if not exists
-  SELECT id INTO v_prod_id FROM public.products WHERE slug = 'fox-nuts-phool-makhana';
+  SELECT id INTO v_prod_id FROM public.products WHERE slug = 'watermelon-seeds';
   IF v_prod_id IS NULL THEN
     INSERT INTO public.products (
-      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count, images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
+      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count,
+      images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
     ) VALUES (
-      'fox-nuts-phool-makhana',
-      'Fox Nuts (Phool Makhana)',
-      'Jumbo Popped Lotus Seeds · Light & Crunchy',
+      'watermelon-seeds',
+      'Hulled Watermelon Kernels (Magaz)',
+      'Crisp White Nutrient-Dense Seed Kernels',
       'seeds',
-      'Low Calorie',
-      'Traditional Pond-Harvested Lotus Seeds',
-      'Hand-popped jumbo white pearls',
-      4.9,
-      33,
-      ARRAY['https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0e/Foxnut_Makhana_-_Nawada_District_-_Bihar_-_1.jpg/960px-Foxnut_Makhana_-_Nawada_District_-_Bihar_-_1.jpg'],
-      'Airy, snow-white popped lotus seeds (Phool Makhana). High in calcium and protein with virtually zero fat.',
-      ARRAY['Roast in a spoonful of ghee or coconut oil with Ceylon black pepper and sea salt for the ultimate guilt-free evening crunch.'],
-      '100% Popped Lotus Seeds (Phool Makhana)',
-      'Keep in a tightly sealed container to maintain crispness.',
-      '6 Months',
-      'Naturally gluten-free and nut-free.',
-      false
-    ) RETURNING id INTO v_prod_id;
-  END IF;
-
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '100g') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '100g', 608, 702, 20);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '250g') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '250g', 1350, 1552, 15);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '500g') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '500g', 2565, 2903, 10);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '1kg') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '1kg', 4928, 5535, 6);
-  END IF;
-END $$;
-
-DO $$
-DECLARE
-  v_prod_id uuid;
-BEGIN
-  -- Insert product if not exists
-  SELECT id INTO v_prod_id FROM public.products WHERE slug = 'blueberries';
-  IF v_prod_id IS NULL THEN
-    INSERT INTO public.products (
-      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count, images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
-    ) VALUES (
-      'blueberries',
-      'Blueberries',
-      'Whole Sun-Dried Wild Berries · Antioxidant Superfruit',
-      'berries',
-      'Antioxidant Rich',
-      'Wild Mountain Berry Reserve',
-      'Gently dehydrated whole blueberries',
-      4.9,
-      31,
-      ARRAY['https://upload.wikimedia.org/wikipedia/commons/1/15/Blueberries.jpg'],
-      'Plump, aromatic dried blueberries bursting with deep berry sweetness and anthocyanin antioxidants.',
-      ARRAY['Gently dried to lock in natural berry juices. Delicious in pancakes, muesli, yoghurt parfaits, or straight from the jar.'],
-      'Whole Blueberries, Natural Fruit Juice Concentrate',
-      'Store sealed in a cool, dark pantry.',
-      '8 Months',
-      'Gluten-free.',
-      false
-    ) RETURNING id INTO v_prod_id;
-  END IF;
-
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '100g') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '100g', 1013, 1170, 20);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '250g') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '250g', 2250, 2588, 15);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '500g') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '500g', 4275, 4838, 10);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '1kg') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '1kg', 8213, 9225, 6);
-  END IF;
-END $$;
-
-DO $$
-DECLARE
-  v_prod_id uuid;
-BEGIN
-  -- Insert product if not exists
-  SELECT id INTO v_prod_id FROM public.products WHERE slug = 'cranberries';
-  IF v_prod_id IS NULL THEN
-    INSERT INTO public.products (
-      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count, images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
-    ) VALUES (
-      'cranberries',
-      'Cranberries',
-      'Ruby Red Whole Sliced · Sweet & Tangy',
-      'berries',
-      'Best Seller',
-      'Harvest Berry Orchards',
-      'Sun-cured ruby cranberries',
-      4.8,
-      35,
-      ARRAY['https://thumb.wikimedia.org/wikipedia/commons/thumb/0/04/Dried-Cranberries.png/960px-Dried-Cranberries.png', 'https://images.unsplash.com/photo-1596591606975-97ee5cef3a1e?auto=format&fit=crop&w=900&q=80'],
-      'Vibrant ruby-red dried cranberries with a bright, refreshing sweet-tart flavour profile.',
-      ARRAY['Rich in proanthocyanidins and Vitamin C. A favourite addition to trail mixes, salads, and festive bakes.'],
-      'Dried Cranberries, Apple Juice Concentrate, Sunflower Oil (<1%)',
-      'Keep resealed in a cool pantry.',
-      '9 Months',
-      'Gluten-free.',
-      false
-    ) RETURNING id INTO v_prod_id;
-  END IF;
-
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '100g') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '100g', 698, 806, 20);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '250g') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '250g', 1550, 1782, 15);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '500g') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '500g', 2945, 3333, 10);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '1kg') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '1kg', 5658, 6355, 6);
-  END IF;
-END $$;
-
-DO $$
-DECLARE
-  v_prod_id uuid;
-BEGIN
-  -- Insert product if not exists
-  SELECT id INTO v_prod_id FROM public.products WHERE slug = 'black-currant';
-  IF v_prod_id IS NULL THEN
-    INSERT INTO public.products (
-      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count, images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
-    ) VALUES (
-      'black-currant',
-      'Black Currant',
-      'Tiny Seedless Tangy Jewels · Iron & Vitamin C',
-      'berries',
-      'Tangy & Sweet',
-      'Cool-Climate Vineyard Harvest',
-      'Shade-dried whole seedless currants',
-      4.8,
-      19,
-      ARRAY['https://thumb.wikimedia.org/wikipedia/commons/thumb/0/05/Ribes_nigrum_a1.JPG/960px-Ribes_nigrum_a1.JPG'],
-      'Intensely flavourful, tangy-sweet dried black currants packed with iron, potassium, and antioxidants.',
-      ARRAY['Adds a burst of deep berry tang to artisan breads, ice creams, oat bowls, and festive fruit cakes.'],
-      '100% Sun-Dried Seedless Black Currants',
-      'Store in a cool, dry cupboard.',
-      '8 Months',
-      'Naturally gluten-free.',
-      false
-    ) RETURNING id INTO v_prod_id;
-  END IF;
-
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '100g') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '100g', 630, 728, 20);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '250g') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '250g', 1400, 1610, 15);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '500g') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '500g', 2660, 3010, 10);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '1kg') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '1kg', 5110, 5740, 6);
-  END IF;
-END $$;
-
-DO $$
-DECLARE
-  v_prod_id uuid;
-BEGIN
-  -- Insert product if not exists
-  SELECT id INTO v_prod_id FROM public.products WHERE slug = 'hazelnuts';
-  IF v_prod_id IS NULL THEN
-    INSERT INTO public.products (
-      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count, images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
-    ) VALUES (
-      'hazelnuts',
-      'Hazelnuts',
-      'Blanched & Dry-Roasted Filberts · Buttery Crunch',
-      'exotic-nuts',
-      'Exotic Reserve',
-      'Black Sea Orchard Kernels',
-      'Dry-roasted skinless golden kernels',
-      4.9,
-      22,
-      ARRAY['https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e4/Hazelnuts_%28Corylus_avellana%29_-_whole_with_kernels.jpg/960px-Hazelnuts_%28Corylus_avellana%29_-_whole_with_kernels.jpg'],
-      'Crunchy, aromatic hazelnut kernels with a rich toasted praline flavour and creamy finish.',
-      ARRAY['Slow-warmed to release their signature nutty perfume. Perfect alongside dark Ceylon chocolate or espresso.'],
-      '100% Whole Hazelnut Kernels',
-      'Keep sealed in an airtight jar.',
-      '6 Months',
-      'Contains tree nuts (hazelnuts).',
-      false
-    ) RETURNING id INTO v_prod_id;
-  END IF;
-
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '100g') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '100g', 1125, 1300, 20);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '250g') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '250g', 2500, 2875, 15);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '500g') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '500g', 4750, 5375, 10);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '1kg') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '1kg', 9125, 10250, 6);
-  END IF;
-END $$;
-
-DO $$
-DECLARE
-  v_prod_id uuid;
-BEGIN
-  -- Insert product if not exists
-  SELECT id INTO v_prod_id FROM public.products WHERE slug = 'macadamia-nuts';
-  IF v_prod_id IS NULL THEN
-    INSERT INTO public.products (
-      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count, images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
-    ) VALUES (
-      'macadamia-nuts',
-      'Macadamia Nuts',
-      'Ivory Cream Whole Kernels · Melt-in-Mouth',
-      'exotic-nuts',
-      'Luxury Grade',
-      'Subtropical Orchard Reserve',
-      'Lightly dry-toasted creamy wholes',
-      5,
-      26,
-      ARRAY['https://thumb.wikimedia.org/wikipedia/commons/thumb/0/00/Macadamia_nuts.jpg/960px-Macadamia_nuts.jpg'],
-      'The world’s most buttery, velvety nut. Whole ivory macadamia kernels with a delicate crunch and rich creamy finish.',
-      ARRAY['High in heart-healthy monounsaturated fats and keto-friendly nutrition. Hand-selected for whole style-0/style-1 kernels.'],
-      '100% Whole Macadamia Nut Kernels',
-      'Store in a cool, dry place or refrigerate.',
-      '6 Months',
-      'Contains tree nuts (macadamia).',
-      false
-    ) RETURNING id INTO v_prod_id;
-  END IF;
-
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '100g') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '100g', 1530, 1768, 20);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '250g') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '250g', 3400, 3910, 15);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '500g') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '500g', 6460, 7310, 10);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '1kg') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '1kg', 12410, 13940, 6);
-  END IF;
-END $$;
-
-DO $$
-DECLARE
-  v_prod_id uuid;
-BEGIN
-  -- Insert product if not exists
-  SELECT id INTO v_prod_id FROM public.products WHERE slug = 'pecan-nuts';
-  IF v_prod_id IS NULL THEN
-    INSERT INTO public.products (
-      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count, images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
-    ) VALUES (
-      'pecan-nuts',
-      'Pecan Nuts',
-      'Mammoth Golden Halves · Naturally Buttery & Sweet',
-      'exotic-nuts',
-      'Exotic Reserve',
-      'River-Valley Pecan Groves',
-      'Raw mammoth halves',
-      4.9,
+      'Protein Dense',
+      'Fertile River Basins',
+      'Hulled raw white watermelon seeds',
+      4.7,
       18,
-      ARRAY['https://thumb.wikimedia.org/wikipedia/commons/thumb/4/49/Pecans.jpg/960px-Pecans.jpg'],
-      'Rich, maple-sweet mammoth pecan halves with a tender, buttery crunch and golden-brown grooves.',
-      ARRAY['Packed with more than 19 vitamins and minerals. Wonderful for snacking, caramelizing, or topping salads and pies.'],
-      '100% Mammoth Pecan Halves',
-      'Refrigerate in an airtight jar for extended freshness.',
-      '6 Months',
-      'Contains tree nuts (pecans).',
-      false
-    ) RETURNING id INTO v_prod_id;
-  END IF;
-
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '100g') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '100g', 1395, 1612, 20);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '250g') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '250g', 3100, 3565, 15);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '500g') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '500g', 5890, 6665, 10);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '1kg') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '1kg', 11315, 12710, 6);
-  END IF;
-END $$;
-
-DO $$
-DECLARE
-  v_prod_id uuid;
-BEGIN
-  -- Insert product if not exists
-  SELECT id INTO v_prod_id FROM public.products WHERE slug = 'berries-mix';
-  IF v_prod_id IS NULL THEN
-    INSERT INTO public.products (
-      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count, images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
-    ) VALUES (
-      'berries-mix',
-      'Berries Mix',
-      'Blueberries, Cranberries, Black Currants & Cherries',
-      'mixes',
-      'Antioxidant Blend',
-      'Ceylon Crunch Artisan Blend',
-      'Sun-cured four-berry medley',
-      4.9,
-      30,
-      ARRAY['https://images.unsplash.com/photo-1596591606975-97ee5cef3a1e?auto=format&fit=crop&w=900&q=80'],
-      'A vibrant jewel-toned medley of dried blueberries, ruby cranberries, tangy black currants, and sweet red berries.',
-      ARRAY['Hand-blended in small batches for balanced sweetness and tartness in every spoonful.'],
-      'Dried Blueberries, Dried Cranberries, Black Currants, Golden Raisins',
-      'Keep sealed in a cool pantry.',
-      '8 Months',
-      'Gluten-free.',
-      false
-    ) RETURNING id INTO v_prod_id;
-  END IF;
-
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '100g') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '100g', 833, 962, 20);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '250g') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '250g', 1850, 2128, 15);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '500g') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '500g', 3515, 3978, 10);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '1kg') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '1kg', 6753, 7585, 6);
-  END IF;
-END $$;
-
-DO $$
-DECLARE
-  v_prod_id uuid;
-BEGIN
-  -- Insert product if not exists
-  SELECT id INTO v_prod_id FROM public.products WHERE slug = 'nut-mix';
-  IF v_prod_id IS NULL THEN
-    INSERT INTO public.products (
-      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count, images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
-    ) VALUES (
-      'nut-mix',
-      'Nut Mix',
-      'Royal 5-Nut Symphony · Cashews, Almonds, Walnuts, Pista & Hazelnuts',
-      'mixes',
-      'Best Seller',
-      'Colombo Small-Batch Roastery',
-      'Lightly toasted & raw gourmet nut blend',
-      5,
-      52,
-      ARRAY['https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f5/Mixed_nuts_small_white1.jpg/960px-Mixed_nuts_small_white1.jpg', 'https://images.unsplash.com/photo-1536591375315-1b83681498b3?auto=format&fit=crop&w=900&q=80'],
-      'Our signature luxury nut blend combining jumbo Ceylon cashews, whole almonds, walnut halves, pistachio kernels, and roasted hazelnuts.',
-      ARRAY['Zero peanuts or cheap fillers — strictly 100% premium tree nuts in balanced proportions.'],
-      'Cashews (Kaju), Almonds (Badam), Walnuts (Akhrot), Pistachios (Pista), Hazelnuts',
-      'Store in an airtight glass jar.',
-      '6 Months',
-      'Contains tree nuts.',
-      true
-    ) RETURNING id INTO v_prod_id;
-  END IF;
-
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '100g') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '100g', 878, 1014, 20);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '250g') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '250g', 1950, 2243, 15);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '500g') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '500g', 3705, 4193, 10);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '1kg') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '1kg', 7118, 7995, 6);
-  END IF;
-END $$;
-
-DO $$
-DECLARE
-  v_prod_id uuid;
-BEGIN
-  -- Insert product if not exists
-  SELECT id INTO v_prod_id FROM public.products WHERE slug = 'seeds-mix';
-  IF v_prod_id IS NULL THEN
-    INSERT INTO public.products (
-      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count, images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
-    ) VALUES (
-      'seeds-mix',
-      'Seeds Mix',
-      '5-in-1 Superseed Crunch · Pumpkin, Sunflower, Flax, Chia & Melon',
-      'mixes',
-      'Daily Superfood',
-      'Artisan Botanical Studio',
-      'Raw & lightly toasted multi-seed blend',
-      4.8,
-      28,
-      ARRAY['https://images.unsplash.com/photo-1588681664899-f142ff2dc9b1?auto=format&fit=crop&w=900&q=80'],
-      'Powerhouse daily nutrition blending emerald pumpkin seeds, sunflower kernels, flax seeds, black chia, and musk melon seeds.',
-      ARRAY['Sprinkle two tablespoons over your morning curd, porridge, salad, or smoothie for sustained plant protein and minerals.'],
-      'Pumpkin Seeds, Sunflower Seeds, Flax Seeds, Chia Seeds, Musk Melon Seeds',
-      'Store in a cool, dry cupboard.',
+      '{"/products/seeds/watermelon-seeds.jpeg"}',
+      'Carefully hulled watermelon seed kernels, packed with plant protein, B vitamins, and healthy unsaturated fats. Great snack or culinary thickening agent.',
+      '{"Light, crunchy kernels with a delicate buttery flavor."}',
+      '100% Hulled Watermelon Kernels',
+      'Airtight storage.',
       '9 Months',
-      'Seed blend.',
+      'Pure seed kernel.',
       false
     ) RETURNING id INTO v_prod_id;
   END IF;
 
   IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '100g') THEN
     INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '100g', 518, 598, 20);
+    VALUES (v_prod_id, '100g', 420, 483, 25);
   END IF;
   IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '250g') THEN
     INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '250g', 1150, 1323, 15);
+    VALUES (v_prod_id, '250g', 920, 1058, 20);
   END IF;
   IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '500g') THEN
     INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '500g', 2185, 2473, 10);
+    VALUES (v_prod_id, '500g', 1750, 1960, 15);
   END IF;
   IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '1kg') THEN
     INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '1kg', 4198, 4715, 6);
+    VALUES (v_prod_id, '1kg', 3300, 3630, 10);
   END IF;
 END $$;
 
@@ -1351,135 +1450,94 @@ DO $$
 DECLARE
   v_prod_id uuid;
 BEGIN
-  -- Insert product if not exists
-  SELECT id INTO v_prod_id FROM public.products WHERE slug = 'trail-mix';
+  SELECT id INTO v_prod_id FROM public.products WHERE slug = 'white-quinoa';
   IF v_prod_id IS NULL THEN
     INSERT INTO public.products (
-      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count, images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
+      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count,
+      images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
     ) VALUES (
-      'trail-mix',
-      'Trail Mix',
-      'Active Energy Blend · Nuts, Seeds, Berries & Dates',
-      'mixes',
-      'Energy Boost',
-      'Colombo Small-Batch Roastery',
-      'Balanced sweet & savoury adventure mix',
+      'white-quinoa',
+      'Pearl White Organic Quinoa',
+      'Delicate Fluffy Ancient Seed Grain',
+      'seeds',
+      'Ancient Grain',
+      'High Andean Terraces',
+      'Triple-washed raw pearl quinoa',
+      4.8,
+      25,
+      '{"/products/seeds/white-quinoa.jpeg"}',
+      'Mild, delicate pearl-white quinoa seeds with gentle fluffiness and subtle nutty taste. Cooks in 15 minutes as a nutritious gluten-free staple.',
+      '{"The classic white variety is the fluffiest and quickest cooking of all quinoa strains."}',
+      '100% Pearl White Quinoa Seeds',
+      'Airtight container in dry place.',
+      '12 Months',
+      'Gluten-free seed.',
+      false
+    ) RETURNING id INTO v_prod_id;
+  END IF;
+
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '100g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '100g', 460, 529, 25);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '250g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '250g', 990, 1139, 20);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '500g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '500g', 1880, 2106, 15);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '1kg') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '1kg', 3550, 3905, 10);
+  END IF;
+END $$;
+
+DO $$
+DECLARE
+  v_prod_id uuid;
+BEGIN
+  SELECT id INTO v_prod_id FROM public.products WHERE slug = 'white-sesame';
+  IF v_prod_id IS NULL THEN
+    INSERT INTO public.products (
+      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count,
+      images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
+    ) VALUES (
+      'white-sesame',
+      'Natural Hulled White Sesame Seeds (Safed Til)',
+      'Aromatic Golden-Ivory Sweet Seeds',
+      'seeds',
+      'Traditional Garnish',
+      'Dry Zone Agro Orchards, Sri Lanka',
+      'Gently hulled and cleaned white seeds',
       4.9,
-      40,
-      ARRAY['https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fd/2021-05-15_04_45_03_A_sample_of_Kirkland_Trail_Mix_in_the_Dulles_section_of_Sterling%2C_Loudoun_County%2C_Virginia.jpg/960px-2021-05-15_04_45_03_A_sample_of_Kirkland_Trail_Mix_in_the_Dulles_section_of_Sterling%2C_Loudoun_County%2C_Virginia.jpg'],
-      'The ultimate on-the-go fuel combining roasted cashews, almonds, pumpkin seeds, ruby cranberries, golden raisins, and diced dates.',
-      ARRAY['Crafted for hikers, gym-goers, and busy professionals seeking clean, sustained energy without refined sugar crashes.'],
-      'Roasted Cashews, Almonds, Walnuts, Pumpkin Seeds, Sunflower Seeds, Cranberries, Golden Raisins',
-      'Keep resealed in a cool, dry place.',
-      '6 Months',
-      'Contains tree nuts and seeds.',
-      false
-    ) RETURNING id INTO v_prod_id;
-  END IF;
-
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '100g') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '100g', 743, 858, 20);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '250g') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '250g', 1650, 1897, 15);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '500g') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '500g', 3135, 3548, 10);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '1kg') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '1kg', 6023, 6765, 6);
-  END IF;
-END $$;
-
-DO $$
-DECLARE
-  v_prod_id uuid;
-BEGIN
-  -- Insert product if not exists
-  SELECT id INTO v_prod_id FROM public.products WHERE slug = 'whole-spices';
-  IF v_prod_id IS NULL THEN
-    INSERT INTO public.products (
-      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count, images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
-    ) VALUES (
-      'whole-spices',
-      'Whole Spices (Ceylon Alba Cinnamon & Pepper)',
-      'Single-Estate Ceylon Alba Quills, Black Pepper & Green Cardamom',
-      'spices',
-      'Ceylon Pure',
-      'Mirissa & Matale Spice Estates, Sri Lanka',
-      'Sun-cured whole estate spices',
-      5,
-      32,
-      ARRAY['https://thumb.wikimedia.org/wikipedia/commons/thumb/d/de/Cinnamomum_verum_spices.jpg/960px-Cinnamomum_verum_spices.jpg', 'https://images.unsplash.com/photo-1509358271058-acd22cc93898?auto=format&fit=crop&w=900&q=80'],
-      'Authentic Sri Lankan whole spices featuring hand-rolled Alba cinnamon quills, Matale black peppercorns, green cardamom pods, and whole cloves.',
-      ARRAY['Harvested from heritage spice gardens in central and southern Sri Lanka with high essential oil content and intoxicating aroma.'],
-      'True Ceylon Alba Cinnamon Quills, Whole Black Peppercorns, Green Cardamom, Whole Cloves',
-      'Store in airtight glass jars away from light and moisture.',
-      '18 Months',
-      'Pure whole spices.',
-      false
-    ) RETURNING id INTO v_prod_id;
-  END IF;
-
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '100g') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '100g', 788, 910, 20);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '250g') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '250g', 1750, 2012, 15);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '500g') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '500g', 3325, 3763, 10);
-  END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '1kg') THEN
-    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, '1kg', 6388, 7175, 6);
-  END IF;
-END $$;
-
-DO $$
-DECLARE
-  v_prod_id uuid;
-BEGIN
-  -- Insert product if not exists
-  SELECT id INTO v_prod_id FROM public.products WHERE slug = 'heritage-harvest-hamper';
-  IF v_prod_id IS NULL THEN
-    INSERT INTO public.products (
-      slug, name, subtitle, category, badge, origin, roast_style, rating, review_count, images, description, extended_about, ingredients, storage, shelf_life, allergen_notice, is_featured
-    ) VALUES (
-      'heritage-harvest-hamper',
-      'The Heritage Harvest Hamper',
-      'Curated Luxury · Solid Pine Box',
-      'gifts-hampers',
-      'Gift Ready',
-      'Handcrafted in Colombo with Sri Lankan Provisions',
-      'Assorted cashews, almonds, dates, figs & Ceylon spices',
-      5,
-      39,
-      ARRAY['https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&w=900&q=80'],
-      'An exquisite hand-built pine chest packed with Cashew (Kaju), Almonds (Badam), Wet Dates (Khajur), Dried Figs (Anjeer), and Whole Ceylon Spices.',
-      ARRAY['Tied with deep forest green grosgrain ribbon and accompanied by a custom greeting card for weddings, birthdays, and corporate gifting.'],
-      'Cashews (250g), Almonds (250g), Wet Dates (300g), Dried Figs (250g), Whole Spices (150g)',
-      'Store items in cool pantry conditions.',
-      '6 Months',
-      'Contains tree nuts.',
+      35,
+      '{"/products/seeds/white-sesame.jpeg"}',
+      'Clean, aromatic white sesame seeds with pleasant sweetness when toasted. Ideal for traditional Sri Lankan sweetmeats, tahini, stir-fries, and bakery garnishing.',
+      '{"Hulled gently using clean water washing without chemical bleach."}',
+      '100% Natural White Sesame Seeds',
+      'Dry sealed pantry.',
+      '10 Months',
+      'Contains sesame.',
       true
     ) RETURNING id INTO v_prod_id;
   END IF;
 
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = 'Standard Gift Box') THEN
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '100g') THEN
     INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, 'Standard Gift Box', 6500, 7200, 10);
+    VALUES (v_prod_id, '100g', 360, 414, 25);
   END IF;
-  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = 'Royal Pine Chest') THEN
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '250g') THEN
     INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
-    VALUES (v_prod_id, 'Royal Pine Chest', 12500, 13900, 4);
+    VALUES (v_prod_id, '250g', 780, 897, 20);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '500g') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '500g', 1460, 1635, 15);
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.product_variants WHERE product_id = v_prod_id AND weight = '1kg') THEN
+    INSERT INTO public.product_variants (product_id, weight, price, original_price, stock)
+    VALUES (v_prod_id, '1kg', 2750, 3025, 10);
   END IF;
 END $$;
-

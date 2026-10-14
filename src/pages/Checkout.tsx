@@ -58,14 +58,14 @@ export const Checkout: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Form inputs
-  const [name, setName] = useState('Dilshan Perera');
-  const [phone, setPhone] = useState('77 123 4567');
-  const [email, setEmail] = useState('dilshan@example.com');
-  const [street, setStreet] = useState('No. 42/1, Alfred House Gardens');
-  const [landmark, setLandmark] = useState('Level 4, Sky Villa');
-  const [city, setCity] = useState('Colombo 03');
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
+  const [street, setStreet] = useState('');
+  const [landmark, setLandmark] = useState('');
+  const [city, setCity] = useState('');
   const [district, setDistrict] = useState('Colombo');
-  const [postalCode, setPostalCode] = useState('00300');
+  const [postalCode, setPostalCode] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('cod');
   const [orderNotes, setOrderNotes] = useState(giftNote || '');
 
@@ -302,7 +302,7 @@ export const Checkout: React.FC = () => {
                   setName(e.target.value);
                   if (errors.name) setErrors({ ...errors, name: undefined });
                 }}
-                placeholder="e.g. Dilshan Perera"
+                placeholder="Enter full name"
                 className="w-full h-12 px-3.5 pr-10 bg-[#f6f3f2] rounded-lg border border-[#EADFD0] text-sm text-[#1F3D2B] focus:bg-white focus:outline-none focus:border-[#1F3D2B]"
               />
               {isNameValid && (
@@ -371,7 +371,7 @@ export const Checkout: React.FC = () => {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="dilshan@example.com"
+              placeholder="name@example.com"
               className="w-full h-12 px-3.5 bg-[#f6f3f2] rounded-lg border border-[#EADFD0] text-sm text-[#1F3D2B] focus:bg-white focus:outline-none focus:border-[#1F3D2B]"
             />
             <span className="text-[11px] text-[#6B6B6B] mt-0.5">

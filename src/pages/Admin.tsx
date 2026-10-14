@@ -19,6 +19,7 @@ import {
   FileText,
   Database,
   RefreshCw,
+  Image as ImageIcon,
 } from 'lucide-react';
 import { isSupabaseConfigured } from '../lib/supabase';
 import { seedProductsToSupabase } from '../lib/seedDatabase';
@@ -33,9 +34,15 @@ export const Admin: React.FC = () => {
     updateOrderPaymentStatus,
     products,
     updateProductStock,
+    updateProductVariantPrice,
+    updateProductImage,
     inquiries,
     showToast,
   } = useStore();
+
+  // Product image editing state
+  const [editingImageId, setEditingImageId] = useState<string | null>(null);
+  const [imageInputVal, setImageInputVal] = useState<string>('');
 
   // Password gate input (Demo password: crunch-admin)
   const [passwordInput, setPasswordInput] = useState('');
@@ -81,7 +88,7 @@ export const Admin: React.FC = () => {
       showToast('Logged in as Ceylon Crunch Atelier Administrator');
     } else {
       setPasswordError(true);
-      showToast('Incorrect administrator password. (Demo: crunch-admin)');
+      showToast('Incorrect administrator password.');
     }
   };
 
@@ -124,10 +131,6 @@ export const Admin: React.FC = () => {
                 Incorrect password. Please try again.
               </p>
             )}
-            {/* Demo Password Hint for user */}
-            <p className="text-[11px] text-[#8B5E3C] mt-2 font-medium">
-              Demo Access: Use <code className="bg-[#f0eded] px-1.5 py-0.5 rounded text-[#1F3D2B] font-mono">crunch-admin</code>
-            </p>
           </div>
 
           <button
@@ -428,61 +431,175 @@ export const Admin: React.FC = () => {
             </p>
 
             <div className="space-y-4 divide-y divide-[#EADFD0]">
-              {products.map((prod) => (
-                <div key={prod.id} className="pt-4 first:pt-0 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="font-serif text-base font-bold text-[#1F3D2B]">
-                        {prod.name}
-                      </h3>
-                      <span className="text-xs text-[#8B5E3C]">{prod.origin}</span>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                    {prod.variants.map((v) => (
-                      <div
-                        key={v.id}
-                        className="p-3 bg-[#f6f3f2] border border-[#EADFD0] rounded-xl flex flex-col justify-between gap-2"
-                      >
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs font-bold text-[#1F3D2B]">{v.weight}</span>
-                          <span
-                            className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                              v.stock === 0
-                                ? 'bg-[#ffdad6] text-[#93000a]'
-                                : v.stock <= 10
-                                ? 'bg-[#ffdcc5] text-[#301400]'
-                                : 'bg-[#c8ebd1] text-[#022111]'
-                            }`}
-                          >
-                            {v.stock === 0 ? 'Out of Stock' : v.stock <= 10 ? 'Low Stock' : 'In Stock'}
-                          </span>
+              {products.length === 0 ? (
+                <p className="text-center py-10 text-xs text-[#6B6B6B]">
+                  No products in catalog. Add products or sync from Supabase to manage inventory.
+                </p>
+              ) : (
+                products.map((prod) => (
+                  <div key={prod.id} className="pt-5 first:pt-0 space-y-3">
+                    {/* Product Header with Thumbnail & Image Edit Controls */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        {/* Thumbnail */}
+                        <div className="relative w-12 h-12 rounded-xl border border-[#EADFD0] overflow-hidden bg-[#FAF8F4] shrink-0 flex items-center justify-center shadow-2xs">
+                          {prod.images && prod.images[0] ? (
+                            <img
+                              src={prod.images[0]}
+                              alt={prod.name}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <Package className="w-5 h-5 text-[#8B5E3C]" />
+                          )}
                         </div>
 
-                        <div className="flex items-center justify-between text-xs">
-                          <span className="text-[#6B6B6B]">{formatRs(v.price)}</span>
-                          <div className="flex items-center gap-1">
-                            <span className="text-[11px] text-[#6B6B6B]">Stock:</span>
-                            <input
-                              type="number"
-                              min={0}
-                              value={v.stock}
-                              onChange={(e) => {
-                                const val = parseInt(e.target.value, 10);
-                                if (!isNaN(val)) {
-                                  updateProductStock(prod.id, v.id, val);
-                                }
-                              }}
-                              className="w-16 h-7 px-2 bg-white border border-[#EADFD0] rounded text-center text-xs font-bold text-[#1F3D2B] focus:outline-none focus:border-[#1F3D2B]"
-                            />
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <h3 className="font-serif text-base font-bold text-[#1F3D2B]">
+                              {prod.name}
+                            </h3>
+                            <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#FAF8F4] border border-[#EADFD0] text-[#8B5E3C] font-semibold capitalize">
+                              {prod.category.replace('-', ' ')}
+                            </span>
                           </div>
+                          <span className="text-xs text-[#8B5E3C]">{prod.origin}</span>
                         </div>
                       </div>
-                    ))}
+
+                      {/* Change Image Button */}
+                      <div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (editingImageId === prod.id) {
+                              setEditingImageId(null);
+                            } else {
+                              setEditingImageId(prod.id);
+                              setImageInputVal(prod.images[0] || '');
+                            }
+                          }}
+                          className="h-8 px-3 rounded-full bg-[#FAF8F4] hover:bg-[#EADFD0] border border-[#EADFD0] text-xs font-semibold text-[#1F3D2B] inline-flex items-center gap-1.5 transition-colors"
+                        >
+                          <ImageIcon className="w-3.5 h-3.5 text-[#8B5E3C]" />
+                          <span>{editingImageId === prod.id ? 'Close' : 'Change Image'}</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Inline Image Edit Bar when active */}
+                    {editingImageId === prod.id && (
+                      <div className="p-3 bg-[#FAF8F4] border border-[#EADFD0] rounded-xl flex flex-col sm:flex-row items-stretch sm:items-center gap-2 animate-in fade-in duration-200">
+                        <div className="flex-1 flex items-center gap-2">
+                          <span className="text-xs font-semibold text-[#1F3D2B] shrink-0">Path/URL:</span>
+                          <input
+                            type="text"
+                            value={imageInputVal}
+                            onChange={(e) => setImageInputVal(e.target.value)}
+                            placeholder="/products/dried-fruits/name.jpeg or https://..."
+                            className="w-full h-8 px-3 bg-white border border-[#EADFD0] rounded-lg text-xs text-[#1F3D2B] focus:outline-none focus:border-[#1F3D2B]"
+                          />
+                        </div>
+                        <div className="flex items-center gap-2 justify-end shrink-0">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (imageInputVal.trim()) {
+                                updateProductImage(prod.id, imageInputVal.trim());
+                                showToast(`Updated image for ${prod.name}`);
+                                setEditingImageId(null);
+                              } else {
+                                showToast('Please enter a valid image path or URL.');
+                              }
+                            }}
+                            className="h-8 px-3 rounded-lg bg-[#1F3D2B] hover:bg-[#143E26] text-white text-xs font-semibold flex items-center gap-1 transition-colors"
+                          >
+                            <CheckCircle2 className="w-3.5 h-3.5" />
+                            <span>Save Image</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setEditingImageId(null)}
+                            className="h-8 px-2.5 rounded-lg bg-white border border-[#EADFD0] hover:bg-[#f6f3f2] text-xs font-medium text-[#6B6B6B]"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Variant Grid */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                      {prod.variants.map((v) => (
+                        <div
+                          key={v.id}
+                          className="p-3.5 bg-[#f6f3f2] border border-[#EADFD0] rounded-xl flex flex-col justify-between gap-3 shadow-2xs"
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-bold text-[#1F3D2B]">{v.weight}</span>
+                            <span
+                              className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                                v.stock === 0
+                                  ? 'bg-[#ffdad6] text-[#93000a]'
+                                  : v.stock <= 10
+                                  ? 'bg-[#ffdcc5] text-[#301400]'
+                                  : 'bg-[#c8ebd1] text-[#022111]'
+                              }`}
+                            >
+                              {v.stock === 0 ? 'Out of Stock' : v.stock <= 10 ? 'Low Stock' : 'In Stock'}
+                            </span>
+                          </div>
+
+                          <div className="space-y-2 pt-1 border-t border-[#EADFD0]/60">
+                            {/* Price Input */}
+                            <div className="flex items-center justify-between text-xs">
+                              <span className="text-[11px] font-medium text-[#6B6B6B]">Price:</span>
+                              <div className="flex items-center gap-1">
+                                <span className="text-[11px] font-mono text-[#8B5E3C]">Rs.</span>
+                                <input
+                                  type="number"
+                                  min={0}
+                                  step={10}
+                                  aria-label={`Price for ${prod.name} ${v.weight}`}
+                                  value={v.price}
+                                  onChange={(e) => {
+                                    const val = parseFloat(e.target.value);
+                                    if (!isNaN(val) && val >= 0) {
+                                      updateProductVariantPrice(prod.id, v.id, val);
+                                    }
+                                  }}
+                                  className="w-20 h-7 px-2 bg-white border border-[#EADFD0] rounded text-center text-xs font-bold text-[#1F3D2B] focus:outline-none focus:border-[#1F3D2B]"
+                                />
+                              </div>
+                            </div>
+
+                            {/* Stock Input */}
+                            <div className="flex items-center justify-between text-xs">
+                              <span className="text-[11px] font-medium text-[#6B6B6B]">Stock:</span>
+                              <div className="flex items-center gap-1">
+                                <span className="text-[11px] font-mono text-[#8B5E3C]">Qty</span>
+                                <input
+                                  type="number"
+                                  min={0}
+                                  aria-label={`Stock for ${prod.name} ${v.weight}`}
+                                  value={v.stock}
+                                  onChange={(e) => {
+                                    const val = parseInt(e.target.value, 10);
+                                    if (!isNaN(val) && val >= 0) {
+                                      updateProductStock(prod.id, v.id, val);
+                                    }
+                                  }}
+                                  className="w-20 h-7 px-2 bg-white border border-[#EADFD0] rounded text-center text-xs font-bold text-[#1F3D2B] focus:outline-none focus:border-[#1F3D2B]"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </div>
         </div>

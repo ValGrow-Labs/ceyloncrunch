@@ -312,38 +312,44 @@ export const Shop: React.FC = () => {
             <span className="material-symbols-outlined text-[40px]">manage_search</span>
           </div>
           <h2 className="font-serif text-2xl text-[#1F3D2B] font-semibold mb-1">
-            No provisions found
+            {products.length === 0 ? 'No products available' : 'No provisions found'}
           </h2>
           <p className="text-sm text-[#6B6B6B] max-w-sm mb-6 leading-relaxed">
-            We couldn't find any items matching your selected criteria. Try adjusting your filters or search terms.
+            {products.length === 0
+              ? 'Our catalog is currently being updated. Check back soon for fresh provisions!'
+              : "We couldn't find any items matching your selected criteria. Try adjusting your filters or search terms."}
           </p>
 
-          <button
-            type="button"
-            onClick={handleResetFilters}
-            className="h-11 px-6 rounded-full bg-[#1F3D2B] text-white text-xs font-semibold flex items-center gap-2 hover:bg-[#162C1F] shadow-sm active:scale-95 transition-all mb-6"
-          >
-            <RefreshCw className="w-3.5 h-3.5" />
-            <span>Reset All Filters</span>
-          </button>
+          {products.length > 0 && (
+            <>
+              <button
+                type="button"
+                onClick={handleResetFilters}
+                className="h-11 px-6 rounded-full bg-[#1F3D2B] text-white text-xs font-semibold flex items-center gap-2 hover:bg-[#162C1F] shadow-sm active:scale-95 transition-all mb-6"
+              >
+                <RefreshCw className="w-3.5 h-3.5" />
+                <span>Reset All Filters</span>
+              </button>
 
-          <div className="flex flex-col items-center">
-            <span className="text-[11px] uppercase font-bold text-[#8B5E3C] tracking-wider mb-2">
-              Popular Searches
-            </span>
-            <div className="flex flex-wrap justify-center gap-2">
-              {['Jumbo Cashews', 'Medjool Dates', 'Almonds', 'Gift Hampers'].map((term) => (
-                <button
-                  key={term}
-                  type="button"
-                  onClick={() => setSearchInput(term)}
-                  className="px-3.5 py-1.5 rounded-full bg-[#f6f3f2] hover:bg-[#EADFD0] text-xs font-medium text-[#1F3D2B] transition-colors"
-                >
-                  {term}
-                </button>
-              ))}
-            </div>
-          </div>
+              <div className="flex flex-col items-center">
+                <span className="text-[11px] uppercase font-bold text-[#8B5E3C] tracking-wider mb-2">
+                  Popular Searches
+                </span>
+                <div className="flex flex-wrap justify-center gap-2">
+                  {['Jumbo Cashews', 'Medjool Dates', 'Almonds', 'Gift Hampers'].map((term) => (
+                    <button
+                      key={term}
+                      type="button"
+                      onClick={() => setSearchInput(term)}
+                      className="px-3.5 py-1.5 rounded-full bg-[#f6f3f2] hover:bg-[#EADFD0] text-xs font-medium text-[#1F3D2B] transition-colors"
+                    >
+                      {term}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
         </div>
       )}
 

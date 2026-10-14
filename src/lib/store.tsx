@@ -83,6 +83,8 @@ interface StoreContextType {
   // Products & Stock
   products: Product[];
   updateProductStock: (productId: string, variantId: string, newStock: number) => void;
+  updateProductVariantPrice: (productId: string, variantId: string, newPrice: number) => void;
+  updateProductImage: (productId: string, newImageUrl: string) => void;
   getProductBySlug: (slug: string) => Product | undefined;
 
   // Cart
@@ -128,261 +130,11 @@ interface StoreContextType {
 
 const StoreContext = createContext<StoreContextType | null>(null);
 
-// Initial Seed Orders
-const SEED_ORDERS: Order[] = [
-  {
-    id: 'CC-000123',
-    createdAt: '18 Oct 2024, 09:30 AM',
-    customer: {
-      name: 'Dilshan Perera',
-      phone: '+94 77 123 4567',
-      email: 'dilshan.perera@example.com',
-    },
-    shippingAddress: {
-      street: 'No. 42/1, Alfred House Gardens, Level 4',
-      landmark: 'Sky Villa',
-      city: 'Colombo 03',
-      district: 'Colombo',
-      postalCode: '00300',
-    },
-    paymentMethod: 'cod',
-    paymentStatus: 'pending',
-    items: [
-      {
-        productId: 'prod-cashews-jumbo',
-        variantId: 'cashew-250g',
-        productName: 'Jumbo Roasted Cashews',
-        variantWeight: '250g Glass Jar',
-        price: 1250,
-        quantity: 1,
-        image: 'https://images.unsplash.com/photo-1536591375315-1b83681498b3?auto=format&fit=crop&w=900&q=80',
-        slug: 'jumbo-roasted-cashews',
-      },
-      {
-        productId: 'prod-dates-medjool',
-        variantId: 'dates-500g',
-        productName: 'Royal Medjool Dates',
-        variantWeight: '500g Heirloom Box',
-        price: 1650,
-        quantity: 1,
-        image: 'https://images.unsplash.com/photo-1549488344-1f9b8d2bd1f3?auto=format&fit=crop&w=900&q=80',
-        slug: 'royal-medjool-dates',
-      },
-      {
-        productId: 'prod-almonds-california',
-        variantId: 'almonds-200g',
-        productName: 'Californian Whole Almonds',
-        variantWeight: '200g Eco-Pouch',
-        price: 900,
-        quantity: 1,
-        image: 'https://images.unsplash.com/photo-1508061253366-f7da158b6d46?auto=format&fit=crop&w=900&q=80',
-        slug: 'californian-whole-almonds',
-      },
-    ],
-    subtotal: 3800,
-    deliveryFee: 450,
-    total: 4250,
-    status: 'dispatched',
-    waybill: 'CLN-8829410-LK',
-    estimatedArrival: 'Tomorrow by 4:00 PM',
-    timeline: [
-      {
-        status: 'placed',
-        title: 'Order Placed',
-        timestamp: '18 Oct, 09:30 AM',
-        description: 'Web checkout verified & tokenized',
-        completed: true,
-      },
-      {
-        status: 'confirmed',
-        title: 'Order Confirmed',
-        timestamp: '18 Oct, 10:15 AM',
-        description: 'Payment verified (COD batch allocation)',
-        completed: true,
-      },
-      {
-        status: 'packed',
-        title: 'Small-Batch Packed',
-        timestamp: '18 Oct, 02:40 PM',
-        description: 'Hand-sealed with natural aroma foil at Colombo',
-        completed: true,
-      },
-      {
-        status: 'dispatched',
-        title: 'Dispatched & In Transit',
-        timestamp: '19 Oct, 08:15 AM',
-        description: 'Handed over to Pronto Express van. En route to Western Province delivery hub.',
-        location: 'Alfred House Gardens Sector, Colombo 03',
-        completed: true,
-      },
-      {
-        status: 'delivered',
-        title: 'Delivered',
-        timestamp: 'Estimated Tomorrow by 4:00 PM',
-        description: 'Recipient signature required at doorstep',
-        completed: false,
-      },
-    ],
-  },
-  {
-    id: 'CC-000124',
-    createdAt: '19 Oct 2024, 11:20 AM',
-    customer: {
-      name: 'Anoma Wickramasinghe',
-      phone: '+94 71 888 2345',
-      email: 'anoma.w@gmail.com',
-    },
-    shippingAddress: {
-      street: '15/2 Rajagiriya Road',
-      city: 'Rajagiriya',
-      district: 'Colombo',
-      postalCode: '10107',
-    },
-    paymentMethod: 'bank',
-    paymentStatus: 'pending',
-    items: [
-      {
-        productId: 'prod-heritage-hamper',
-        variantId: 'hamper-box',
-        productName: 'The Heritage Harvest Hamper',
-        variantWeight: 'Standard Gift Box',
-        price: 6500,
-        quantity: 1,
-        image: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&w=900&q=80',
-        slug: 'heritage-harvest-hamper',
-      },
-    ],
-    subtotal: 6500,
-    deliveryFee: 0, // Free delivery >= 5000
-    total: 6500,
-    status: 'confirmed',
-    waybill: 'CLN-9912044-LK',
-    estimatedArrival: 'In 2 days',
-    timeline: [
-      {
-        status: 'placed',
-        title: 'Order Placed',
-        timestamp: '19 Oct, 11:20 AM',
-        description: 'Order registered via website checkout',
-        completed: true,
-      },
-      {
-        status: 'confirmed',
-        title: 'Order Confirmed',
-        timestamp: '19 Oct, 11:45 AM',
-        description: 'Direct bank transfer reference matched',
-        completed: true,
-      },
-      {
-        status: 'packed',
-        title: 'Small-Batch Packed',
-        timestamp: 'Pending queue',
-        description: 'Bespoke pine hamper being assembled',
-        completed: false,
-      },
-      {
-        status: 'dispatched',
-        title: 'Dispatched & In Transit',
-        timestamp: 'Scheduled tomorrow morning',
-        description: 'Awaiting courier collection',
-        completed: false,
-      },
-      {
-        status: 'delivered',
-        title: 'Delivered',
-        timestamp: 'Estimated in 2 days',
-        description: 'Doorstep handoff',
-        completed: false,
-      },
-    ],
-  },
-  {
-    id: 'CC-000120',
-    createdAt: '15 Oct 2024, 02:15 PM',
-    customer: {
-      name: 'Kavinda Jayawardena',
-      phone: '+94 76 999 1122',
-      email: 'kavinda.j@yahoo.com',
-    },
-    shippingAddress: {
-      street: '78 Peradeniya Road',
-      city: 'Kandy',
-      district: 'Kandy',
-      postalCode: '20000',
-    },
-    paymentMethod: 'cod',
-    paymentStatus: 'received',
-    items: [
-      {
-        productId: 'prod-pistachios-roasted',
-        variantId: 'pistachio-250g',
-        productName: 'Roasted Pistachios',
-        variantWeight: '250g Pack',
-        price: 2800,
-        quantity: 2,
-        image: 'https://images.unsplash.com/photo-1525059696034-4967a8e1dca2?auto=format&fit=crop&w=900&q=80',
-        slug: 'roasted-pistachios',
-      },
-    ],
-    subtotal: 5600,
-    deliveryFee: 0,
-    total: 5600,
-    status: 'delivered',
-    waybill: 'CLN-7734120-LK',
-    estimatedArrival: 'Delivered on 17 Oct',
-    timeline: [
-      {
-        status: 'placed',
-        title: 'Order Placed',
-        timestamp: '15 Oct, 02:15 PM',
-        description: 'Web order verified',
-        completed: true,
-      },
-      {
-        status: 'confirmed',
-        title: 'Order Confirmed',
-        timestamp: '15 Oct, 03:00 PM',
-        description: 'Payment approved',
-        completed: true,
-      },
-      {
-        status: 'packed',
-        title: 'Small-Batch Packed',
-        timestamp: '15 Oct, 06:10 PM',
-        description: 'Vacuum sealed for tropical freshness',
-        completed: true,
-      },
-      {
-        status: 'dispatched',
-        title: 'Dispatched & In Transit',
-        timestamp: '16 Oct, 08:30 AM',
-        description: 'Dispatched via Pronto Outstation Express',
-        completed: true,
-      },
-      {
-        status: 'delivered',
-        title: 'Delivered',
-        timestamp: '17 Oct, 03:45 PM',
-        description: 'Delivered and signed by recipient in Kandy',
-        location: 'Kandy Central Hub',
-        completed: true,
-      },
-    ],
-  },
-];
+// Initial Seed Orders (empty for live production)
+const SEED_ORDERS: Order[] = [];
 
-// Seed Inquiries
-const SEED_INQUIRIES: ContactInquiry[] = [
-  {
-    id: 'inq-1',
-    name: 'Ruwan Senanayake',
-    email: 'ruwan.s@gmail.com',
-    phone: '+94 77 345 6789',
-    subject: 'Corporate Hamper Order (50 Boxes)',
-    message: 'We are looking to order 50 bespoke corporate gift boxes for our end-of-year gala in December. Please send a quotation and branding options.',
-    createdAt: '17 Oct 2024, 10:15 AM',
-  },
-];
+// Seed Inquiries (empty for live production)
+const SEED_INQUIRIES: ContactInquiry[] = [];
 
 // Helper to normalize SL phone numbers for comparison
 export function normalizePhone(raw: string): string {
@@ -397,10 +149,14 @@ export function normalizePhone(raw: string): string {
 }
 
 export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Products
+  // Products (32 Dried Fruits & Seeds catalog)
   const [products, setProducts] = useState<Product[]>(() => {
     try {
-      const saved = localStorage.getItem('ceylon_crunch_products_v3');
+      localStorage.removeItem('ceylon_crunch_products_v4');
+      localStorage.removeItem('ceylon_crunch_products_v3');
+      localStorage.removeItem('ceylon_crunch_products_v2');
+      localStorage.removeItem('ceylon_crunch_products');
+      const saved = localStorage.getItem('ceylon_crunch_products_v5');
       return saved ? JSON.parse(saved) : INITIAL_PRODUCTS;
     } catch {
       return INITIAL_PRODUCTS;
@@ -425,33 +181,54 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   });
 
-  // Orders
+  // Orders (clean of any previous demo entries)
   const [orders, setOrders] = useState<Order[]>(() => {
     try {
       const saved = localStorage.getItem('ceylon_crunch_orders');
-      return saved ? JSON.parse(saved) : SEED_ORDERS;
+      if (saved) {
+        const parsed: Order[] = JSON.parse(saved);
+        // Exclude legacy demo order IDs
+        return parsed.filter(
+          (o) => !['CC-000123', 'CC-000124', 'CC-000120'].includes(o.id)
+        );
+      }
+      return [];
     } catch {
-      return SEED_ORDERS;
+      return [];
     }
   });
 
-  // Reviews
+  // Reviews (clean of demo reviews)
   const [reviews, setReviews] = useState<Record<string, Review[]>>(() => {
     try {
       const saved = localStorage.getItem('ceylon_crunch_reviews');
-      return saved ? JSON.parse(saved) : INITIAL_REVIEWS;
+      if (saved) {
+        const parsed: Record<string, Review[]> = JSON.parse(saved);
+        const cleaned: Record<string, Review[]> = {};
+        for (const [k, v] of Object.entries(parsed)) {
+          if (Array.isArray(v)) {
+            cleaned[k] = v.filter((r) => r.id !== 'rev-1');
+          }
+        }
+        return cleaned;
+      }
+      return INITIAL_REVIEWS;
     } catch {
       return INITIAL_REVIEWS;
     }
   });
 
-  // Inquiries
+  // Inquiries (clean of demo inquiries)
   const [inquiries, setInquiries] = useState<ContactInquiry[]>(() => {
     try {
       const saved = localStorage.getItem('ceylon_crunch_inquiries');
-      return saved ? JSON.parse(saved) : SEED_INQUIRIES;
+      if (saved) {
+        const parsed: ContactInquiry[] = JSON.parse(saved);
+        return parsed.filter((i) => i.id !== 'inq-1');
+      }
+      return [];
     } catch {
-      return SEED_INQUIRIES;
+      return [];
     }
   });
 
@@ -514,7 +291,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   // Sync to localStorage
   useEffect(() => {
     try {
-      localStorage.setItem('ceylon_crunch_products_v3', JSON.stringify(products));
+      localStorage.setItem('ceylon_crunch_products_v5', JSON.stringify(products));
     } catch (e) {
       console.error(e);
     }
@@ -583,6 +360,53 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           variants: p.variants.map((v) => (v.id === variantId ? { ...v, stock: Math.max(0, newStock) } : v)),
         };
       })
+    );
+  };
+
+  // Price update for variant
+  const updateProductVariantPrice = (productId: string, variantId: string, newPrice: number) => {
+    if (isNaN(newPrice) || newPrice < 0) return;
+    const roundedPrice = Math.round(newPrice * 100) / 100;
+
+    setProducts((prev) =>
+      prev.map((p) => {
+        if (p.id !== productId) return p;
+        return {
+          ...p,
+          variants: p.variants.map((v) => (v.id === variantId ? { ...v, price: roundedPrice } : v)),
+        };
+      })
+    );
+
+    // Keep active cart items synchronized with the new price
+    setCart((prev) =>
+      prev.map((item) =>
+        item.variantId === variantId ? { ...item, price: roundedPrice } : item
+      )
+    );
+  };
+
+  // Product primary image update
+  const updateProductImage = (productId: string, newImageUrl: string) => {
+    const trimmed = newImageUrl.trim();
+    if (!trimmed) return;
+
+    setProducts((prev) =>
+      prev.map((p) => {
+        if (p.id !== productId) return p;
+        const otherImages = p.images ? p.images.slice(1) : [];
+        return {
+          ...p,
+          images: [trimmed, ...otherImages],
+        };
+      })
+    );
+
+    // Keep active cart items synchronized with the new image
+    setCart((prev) =>
+      prev.map((item) =>
+        item.productId === productId ? { ...item, image: trimmed } : item
+      )
     );
   };
 
@@ -960,6 +784,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       value={{
         products,
         updateProductStock,
+        updateProductVariantPrice,
+        updateProductImage,
         getProductBySlug,
         cart,
         addToCart,

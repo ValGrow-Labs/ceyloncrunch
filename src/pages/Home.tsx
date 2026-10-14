@@ -16,19 +16,19 @@ export const Home: React.FC = () => {
       name: 'Nuts',
       slug: 'nuts',
       image: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a5/Bowl_of_Cashews_and_Almonds_%2848140118636%29.jpg/960px-Bowl_of_Cashews_and_Almonds_%2848140118636%29.jpg',
-      description: 'Walnuts (Akhrot), Almonds (Badam), Cashew (Kaju) & Pistachio (Pista)',
+      description: 'Walnuts, Almonds, Cashew & Pistachio',
     },
     {
       name: 'Dried Fruits',
       slug: 'dried-fruits',
       image: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/28/Dried_figs_%282%29.jpg/960px-Dried_figs_%282%29.jpg',
-      description: 'Raisins (Kishmish), Dried Figs (Anjeer), Apricots, Kiwi & Prunes',
+      description: 'Raisins, Dried Figs, Apricots, Kiwi & Prunes',
     },
     {
       name: 'Dates',
       slug: 'dates',
       image: 'https://images.unsplash.com/photo-1549488344-1f9b8d2bd1f3?auto=format&fit=crop&w=800&q=80',
-      description: 'Wet Dates (Khajur) & Dry Dates (Chuara)',
+      description: 'Wet Dates & Dry Dates',
     },
     {
       name: 'Seeds',
@@ -283,11 +283,17 @@ export const Home: React.FC = () => {
         </motion.div>
 
         {/* Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5 lg:gap-5">
-          {favorites.slice(0, 8).map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
+        {favorites.length > 0 ? (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5 lg:gap-5">
+            {favorites.slice(0, 8).map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        ) : (
+          <div className="bg-white border border-[#EADFD0] rounded-2xl p-8 text-center text-[#6B6B6B] text-sm">
+            No products available yet. Check back soon for fresh arrivals!
+          </div>
+        )}
       </section>
 
       {/* 4. WHY CEYLON CRUNCH */}
@@ -396,20 +402,20 @@ export const Home: React.FC = () => {
             {
               name: 'Dried Fruits',
               slug: 'dried-fruits',
-              image: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/28/Dried_figs_%282%29.jpg/960px-Dried_figs_%282%29.jpg',
+              image: '/products/dried-fruits/dried-apricots.jpeg',
               description: 'Naturally sweet and convenient for everyday snacking.',
             },
             {
-              name: 'Dates',
-              slug: 'dates',
-              image: 'https://images.unsplash.com/photo-1549488344-1f9b8d2bd1f3?auto=format&fit=crop&w=800&q=80',
-              description: 'A selection of dates for snacking, sharing and gifting.',
+              name: 'Seeds & Grains',
+              slug: 'seeds',
+              image: '/products/seeds/pumpkin-seeds.jpeg',
+              description: 'Raw chia, flax, pumpkin, hemp hearts and superfoods.',
             },
             {
-              name: 'Seeds',
-              slug: 'seeds',
-              image: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2e/Pepita_de_calabaza.jpg/960px-Pepita_de_calabaza.jpg',
-              description: 'Simple additions to your everyday meals.',
+              name: 'Tropical Provisions',
+              slug: 'dried-fruits',
+              image: '/products/dried-fruits/dried-mango.jpeg',
+              description: 'Ceylon pineapples, mangoes, bananas, and strawberries.',
             },
             {
               name: 'Healthy Snacks',

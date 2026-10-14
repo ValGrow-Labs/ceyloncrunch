@@ -70,11 +70,17 @@ export const Gifting: React.FC = () => {
       </div>
 
       {/* Hampers Showcase Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {hampers.map((hamper) => (
-          <ProductCard key={hamper.id} product={hamper} />
-        ))}
-      </div>
+      {hampers.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {hampers.map((hamper) => (
+            <ProductCard key={hamper.id} product={hamper} />
+          ))}
+        </div>
+      ) : (
+        <div className="bg-white border border-[#EADFD0] rounded-2xl p-8 text-center text-[#6B6B6B] text-sm">
+          No hampers available currently. Contact us for custom gifting!
+        </div>
+      )}
 
       {/* Custom Gifting Bespoke Banner */}
       <div className="bg-[#FAF8F4] border border-[#EADFD0] rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xs">
