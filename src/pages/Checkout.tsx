@@ -98,7 +98,7 @@ export const Checkout: React.FC = () => {
   const isStreetValid = street.trim().length >= 4;
   const isCityValid = city.trim().length >= 2;
 
-  const handlePlaceOrder = (e: React.FormEvent) => {
+  const handlePlaceOrder = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const newErrors: { name?: string; phone?: string; street?: string; city?: string } = {};
@@ -125,12 +125,11 @@ export const Checkout: React.FC = () => {
 
     setIsSubmitting(true);
 
-    // Create the order
-    setTimeout(() => {
+    try {
       // Format SL normalized mobile phone number
       const normalizedPhone = '+94 ' + normalizePhone(phone).slice(2).replace(/(\d{2})(\d{3})(\d{4})/, '$1 $2 $3');
 
-      const result = createOrder({
+      const result = await createOrder({
         customer: {
           name: name.trim(),
           phone: normalizedPhone,
@@ -144,8 +143,9 @@ export const Checkout: React.FC = () => {
           postalCode: postalCode.trim() || undefined,
         },
         paymentMethod,
-        paymentStatus: paymentMethod === 'cod' ? 'pending' : 'pending',
+        paymentStatus: 'pending',
         orderNotes: orderNotes.trim() || undefined,
+        giftNote: giftNote.trim() || undefined,
         items: [...cart],
         subtotal: cartSubtotal,
         deliveryFee,
@@ -159,7 +159,10 @@ export const Checkout: React.FC = () => {
       } else {
         showToast(result.error || 'Failed to place order. Please review stock availability.');
       }
-    }, 1200);
+    } catch (err: any) {
+      setIsSubmitting(false);
+      showToast(err?.message || 'Failed to place order. Please review your connection.');
+    }
   };
 
   return (

@@ -32,7 +32,39 @@ import { ReturnsRefunds } from './pages/ReturnsRefunds';
 import { Admin } from './pages/Admin';
 import { NotFound } from './pages/NotFound';
 
+import { Database, AlertTriangle } from 'lucide-react';
+import { isSupabaseConfigured } from './lib/supabase';
+
 export default function App() {
+  if (!isSupabaseConfigured) {
+    return (
+      <div className="min-h-screen bg-[#FBF7F0] flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-white border border-[#EADFD0] rounded-3xl p-8 shadow-sm text-center space-y-4">
+          <div className="w-16 h-16 rounded-full bg-[#1F3D2B] text-[#C5A059] flex items-center justify-center mx-auto shadow-xs">
+            <Database className="w-8 h-8" />
+          </div>
+          <h1 className="font-serif text-2xl font-bold text-[#1F3D2B]">
+            Database Connection Required
+          </h1>
+          <p className="text-xs text-[#6B6B6B] leading-relaxed">
+            Ceylon Crunch operates with Supabase PostgreSQL as the live single source of truth across all devices. Silent fallbacks to mock data are disabled to prevent out-of-sync product inventory.
+          </p>
+          <div className="bg-[#FAF8F4] border border-[#EADFD0] rounded-xl p-3.5 text-left font-mono text-[11px] text-[#424843] space-y-1.5">
+            <div className="text-[10px] text-[#8B5E3C] font-sans font-bold uppercase tracking-wider mb-1">
+              Required in .env:
+            </div>
+            <div>VITE_SUPABASE_URL=https://your-project.supabase.co</div>
+            <div>VITE_SUPABASE_ANON_KEY=eyJhbGciOi...</div>
+          </div>
+          <div className="flex items-center justify-center gap-1.5 text-[11px] text-[#8B5E3C]">
+            <AlertTriangle className="w-3.5 h-3.5" />
+            <span>Add your credentials and restart Vite development server</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <StoreProvider>
       <BrowserRouter>

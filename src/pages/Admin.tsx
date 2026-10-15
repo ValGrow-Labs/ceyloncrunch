@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useStore, OrderStatus, PaymentStatus } from '../lib/store';
 import { formatRs } from '../data/products';
@@ -20,33 +20,48 @@ import {
   Database,
   RefreshCw,
   Image as ImageIcon,
+  Mail,
+  Upload,
 } from 'lucide-react';
-import { isSupabaseConfigured } from '../lib/supabase';
+import {
+  isSupabaseConfigured,
+  adminUploadProductImage,
+  fetchPublicSiteSettings,
+  adminUpdateSiteSettings,
+} from '../lib/supabase';
 import { seedProductsToSupabase } from '../lib/seedDatabase';
 
 export const Admin: React.FC = () => {
   const {
     isAdmin,
+    isAdminLoading,
+    adminEmail,
     loginAdmin,
     logoutAdmin,
     orders,
+    refreshOrders,
     updateOrderStatus,
     updateOrderPaymentStatus,
     products,
+    refreshProducts,
     updateProductStock,
     updateProductVariantPrice,
     updateProductImage,
     inquiries,
+    refreshInquiries,
     showToast,
   } = useStore();
 
   // Product image editing state
   const [editingImageId, setEditingImageId] = useState<string | null>(null);
   const [imageInputVal, setImageInputVal] = useState<string>('');
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
 
-  // Password gate input (Demo password: crunch-admin)
+  // Supabase Auth credentials input
+  const [emailInput, setEmailInput] = useState('admin@ceyloncrunch.lk');
   const [passwordInput, setPasswordInput] = useState('');
-  const [passwordError, setPasswordError] = useState(false);
+  const [loginError, setLoginError] = useState<string | null>(null);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   // Active admin tab
   const [activeTab, setActiveTab] = useState<'orders' | 'inventory' | 'config' | 'inquiries'>('orders');
@@ -65,6 +80,26 @@ export const Admin: React.FC = () => {
     supabaseProjectUrl: 'https://ceyloncrunch-db.supabase.co',
     supabaseStorageBucket: 'product-images',
   });
+  const [isSavingConfig, setIsSavingConfig] = useState(false);
+
+  // Load site config from Supabase on mount
+  useEffect(() => {
+    if (!isAdmin || !isSupabaseConfigured) return;
+    fetchPublicSiteSettings().then((settings) => {
+      if (settings) {
+        setSiteConfig((prev) => ({
+          ...prev,
+          storeName: settings.store_name || prev.storeName,
+          announcementBanner: settings.announcement_banner || prev.announcementBanner,
+          freeDeliveryThreshold: settings.free_delivery_threshold ?? prev.freeDeliveryThreshold,
+          standardDeliveryFee: settings.standard_delivery_fee ?? prev.standardDeliveryFee,
+          bankDetails: settings.bank_details || prev.bankDetails,
+          contactEmail: settings.contact_email || prev.contactEmail,
+          contactPhone: settings.contact_phone || prev.contactPhone,
+        }));
+      }
+    });
+  }, [isAdmin]);
 
   // Orders filters
   const [orderFilterStatus, setOrderFilterStatus] = useState<string>('all');
@@ -80,19 +115,66 @@ export const Admin: React.FC = () => {
     showToast(result.message);
   };
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    const success = loginAdmin(passwordInput.trim());
-    if (success) {
-      setPasswordError(false);
-      showToast('Logged in as Ceylon Crunch Atelier Administrator');
+  const handleFileUpload = async (productId: string, file: File) => {
+    setIsUploadingImage(true);
+    showToast('Uploading image to Supabase Storage...');
+    const res = await adminUploadProductImage(productId, file);
+    setIsUploadingImage(false);
+    if (res.success && res.url) {
+      showToast('Image uploaded and updated in catalog!');
+      setEditingImageId(null);
+      await refreshProducts();
     } else {
-      setPasswordError(true);
-      showToast('Incorrect administrator password.');
+      showToast(res.error || 'Failed to upload image.');
     }
   };
 
-  // If not authenticated, show password gate
+  const handleSaveConfig = async () => {
+    setIsSavingConfig(true);
+    showToast('Saving configuration to Supabase...');
+    const res = await adminUpdateSiteSettings({
+      store_name: siteConfig.storeName,
+      announcement_banner: siteConfig.announcementBanner,
+      free_delivery_threshold: siteConfig.freeDeliveryThreshold,
+      standard_delivery_fee: siteConfig.standardDeliveryFee,
+      bank_details: siteConfig.bankDetails,
+      contact_email: siteConfig.contactEmail,
+      contact_phone: siteConfig.contactPhone,
+    });
+    setIsSavingConfig(false);
+    if (res.success) {
+      showToast('Website configuration saved to Supabase!');
+    } else {
+      showToast(`Failed to save configuration: ${res.error}`);
+    }
+  };
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoginError(null);
+    setIsLoggingIn(true);
+    const result = await loginAdmin(emailInput.trim(), passwordInput.trim());
+    setIsLoggingIn(false);
+    if (result.success) {
+      setPasswordInput('');
+      showToast('Logged in as Ceylon Crunch Atelier Administrator');
+    } else {
+      setLoginError(result.error || 'Authentication failed. Please verify credentials.');
+      showToast(result.error || 'Incorrect email or password.');
+    }
+  };
+
+  // If loading session verification, show loader
+  if (isAdminLoading) {
+    return (
+      <div className="py-24 flex flex-col items-center justify-center max-w-sm mx-auto px-4 text-center">
+        <RefreshCw className="w-8 h-8 text-[#1F3D2B] animate-spin mb-3" />
+        <p className="text-sm font-medium text-[#1F3D2B]">Verifying administrator session...</p>
+      </div>
+    );
+  }
+
+  // If not authenticated, show Supabase Auth login gate
   if (!isAdmin) {
     return (
       <div className="py-20 flex flex-col items-center justify-center max-w-sm mx-auto px-4">
@@ -104,10 +186,30 @@ export const Admin: React.FC = () => {
           Atelier Admin Portal
         </h1>
         <p className="text-xs text-[#6B6B6B] text-center mb-6">
-          Supabase Admin Authentication • Manage products, orders, PayHere payments &amp; website configuration.
+          Supabase Auth Protected • Single Source of Truth Console
         </p>
 
         <form onSubmit={handleLogin} className="w-full bg-white border border-[#EADFD0] rounded-2xl p-6 shadow-sm space-y-4">
+          <div>
+            <label className="text-xs font-bold text-[#1F3D2B] block mb-1">
+              Admin Email
+            </label>
+            <div className="relative flex items-center">
+              <Mail className="w-4 h-4 text-[#8B5E3C] absolute left-3.5" />
+              <input
+                type="email"
+                required
+                value={emailInput}
+                onChange={(e) => {
+                  setEmailInput(e.target.value);
+                  if (loginError) setLoginError(null);
+                }}
+                placeholder="admin@ceyloncrunch.lk"
+                className="w-full h-11 pl-10 pr-3.5 bg-[#f6f3f2] rounded-xl border border-[#EADFD0] text-sm text-[#1F3D2B] focus:bg-white focus:outline-none focus:border-[#1F3D2B]"
+              />
+            </div>
+          </div>
+
           <div>
             <label className="text-xs font-bold text-[#1F3D2B] block mb-1">
               Admin Password
@@ -120,24 +222,34 @@ export const Admin: React.FC = () => {
                 value={passwordInput}
                 onChange={(e) => {
                   setPasswordInput(e.target.value);
-                  if (passwordError) setPasswordError(false);
+                  if (loginError) setLoginError(null);
                 }}
-                placeholder="Enter password..."
+                placeholder="••••••••••••"
                 className="w-full h-11 pl-10 pr-3.5 bg-[#f6f3f2] rounded-xl border border-[#EADFD0] text-sm text-[#1F3D2B] focus:bg-white focus:outline-none focus:border-[#1F3D2B]"
               />
             </div>
-            {passwordError && (
-              <p className="text-xs text-[#B3261E] mt-1">
-                Incorrect password. Please try again.
-              </p>
-            )}
           </div>
+
+          {loginError && (
+            <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-xs text-red-700 flex items-start gap-2">
+              <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
+              <span>{loginError}</span>
+            </div>
+          )}
 
           <button
             type="submit"
-            className="w-full h-11 rounded-full bg-[#1F3D2B] hover:bg-[#162C1F] text-white text-xs font-semibold flex items-center justify-center gap-2 shadow-sm transition-all"
+            disabled={isLoggingIn}
+            className="w-full h-11 rounded-full bg-[#1F3D2B] hover:bg-[#162C1F] text-white text-xs font-semibold flex items-center justify-center gap-2 shadow-sm transition-all disabled:opacity-50 cursor-pointer"
           >
-            <span>Login to Console</span>
+            {isLoggingIn ? (
+              <>
+                <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                <span>Authenticating with Supabase...</span>
+              </>
+            ) : (
+              <span>Login to Console</span>
+            )}
           </button>
         </form>
       </div>
@@ -175,10 +287,15 @@ export const Admin: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-2">
+          {adminEmail && (
+            <span className="hidden sm:inline-flex items-center px-3 py-1 rounded-full text-[11px] font-semibold bg-[#EADFD0]/50 text-[#1F3D2B] border border-[#EADFD0]">
+              {adminEmail}
+            </span>
+          )}
           <button
             type="button"
             onClick={logoutAdmin}
-            className="h-9 px-4 rounded-full bg-[#f6f3f2] hover:bg-[#EADFD0] border border-[#EADFD0] text-xs font-semibold text-[#1F3D2B] flex items-center gap-1.5 transition-colors"
+            className="h-9 px-4 rounded-full bg-[#f6f3f2] hover:bg-[#EADFD0] border border-[#EADFD0] text-xs font-semibold text-[#1F3D2B] flex items-center gap-1.5 transition-colors cursor-pointer"
           >
             <LogOut className="w-3.5 h-3.5" />
             <span>Logout</span>
@@ -423,12 +540,28 @@ export const Admin: React.FC = () => {
       {activeTab === 'inventory' && (
         <div className="space-y-4">
           <div className="bg-white border border-[#EADFD0] rounded-2xl p-5 shadow-2xs">
-            <h2 className="font-serif text-lg font-bold text-[#1F3D2B] mb-1">
-              Live Small-Batch Inventory
-            </h2>
-            <p className="text-xs text-[#6B6B6B] mb-4">
-              Edit pack availability directly. Changes take effect across product pages and checkout immediately.
-            </p>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+              <div>
+                <h2 className="font-serif text-lg font-bold text-[#1F3D2B] mb-1">
+                  Live Small-Batch Inventory
+                </h2>
+                <p className="text-xs text-[#6B6B6B]">
+                  Edit pack pricing and stock availability directly. Changes sync to Supabase and reflect across all devices immediately.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => {
+                  refreshProducts();
+                  showToast('Inventory re-synced with Supabase');
+                }}
+                className="h-8 px-3 rounded-full bg-[#FAF8F4] hover:bg-[#EADFD0] text-[#1F3D2B] text-xs font-semibold flex items-center gap-1.5 border border-[#EADFD0] self-start sm:self-auto transition-colors"
+              >
+                <RefreshCw className="w-3.5 h-3.5" />
+                <span>Sync Inventory</span>
+              </button>
+            </div>
 
             <div className="space-y-4 divide-y divide-[#EADFD0]">
               {products.length === 0 ? (
@@ -489,41 +622,66 @@ export const Admin: React.FC = () => {
 
                     {/* Inline Image Edit Bar when active */}
                     {editingImageId === prod.id && (
-                      <div className="p-3 bg-[#FAF8F4] border border-[#EADFD0] rounded-xl flex flex-col sm:flex-row items-stretch sm:items-center gap-2 animate-in fade-in duration-200">
-                        <div className="flex-1 flex items-center gap-2">
-                          <span className="text-xs font-semibold text-[#1F3D2B] shrink-0">Path/URL:</span>
-                          <input
-                            type="text"
-                            value={imageInputVal}
-                            onChange={(e) => setImageInputVal(e.target.value)}
-                            placeholder="/products/dried-fruits/name.jpeg or https://..."
-                            className="w-full h-8 px-3 bg-white border border-[#EADFD0] rounded-lg text-xs text-[#1F3D2B] focus:outline-none focus:border-[#1F3D2B]"
-                          />
+                      <div className="p-4 bg-[#FAF8F4] border border-[#EADFD0] rounded-xl flex flex-col gap-3 animate-in fade-in duration-200">
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pb-3 border-b border-[#EADFD0]">
+                          <div>
+                            <span className="text-xs font-bold text-[#1F3D2B] block">Change Product Image</span>
+                            <span className="text-[11px] text-[#6B6B6B]">Upload a photo from your computer/phone, or set an image URL.</span>
+                          </div>
+
+                          <label className={`h-8 px-3 rounded-lg bg-[#1F3D2B] hover:bg-[#143E26] text-white text-xs font-semibold inline-flex items-center justify-center gap-1.5 cursor-pointer transition-colors shadow-xs ${isUploadingImage ? 'opacity-50 pointer-events-none' : ''}`}>
+                            <Upload className="w-3.5 h-3.5" />
+                            <span>{isUploadingImage ? 'Uploading to Supabase...' : 'Upload Image File'}</span>
+                            <input
+                              type="file"
+                              accept="image/png,image/jpeg,image/webp"
+                              disabled={isUploadingImage}
+                              className="hidden"
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) {
+                                  handleFileUpload(prod.id, file);
+                                }
+                              }}
+                            />
+                          </label>
                         </div>
-                        <div className="flex items-center gap-2 justify-end shrink-0">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              if (imageInputVal.trim()) {
-                                updateProductImage(prod.id, imageInputVal.trim());
-                                showToast(`Updated image for ${prod.name}`);
-                                setEditingImageId(null);
-                              } else {
-                                showToast('Please enter a valid image path or URL.');
-                              }
-                            }}
-                            className="h-8 px-3 rounded-lg bg-[#1F3D2B] hover:bg-[#143E26] text-white text-xs font-semibold flex items-center gap-1 transition-colors"
-                          >
-                            <CheckCircle2 className="w-3.5 h-3.5" />
-                            <span>Save Image</span>
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setEditingImageId(null)}
-                            className="h-8 px-2.5 rounded-lg bg-white border border-[#EADFD0] hover:bg-[#f6f3f2] text-xs font-medium text-[#6B6B6B]"
-                          >
-                            Cancel
-                          </button>
+
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                          <div className="flex-1 flex items-center gap-2">
+                            <span className="text-xs font-semibold text-[#1F3D2B] shrink-0">Or Image URL:</span>
+                            <input
+                              type="text"
+                              value={imageInputVal}
+                              onChange={(e) => setImageInputVal(e.target.value)}
+                              placeholder="/products/dried-fruits/name.jpeg or https://..."
+                              className="w-full h-8 px-3 bg-white border border-[#EADFD0] rounded-lg text-xs text-[#1F3D2B] focus:outline-none focus:border-[#1F3D2B]"
+                            />
+                          </div>
+                          <div className="flex items-center gap-2 justify-end shrink-0">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (imageInputVal.trim()) {
+                                  updateProductImage(prod.id, imageInputVal.trim());
+                                  setEditingImageId(null);
+                                } else {
+                                  showToast('Please enter a valid image path or URL.');
+                                }
+                              }}
+                              className="h-8 px-3 rounded-lg bg-[#1F3D2B] hover:bg-[#143E26] text-white text-xs font-semibold flex items-center gap-1 transition-colors"
+                            >
+                              <CheckCircle2 className="w-3.5 h-3.5" />
+                              <span>Save URL</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setEditingImageId(null)}
+                              className="h-8 px-2.5 rounded-lg bg-white border border-[#EADFD0] hover:bg-[#f6f3f2] text-xs font-medium text-[#6B6B6B]"
+                            >
+                              Cancel
+                            </button>
+                          </div>
                         </div>
                       </div>
                     )}
@@ -770,10 +928,11 @@ export const Admin: React.FC = () => {
             <div className="pt-2 flex justify-end">
               <button
                 type="button"
-                onClick={() => showToast('Website & Supabase configuration saved successfully!')}
-                className="h-10 px-6 rounded-full bg-[#1F3D2B] hover:bg-[#162C1F] text-white text-xs font-semibold transition-colors shadow-xs"
+                disabled={isSavingConfig}
+                onClick={handleSaveConfig}
+                className="h-10 px-6 rounded-full bg-[#1F3D2B] hover:bg-[#162C1F] text-white text-xs font-semibold transition-colors shadow-xs disabled:opacity-50"
               >
-                Save Website Configuration
+                {isSavingConfig ? 'Saving to Supabase...' : 'Save Website Configuration'}
               </button>
             </div>
           </div>

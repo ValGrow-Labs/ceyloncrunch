@@ -126,8 +126,89 @@ export interface DbInquiry {
 // SUPABASE SERVICE HELPERS
 // ==========================================
 
+export interface PlaceOrderItemPayload {
+  variant_id: string;
+  quantity: number;
+}
+
+export interface PlaceOrderPayload {
+  customer_name: string;
+  customer_phone: string;
+  customer_email?: string | null;
+  shipping_street: string;
+  shipping_city: string;
+  shipping_district: string;
+  shipping_postal?: string | null;
+  landmark?: string | null;
+  payment_method: 'cod' | 'bank' | 'card';
+  items: PlaceOrderItemPayload[];
+  order_notes?: string | null;
+  gift_note?: string | null;
+  idempotency_key?: string | null;
+}
+
+export interface PlaceOrderResult {
+  success: boolean;
+  order_id?: string;
+  access_token?: string;
+  waybill?: string;
+  subtotal?: number;
+  delivery_fee?: number;
+  total?: number;
+  status?: string;
+  is_duplicate?: boolean;
+  error?: string;
+}
+
+export interface TrackOrderResult {
+  found: boolean;
+  order?: {
+    id: string;
+    status: string;
+    payment_method: string;
+    payment_status: string;
+    payment_slip_url?: string | null;
+    subtotal: number;
+    delivery_fee: number;
+    total: number;
+    waybill?: string;
+    estimated_arrival?: string;
+    shipping_city: string;
+    shipping_district: string;
+    created_at: string;
+    items: Array<{
+      product_name: string;
+      variant_weight: string;
+      price: number;
+      quantity: number;
+      image?: string | null;
+    }>;
+  };
+  error?: string;
+}
+
+export interface DbSiteSettings {
+  id: string;
+  store_name: string;
+  announcement_banner: string;
+  free_delivery_threshold: number;
+  standard_delivery_fee: number;
+  bank_details: string;
+  contact_email: string;
+  contact_phone: string;
+  whatsapp_number: string;
+  instagram_url: string;
+  facebook_url: string;
+  tiktok_url: string;
+  updated_at?: string;
+}
+
+export interface DbOrderWithItems extends DbOrder {
+  items: DbOrderItem[];
+}
+
 /**
- * Fetch all products with their nested variants
+ * Fetch all products with their nested variants from Supabase
  */
 export async function getProductsFromSupabase(): Promise<DbProduct[] | null> {
   if (!supabase) return null;
@@ -135,7 +216,9 @@ export async function getProductsFromSupabase(): Promise<DbProduct[] | null> {
     const { data, error } = await supabase
       .from('products')
       .select('*, variants:product_variants(*)')
-      .order('created_at', { ascending: false });
+      .eq('is_active', true)
+      .order('display_order', { ascending: true })
+      .order('name', { ascending: true });
 
     if (error) {
       console.warn('Supabase getProducts error:', error.message);
@@ -149,56 +232,334 @@ export async function getProductsFromSupabase(): Promise<DbProduct[] | null> {
 }
 
 /**
- * Save a new order and its items in Supabase
+ * Admin: Update variant price directly in Supabase product_variants table
  */
-export async function saveOrderToSupabase(
-  order: DbOrder,
-  items: Omit<DbOrderItem, 'order_id'>[]
-): Promise<boolean> {
-  if (!supabase) return false;
+export async function adminUpdateVariantPrice(
+  variantId: string,
+  newPrice: number
+): Promise<{ success: boolean; error?: string }> {
+  if (!supabase) return { success: false, error: 'Database is not connected.' };
+  if (isNaN(newPrice) || newPrice < 0) {
+    return { success: false, error: 'Price must be a non-negative number.' };
+  }
+
+  const rounded = Math.round(newPrice);
   try {
-    const { error: orderError } = await supabase.from('orders').insert([order]);
-    if (orderError) {
-      console.error('Supabase saveOrder error:', orderError.message);
-      return false;
-    }
+    const { error } = await supabase
+      .from('product_variants')
+      .update({ price: rounded, updated_at: new Date().toISOString() })
+      .eq('id', variantId);
 
-    if (items.length > 0) {
-      const itemsToInsert = items.map((item) => ({
-        ...item,
-        order_id: order.id,
-      }));
-      const { error: itemsError } = await supabase.from('order_items').insert(itemsToInsert);
-      if (itemsError) {
-        console.error('Supabase saveOrderItems error:', itemsError.message);
-      }
+    if (error) {
+      return { success: false, error: error.message };
     }
-
-    return true;
-  } catch (err) {
-    console.error('Supabase saveOrder exception:', err);
-    return false;
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err?.message || 'Failed to update price.' };
   }
 }
 
 /**
- * Track an order by ID and phone number
+ * Admin: Update variant stock directly in Supabase product_variants table
  */
-export async function getOrderFromSupabase(
+export async function adminUpdateVariantStock(
+  variantId: string,
+  newStock: number
+): Promise<{ success: boolean; error?: string }> {
+  if (!supabase) return { success: false, error: 'Database is not connected.' };
+  const safeStock = Math.max(0, Math.round(newStock));
+
+  try {
+    const { error } = await supabase
+      .from('product_variants')
+      .update({ stock: safeStock, updated_at: new Date().toISOString() })
+      .eq('id', variantId);
+
+    if (error) {
+      return { success: false, error: error.message };
+    }
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err?.message || 'Failed to update stock.' };
+  }
+}
+
+/**
+ * Admin: Upload product image to Supabase Storage and update database image URL
+ */
+export async function adminUploadProductImage(
+  productId: string,
+  file: File
+): Promise<{ success: boolean; url?: string; error?: string }> {
+  if (!supabase) return { success: false, error: 'Database is not connected.' };
+  try {
+    const fileExt = file.name.split('.').pop() || 'jpg';
+    const filePath = `products/${productId}_${Date.now()}.${fileExt}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('product-images')
+      .upload(filePath, file, { upsert: true });
+
+    if (uploadError) {
+      return { success: false, error: uploadError.message };
+    }
+
+    const { data: publicData } = supabase.storage
+      .from('product-images')
+      .getPublicUrl(filePath);
+
+    const publicUrl = publicData?.publicUrl;
+    if (!publicUrl) {
+      return { success: false, error: 'Failed to retrieve public image URL.' };
+    }
+
+    // Update in product_images table and products.images array
+    await supabase.from('product_images').insert([
+      {
+        product_id: productId,
+        url: publicUrl,
+        is_primary: true,
+        display_order: 0,
+      },
+    ]);
+
+    // Update primary image in products table
+    const { data: currentProd } = await supabase
+      .from('products')
+      .select('images')
+      .eq('id', productId)
+      .single();
+
+    const otherImages = currentProd?.images ? currentProd.images.slice(1) : [];
+    await supabase
+      .from('products')
+      .update({
+        images: [publicUrl, ...otherImages],
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', productId);
+
+    return { success: true, url: publicUrl };
+  } catch (err: any) {
+    return { success: false, error: err?.message || 'Image upload failed.' };
+  }
+}
+
+/**
+ * Admin: Update primary image path / URL directly
+ */
+export async function adminUpdateProductImageUrl(
+  productId: string,
+  newImageUrl: string
+): Promise<{ success: boolean; error?: string }> {
+  if (!supabase) return { success: false, error: 'Database is not connected.' };
+  const trimmed = newImageUrl.trim();
+  if (!trimmed) return { success: false, error: 'Image URL cannot be empty.' };
+
+  try {
+    const { data: currentProd } = await supabase
+      .from('products')
+      .select('images')
+      .eq('id', productId)
+      .single();
+
+    const otherImages = currentProd?.images ? currentProd.images.slice(1) : [];
+    const { error } = await supabase
+      .from('products')
+      .update({
+        images: [trimmed, ...otherImages],
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', productId);
+
+    if (error) {
+      return { success: false, error: error.message };
+    }
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err?.message || 'Failed to update image URL.' };
+  }
+}
+
+/**
+ * Place order via SECURITY DEFINER RPC (Atomic stock decrement and server-side pricing)
+ */
+export async function placeOrderRpc(
+  payload: PlaceOrderPayload
+): Promise<PlaceOrderResult> {
+  if (!supabase) {
+    return { success: false, error: 'Database is not connected.' };
+  }
+
+  try {
+    const { data, error } = await supabase.rpc('place_order', {
+      p_customer_name: payload.customer_name,
+      p_customer_phone: payload.customer_phone,
+      p_shipping_street: payload.shipping_street,
+      p_shipping_city: payload.shipping_city,
+      p_shipping_district: payload.shipping_district,
+      p_payment_method: payload.payment_method,
+      p_items: payload.items,
+      p_customer_email: payload.customer_email || null,
+      p_shipping_postal: payload.shipping_postal || null,
+      p_landmark: payload.landmark || null,
+      p_order_notes: payload.order_notes || null,
+      p_gift_note: payload.gift_note || null,
+      p_idempotency_key: payload.idempotency_key || null,
+    });
+
+    if (error) {
+      return { success: false, error: error.message };
+    }
+
+    return data as PlaceOrderResult;
+  } catch (err: any) {
+    return { success: false, error: err?.message || 'Order placement failed.' };
+  }
+}
+
+/**
+ * Track an order via SECURITY DEFINER RPC
+ */
+export async function trackOrderRpc(
   orderId: string,
-  phone?: string
-): Promise<{ order: DbOrder; items: DbOrderItem[] } | null> {
+  phone: string
+): Promise<TrackOrderResult> {
+  if (!supabase) {
+    return { found: false, error: 'Database is not connected.' };
+  }
+
+  try {
+    const { data, error } = await supabase.rpc('track_order', {
+      p_order_id: orderId,
+      p_phone: phone,
+    });
+
+    if (error) {
+      return { found: false, error: error.message };
+    }
+
+    return data as TrackOrderResult;
+  } catch (err: any) {
+    return { found: false, error: err?.message || 'Tracking failed.' };
+  }
+}
+
+/**
+ * Admin: Fetch all orders with order items
+ */
+export async function fetchAdminOrders(): Promise<DbOrderWithItems[] | null> {
   if (!supabase) return null;
   try {
-    let query = supabase.from('orders').select('*, items:order_items(*)').eq('id', orderId);
-    if (phone) {
-      query = query.ilike('customer_phone', `%${phone.trim()}%`);
-    }
-    const { data, error } = await query.single();
-    if (error || !data) return null;
+    const { data, error } = await supabase
+      .from('orders')
+      .select('*, items:order_items(*)')
+      .order('created_at', { ascending: false });
 
-    const { items, ...order } = data;
-    return { order: order as DbOrder, items: (items || []) as DbOrderItem[] };
+    if (error) {
+      console.warn('Fetch admin orders error:', error.message);
+      return null;
+    }
+    return data as DbOrderWithItems[];
+  } catch (err) {
+    console.warn('Fetch admin orders exception:', err);
+    return null;
+  }
+}
+
+/**
+ * Admin: Update order fulfillment status in Supabase
+ */
+export async function adminUpdateOrderStatus(
+  orderId: string,
+  status: string
+): Promise<{ success: boolean; error?: string }> {
+  if (!supabase) return { success: false, error: 'Database is not connected.' };
+  try {
+    const { error } = await supabase
+      .from('orders')
+      .update({ status, updated_at: new Date().toISOString() })
+      .eq('id', orderId);
+
+    if (error) return { success: false, error: error.message };
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err?.message || 'Status update failed.' };
+  }
+}
+
+/**
+ * Admin: Update payment status in Supabase
+ */
+export async function adminUpdatePaymentStatus(
+  orderId: string,
+  paymentStatus: string
+): Promise<{ success: boolean; error?: string }> {
+  if (!supabase) return { success: false, error: 'Database is not connected.' };
+  try {
+    const { error } = await supabase
+      .from('orders')
+      .update({ payment_status: paymentStatus, updated_at: new Date().toISOString() })
+      .eq('id', orderId);
+
+    if (error) return { success: false, error: error.message };
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err?.message || 'Payment status update failed.' };
+  }
+}
+
+/**
+ * Fetch public site settings (banner, delivery fees, bank info)
+ */
+export async function fetchPublicSiteSettings(): Promise<DbSiteSettings | null> {
+  if (!supabase) return null;
+  try {
+    const { data, error } = await supabase
+      .from('public_site_settings')
+      .select('*')
+      .single();
+
+    if (error || !data) return null;
+    return data as DbSiteSettings;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Admin: Update site configuration in Supabase
+ */
+export async function adminUpdateSiteSettings(
+  settings: Partial<DbSiteSettings>
+): Promise<{ success: boolean; error?: string }> {
+  if (!supabase) return { success: false, error: 'Database is not connected.' };
+  try {
+    const { error } = await supabase
+      .from('site_settings')
+      .update({ ...settings, updated_at: new Date().toISOString() })
+      .eq('id', 'default');
+
+    if (error) return { success: false, error: error.message };
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err?.message || 'Failed to update settings.' };
+  }
+}
+
+/**
+ * Admin: Fetch inquiries from Supabase
+ */
+export async function fetchAdminInquiries(): Promise<DbInquiry[] | null> {
+  if (!supabase) return null;
+  try {
+    const { data, error } = await supabase
+      .from('inquiries')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) return null;
+    return data as DbInquiry[];
   } catch {
     return null;
   }
@@ -252,9 +613,10 @@ export async function uploadPaymentSlip(
     }
 
     const { data } = supabase.storage.from('payment-slips').getPublicUrl(filePath);
-    return data.publicUrl || null;
+    return data?.publicUrl || null;
   } catch (err) {
     console.warn('Payment slip upload exception:', err);
     return null;
   }
 }
+
