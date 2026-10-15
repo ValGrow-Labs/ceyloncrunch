@@ -101,6 +101,7 @@ export default function App() {
               <Route path="/refund-policy" element={<ReturnsRefunds />} />
               <Route path="/returns" element={<ReturnsRefunds />} />
               <Route path="/admin" element={<Admin />} />
+              <Route path="/admin/*" element={<Admin />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>

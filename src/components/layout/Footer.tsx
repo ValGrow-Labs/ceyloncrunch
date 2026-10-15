@@ -141,6 +141,11 @@ export const Footer: React.FC = () => {
                   Track Your Order
                 </Link>
               </li>
+              <li>
+                <Link to="/admin" className="hover:text-[#C9A84C] transition-colors flex items-center gap-1">
+                  <span>Admin Portal</span>
+                </Link>
+              </li>
             </ul>
           </div>
 

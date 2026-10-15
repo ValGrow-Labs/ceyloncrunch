@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams, useLocation } from 'react-router-dom';
 import { useStore, OrderStatus, PaymentStatus } from '../lib/store';
 import { formatRs } from '../data/products';
 import {
@@ -32,6 +32,9 @@ import {
 import { seedProductsToSupabase } from '../lib/seedDatabase';
 
 export const Admin: React.FC = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const location = useLocation();
+
   const {
     isAdmin,
     isAdminLoading,
@@ -63,8 +66,37 @@ export const Admin: React.FC = () => {
   const [loginError, setLoginError] = useState<string | null>(null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
-  // Active admin tab
-  const [activeTab, setActiveTab] = useState<'orders' | 'inventory' | 'config' | 'inquiries'>('orders');
+  // Active admin tab (syncs with ?tab= query parameter and /admin/:subpath)
+  const getInitialTab = (): 'orders' | 'inventory' | 'config' | 'inquiries' => {
+    const tabFromQuery = searchParams.get('tab');
+    if (tabFromQuery && ['orders', 'inventory', 'config', 'inquiries'].includes(tabFromQuery)) {
+      return tabFromQuery as 'orders' | 'inventory' | 'config' | 'inquiries';
+    }
+    const pathPart = location.pathname.replace(/^\/admin\/?/, '').split('/')[0];
+    if (pathPart && ['orders', 'inventory', 'config', 'inquiries'].includes(pathPart)) {
+      return pathPart as 'orders' | 'inventory' | 'config' | 'inquiries';
+    }
+    return 'orders';
+  };
+
+  const [activeTab, setActiveTabState] = useState<'orders' | 'inventory' | 'config' | 'inquiries'>(getInitialTab);
+
+  useEffect(() => {
+    const tabFromQuery = searchParams.get('tab');
+    if (tabFromQuery && ['orders', 'inventory', 'config', 'inquiries'].includes(tabFromQuery)) {
+      setActiveTabState(tabFromQuery as 'orders' | 'inventory' | 'config' | 'inquiries');
+      return;
+    }
+    const pathPart = location.pathname.replace(/^\/admin\/?/, '').split('/')[0];
+    if (pathPart && ['orders', 'inventory', 'config', 'inquiries'].includes(pathPart)) {
+      setActiveTabState(pathPart as 'orders' | 'inventory' | 'config' | 'inquiries');
+    }
+  }, [location.pathname, searchParams]);
+
+  const setActiveTab = (tab: 'orders' | 'inventory' | 'config' | 'inquiries') => {
+    setActiveTabState(tab);
+    setSearchParams({ tab });
+  };
 
   // Website Configuration State
   const [siteConfig, setSiteConfig] = useState({
