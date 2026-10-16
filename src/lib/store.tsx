@@ -4,7 +4,9 @@ import {
   supabase,
   isSupabaseConfigured,
   getProductsFromSupabase,
+  adminUpdateVariant,
   adminUpdateVariantPrice,
+  adminUpdateVariantOriginalPrice,
   adminUpdateVariantStock,
   adminUpdateProductImageUrl,
   placeOrderRpc,
@@ -81,6 +83,30 @@ export interface ContactInquiry {
   createdAt: string;
 }
 
+export interface SavedAddress {
+  id: string;
+  label: string; // e.g., 'Home', 'Work', 'Family'
+  recipientName: string;
+  phone: string;
+  street: string;
+  landmark?: string;
+  city: string;
+  district: string;
+  postalCode?: string;
+  isDefault: boolean;
+}
+
+export interface CustomerProfile {
+  name: string;
+  phone: string;
+  email: string;
+  city: string;
+  district: string;
+  dietaryPreferences: string[];
+  loyaltyTier: 'Ceylon Patron' | 'Island Connoisseur' | 'Artisan Reserve';
+  memberSince: string;
+}
+
 interface ToastMessage {
   id: string;
   message: string;
@@ -95,6 +121,8 @@ interface StoreContextType {
   refreshProducts: () => Promise<void>;
   updateProductStock: (productId: string, variantId: string, newStock: number) => Promise<void>;
   updateProductVariantPrice: (productId: string, variantId: string, newPrice: number) => Promise<void>;
+  updateProductVariantOriginalPrice: (productId: string, variantId: string, newOriginalPrice?: number) => Promise<void>;
+  updateProductVariants: (productId: string, variantUpdates: { id: string; price: number; originalPrice?: number; stock: number }[]) => Promise<{ success: boolean; error?: string }>;
   updateProductImage: (productId: string, newImageUrl: string) => Promise<void>;
   getProductBySlug: (slug: string) => Product | undefined;
 
@@ -120,6 +148,22 @@ interface StoreContextType {
   updateOrderPaymentStatus: (orderId: string, paymentStatus: PaymentStatus) => Promise<void>;
   uploadOrderSlip: (orderId: string, slipDataUrl: string) => Promise<void>;
   lookupOrder: (orderNumber: string, phone: string) => Order | undefined;
+  linkOrderToProfile: (order: Order) => void;
+
+  // Patron Profile & Addresses
+  patronProfile: CustomerProfile;
+  updatePatronProfile: (data: Partial<CustomerProfile>) => void;
+  savedAddresses: SavedAddress[];
+  addSavedAddress: (address: Omit<SavedAddress, 'id'>) => SavedAddress;
+  updateSavedAddress: (id: string, address: Partial<SavedAddress>) => void;
+  deleteSavedAddress: (id: string) => void;
+  setDefaultAddress: (id: string) => void;
+
+  // Wishlist
+  wishlist: string[];
+  toggleWishlist: (productId: string) => void;
+  isWishlisted: (productId: string) => boolean;
+  clearWishlist: () => void;
 
   // Reviews
   reviews: Record<string, Review[]>;
@@ -247,6 +291,42 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   // Toast
   const [toast, setToast] = useState<ToastMessage | null>(null);
+
+  // Patron Profile State
+  const [patronProfile, setPatronProfile] = useState<CustomerProfile>(() => {
+    try {
+      const saved = localStorage.getItem('ceylon_crunch_patron_profile');
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return {
+      name: '',
+      phone: '',
+      email: '',
+      city: 'Colombo',
+      district: 'Colombo',
+      dietaryPreferences: [],
+      loyaltyTier: 'Ceylon Patron',
+      memberSince: new Date().getFullYear().toString(),
+    };
+  });
+
+  // Saved Addresses State
+  const [savedAddresses, setSavedAddresses] = useState<SavedAddress[]>(() => {
+    try {
+      const saved = localStorage.getItem('ceylon_crunch_saved_addresses');
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return [];
+  });
+
+  // Wishlist State (list of product IDs)
+  const [wishlist, setWishlist] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem('ceylon_crunch_wishlist');
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return [];
+  });
 
   // Admin session authenticated through Supabase Auth & public.admins table
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
@@ -704,6 +784,106 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   };
 
+  // Original / Strikethrough price update for variant (discount compare-at price)
+  const updateProductVariantOriginalPrice = async (
+    productId: string,
+    variantId: string,
+    newOriginalPrice?: number
+  ) => {
+    const val =
+      newOriginalPrice === undefined || isNaN(newOriginalPrice)
+        ? undefined
+        : Math.round(newOriginalPrice);
+
+    // Optimistic local state update
+    setProducts((prev) =>
+      prev.map((p) => {
+        if (p.id !== productId) return p;
+        return {
+          ...p,
+          variants: p.variants.map((v) =>
+            v.id === variantId ? { ...v, originalPrice: val } : v
+          ),
+        };
+      })
+    );
+
+    if (isSupabaseConfigured) {
+      const res = await adminUpdateVariantOriginalPrice(variantId, val ?? null);
+      if (!res.success) {
+        showToast(`Original price update failed: ${res.error}`);
+        await refreshProducts();
+      } else {
+        showToast('Discount / Original price updated');
+      }
+    }
+  };
+
+  // Batch save variants for a product
+  const updateProductVariants = async (
+    productId: string,
+    variantUpdates: { id: string; price: number; originalPrice?: number; stock: number }[]
+  ): Promise<{ success: boolean; error?: string }> => {
+    // Optimistic local state update
+    setProducts((prev) =>
+      prev.map((p) => {
+        if (p.id !== productId) return p;
+        const updateMap = new Map(variantUpdates.map((u) => [u.id, u]));
+        return {
+          ...p,
+          variants: p.variants.map((v) => {
+            const upd = updateMap.get(v.id);
+            if (!upd) return v;
+            return {
+              ...v,
+              price: Math.round(upd.price),
+              originalPrice: upd.originalPrice !== undefined ? Math.round(upd.originalPrice) : undefined,
+              stock: Math.max(0, Math.round(upd.stock)),
+            };
+          }),
+        };
+      })
+    );
+
+    // Sync active cart
+    setCart((prev) =>
+      prev.map((item) => {
+        const upd = variantUpdates.find((u) => u.id === item.variantId);
+        if (upd) {
+          return {
+            ...item,
+            price: Math.round(upd.price),
+            quantity: Math.min(item.quantity, Math.max(1, Math.round(upd.stock))),
+          };
+        }
+        return item;
+      })
+    );
+
+    if (isSupabaseConfigured) {
+      try {
+        const promises = variantUpdates.map((v) =>
+          adminUpdateVariant(v.id, {
+            price: v.price,
+            original_price: v.originalPrice ?? null,
+            stock: v.stock,
+          })
+        );
+        const results = await Promise.all(promises);
+        const failed = results.find((r) => !r.success);
+        if (failed) {
+          await refreshProducts();
+          return { success: false, error: failed.error };
+        }
+      } catch (err: any) {
+        await refreshProducts();
+        return { success: false, error: err?.message || 'Failed to update database' };
+      }
+    }
+
+    return { success: true };
+  };
+
   // Product primary image update
   const updateProductImage = async (productId: string, newImageUrl: string) => {
     const trimmed = newImageUrl.trim();
@@ -923,7 +1103,38 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         ],
       };
 
-      setOrders((prev) => [newOrder, ...prev]);
+      setOrders((prev) => {
+        const next = [newOrder, ...prev];
+        try {
+          localStorage.setItem('ceylon_crunch_orders', JSON.stringify(next));
+        } catch {}
+        return next;
+      });
+
+      // Auto-populate patron profile & address if not present
+      if (!patronProfile.name) {
+        updatePatronProfile({
+          name: orderData.customer.name,
+          phone: orderData.customer.phone,
+          email: orderData.customer.email || '',
+          city: orderData.shippingAddress.city,
+          district: orderData.shippingAddress.district,
+        });
+      }
+      if (savedAddresses.length === 0) {
+        addSavedAddress({
+          label: 'Home',
+          recipientName: orderData.customer.name,
+          phone: orderData.customer.phone,
+          street: orderData.shippingAddress.street,
+          landmark: orderData.shippingAddress.landmark,
+          city: orderData.shippingAddress.city,
+          district: orderData.shippingAddress.district,
+          postalCode: orderData.shippingAddress.postalCode,
+          isDefault: true,
+        });
+      }
+
       clearCart();
       // Instantly refresh products to reflect decremented stock in local UI
       refreshProducts();
@@ -1136,6 +1347,108 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setAdminEmail(null);
   };
 
+  // Patron Profile & Address methods
+  const updatePatronProfile = (data: Partial<CustomerProfile>) => {
+    setPatronProfile((prev) => {
+      const updated = { ...prev, ...data };
+      try {
+        localStorage.setItem('ceylon_crunch_patron_profile', JSON.stringify(updated));
+      } catch {}
+      return updated;
+    });
+  };
+
+  const addSavedAddress = (addressData: Omit<SavedAddress, 'id'>): SavedAddress => {
+    const newAddress: SavedAddress = {
+      ...addressData,
+      id: `addr-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+      isDefault: savedAddresses.length === 0 ? true : addressData.isDefault,
+    };
+    setSavedAddresses((prev) => {
+      let updated = prev;
+      if (newAddress.isDefault) {
+        updated = prev.map((a) => ({ ...a, isDefault: false }));
+      }
+      const finalAddresses = [newAddress, ...updated];
+      try {
+        localStorage.setItem('ceylon_crunch_saved_addresses', JSON.stringify(finalAddresses));
+      } catch {}
+      return finalAddresses;
+    });
+    return newAddress;
+  };
+
+  const updateSavedAddress = (id: string, addressData: Partial<SavedAddress>) => {
+    setSavedAddresses((prev) => {
+      let updated = prev.map((a) => (a.id === id ? { ...a, ...addressData } : a));
+      if (addressData.isDefault) {
+        updated = updated.map((a) => (a.id === id ? { ...a, isDefault: true } : { ...a, isDefault: false }));
+      }
+      try {
+        localStorage.setItem('ceylon_crunch_saved_addresses', JSON.stringify(updated));
+      } catch {}
+      return updated;
+    });
+  };
+
+  const deleteSavedAddress = (id: string) => {
+    setSavedAddresses((prev) => {
+      const remaining = prev.filter((a) => a.id !== id);
+      if (remaining.length > 0 && !remaining.some((a) => a.isDefault)) {
+        remaining[0].isDefault = true;
+      }
+      try {
+        localStorage.setItem('ceylon_crunch_saved_addresses', JSON.stringify(remaining));
+      } catch {}
+      return remaining;
+    });
+  };
+
+  const setDefaultAddress = (id: string) => {
+    setSavedAddresses((prev) => {
+      const updated = prev.map((a) => ({ ...a, isDefault: a.id === id }));
+      try {
+        localStorage.setItem('ceylon_crunch_saved_addresses', JSON.stringify(updated));
+      } catch {}
+      return updated;
+    });
+  };
+
+  // Wishlist methods
+  const toggleWishlist = (productId: string) => {
+    setWishlist((prev) => {
+      const exists = prev.includes(productId);
+      const next = exists ? prev.filter((id) => id !== productId) : [...prev, productId];
+      try {
+        localStorage.setItem('ceylon_crunch_wishlist', JSON.stringify(next));
+      } catch {}
+      return next;
+    });
+  };
+
+  const isWishlisted = (productId: string): boolean => {
+    return wishlist.includes(productId);
+  };
+
+  const clearWishlist = () => {
+    setWishlist([]);
+    try {
+      localStorage.removeItem('ceylon_crunch_wishlist');
+    } catch {}
+  };
+
+  // Link Order to Profile
+  const linkOrderToProfile = (order: Order) => {
+    setOrders((prev) => {
+      if (prev.some((o) => o.id === order.id)) return prev;
+      const updated = [order, ...prev];
+      try {
+        localStorage.setItem('ceylon_crunch_orders', JSON.stringify(updated));
+      } catch {}
+      return updated;
+    });
+  };
+
   return (
     <StoreContext.Provider
       value={{
@@ -1144,6 +1457,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         refreshProducts,
         updateProductStock,
         updateProductVariantPrice,
+        updateProductVariantOriginalPrice,
+        updateProductVariants,
         updateProductImage,
         getProductBySlug,
         cart,
@@ -1165,6 +1480,18 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         updateOrderPaymentStatus,
         uploadOrderSlip,
         lookupOrder,
+        linkOrderToProfile,
+        patronProfile,
+        updatePatronProfile,
+        savedAddresses,
+        addSavedAddress,
+        updateSavedAddress,
+        deleteSavedAddress,
+        setDefaultAddress,
+        wishlist,
+        toggleWishlist,
+        isWishlisted,
+        clearWishlist,
         reviews,
         addReview,
         inquiries,

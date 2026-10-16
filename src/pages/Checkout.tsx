@@ -45,8 +45,18 @@ const SRI_LANKAN_DISTRICTS = [
 
 export const Checkout: React.FC = () => {
   const navigate = useNavigate();
-  const { cart, cartSubtotal, deliveryFee, cartTotal, itemCount, giftNote, createOrder, showToast } =
-    useStore();
+  const {
+    cart,
+    cartSubtotal,
+    deliveryFee,
+    cartTotal,
+    itemCount,
+    giftNote,
+    createOrder,
+    showToast,
+    patronProfile,
+    savedAddresses,
+  } = useStore();
 
   // Redirect to cart if empty
   if (cart.length === 0) {
@@ -57,15 +67,17 @@ export const Checkout: React.FC = () => {
   const [isSummaryOpen, setIsSummaryOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const defaultAddr = savedAddresses.find((a) => a.isDefault) || savedAddresses[0];
+
   // Form inputs
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [email, setEmail] = useState('');
-  const [street, setStreet] = useState('');
-  const [landmark, setLandmark] = useState('');
-  const [city, setCity] = useState('');
-  const [district, setDistrict] = useState('Colombo');
-  const [postalCode, setPostalCode] = useState('');
+  const [name, setName] = useState(defaultAddr?.recipientName || patronProfile?.name || '');
+  const [phone, setPhone] = useState(defaultAddr?.phone || patronProfile?.phone || '');
+  const [email, setEmail] = useState(patronProfile?.email || '');
+  const [street, setStreet] = useState(defaultAddr?.street || '');
+  const [landmark, setLandmark] = useState(defaultAddr?.landmark || '');
+  const [city, setCity] = useState(defaultAddr?.city || patronProfile?.city || 'Colombo');
+  const [district, setDistrict] = useState(defaultAddr?.district || patronProfile?.district || 'Colombo');
+  const [postalCode, setPostalCode] = useState(defaultAddr?.postalCode || '');
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('cod');
   const [orderNotes, setOrderNotes] = useState(giftNote || '');
 
@@ -396,6 +408,36 @@ export const Checkout: React.FC = () => {
             </div>
             <span className="text-xs font-semibold text-[#8B5E3C]">Island-Wide</span>
           </div>
+
+          {/* Quick Saved Address Picker */}
+          {savedAddresses.length > 0 && (
+            <div className="p-3 bg-[#FAF8F4] rounded-xl border border-[#EADFD0] space-y-2">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[#8B5E3C] block">
+                Prefill from Saved Address Book
+              </span>
+              <div className="flex flex-wrap gap-2">
+                {savedAddresses.map((addr) => (
+                  <button
+                    key={addr.id}
+                    type="button"
+                    onClick={() => {
+                      if (addr.recipientName) setName(addr.recipientName);
+                      if (addr.phone) setPhone(addr.phone);
+                      setStreet(addr.street);
+                      setLandmark(addr.landmark || '');
+                      setCity(addr.city);
+                      setDistrict(addr.district);
+                      setPostalCode(addr.postalCode || '');
+                      showToast(`Filled from ${addr.label} address`);
+                    }}
+                    className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white hover:bg-[#1F3D2B] hover:text-white text-[#1F3D2B] border border-[#EADFD0] transition-colors"
+                  >
+                    📍 {addr.label} ({addr.city})
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Street Address */}
           <div className="flex flex-col gap-1">

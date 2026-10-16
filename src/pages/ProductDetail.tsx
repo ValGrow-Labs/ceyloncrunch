@@ -24,7 +24,7 @@ import {
 export const ProductDetail: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
-  const { products, getProductBySlug, addToCart, reviews, addReview, showToast } = useStore();
+  const { products, getProductBySlug, addToCart, reviews, addReview, showToast, toggleWishlist, isWishlisted } = useStore();
 
   const product = getProductBySlug(slug || '');
 
@@ -32,7 +32,6 @@ export const ProductDetail: React.FC = () => {
   const [selectedVariantId, setSelectedVariantId] = useState<string>('');
   const [quantity, setQuantity] = useState(1);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
-  const [isWishlisted, setIsWishlisted] = useState(false);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
 
   // Accordion state
@@ -104,9 +103,12 @@ export const ProductDetail: React.FC = () => {
     navigate('/checkout');
   };
 
+  const isProductWishlisted = Boolean(product && isWishlisted(product.id));
+
   const handleWishlistToggle = () => {
-    setIsWishlisted(!isWishlisted);
-    showToast(isWishlisted ? 'Removed from your wishlist' : 'Saved to your harvest wishlist');
+    if (!product) return;
+    toggleWishlist(product.id);
+    showToast(isProductWishlisted ? 'Removed from your wishlist' : 'Saved to your harvest wishlist');
   };
 
   const handleShare = async () => {
@@ -149,7 +151,7 @@ export const ProductDetail: React.FC = () => {
   const pairedProducts = products.filter((p) => product.pairsWithIds.includes(p.id));
 
   const discountPercent =
-    currentVariant && currentVariant.originalPrice
+    currentVariant && currentVariant.originalPrice && currentVariant.originalPrice > currentVariant.price
       ? Math.round(((currentVariant.originalPrice - currentVariant.price) / currentVariant.originalPrice) * 100)
       : null;
 
@@ -225,10 +227,10 @@ export const ProductDetail: React.FC = () => {
               onClick={handleWishlistToggle}
               aria-label="Save to wishlist"
               className={`absolute top-3 right-3 w-10 h-10 rounded-full bg-white/90 backdrop-blur-md shadow-md flex items-center justify-center transition-all active:scale-90 z-10 ${
-                isWishlisted ? 'text-[#B3261E]' : 'text-[#1F3D2B]'
+                isProductWishlisted ? 'text-[#B3261E]' : 'text-[#1F3D2B]'
               }`}
             >
-              <Heart className={`w-5 h-5 ${isWishlisted ? 'fill-[#B3261E]' : ''}`} />
+              <Heart className={`w-5 h-5 ${isProductWishlisted ? 'fill-[#B3261E]' : ''}`} />
             </button>
 
             {/* Pagination Dots */}
@@ -304,7 +306,7 @@ export const ProductDetail: React.FC = () => {
               <span className="font-serif text-2xl lg:text-3xl text-[#1F3D2B] font-bold tracking-tight tabular-nums">
                 {formatRs(currentVariant.price)}
               </span>
-              {currentVariant.originalPrice && (
+              {currentVariant.originalPrice && currentVariant.originalPrice > currentVariant.price && (
                 <span className="text-sm text-[#6B6B6B] line-through opacity-70 tabular-nums">
                   {formatRs(currentVariant.originalPrice)}
                 </span>

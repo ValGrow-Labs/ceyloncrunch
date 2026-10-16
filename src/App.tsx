@@ -30,6 +30,7 @@ import { PrivacyPolicy } from './pages/PrivacyPolicy';
 import { TermsConditions } from './pages/TermsConditions';
 import { ReturnsRefunds } from './pages/ReturnsRefunds';
 import { Admin } from './pages/Admin';
+import { Profile } from './pages/Profile';
 import { NotFound } from './pages/NotFound';
 
 import { Database, AlertTriangle } from 'lucide-react';
@@ -102,6 +103,8 @@ export default function App() {
               <Route path="/returns" element={<ReturnsRefunds />} />
               <Route path="/admin" element={<Admin />} />
               <Route path="/admin/*" element={<Admin />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/account" element={<Profile />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>

@@ -260,6 +260,30 @@ export async function adminUpdateVariantPrice(
 }
 
 /**
+ * Admin: Update variant original / compare-at price in Supabase product_variants table
+ */
+export async function adminUpdateVariantOriginalPrice(
+  variantId: string,
+  newOriginalPrice: number | null
+): Promise<{ success: boolean; error?: string }> {
+  if (!supabase) return { success: false, error: 'Database is not connected.' };
+  try {
+    const val = newOriginalPrice === null || isNaN(newOriginalPrice) ? null : Math.round(newOriginalPrice);
+    const { error } = await supabase
+      .from('product_variants')
+      .update({ original_price: val, updated_at: new Date().toISOString() })
+      .eq('id', variantId);
+
+    if (error) {
+      return { success: false, error: error.message };
+    }
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err?.message || 'Failed to update original price.' };
+  }
+}
+
+/**
  * Admin: Update variant stock directly in Supabase product_variants table
  */
 export async function adminUpdateVariantStock(
@@ -281,6 +305,51 @@ export async function adminUpdateVariantStock(
     return { success: true };
   } catch (err: any) {
     return { success: false, error: err?.message || 'Failed to update stock.' };
+  }
+}
+
+/**
+ * Admin: Update all fields of a variant at once (price, original_price, stock)
+ */
+export async function adminUpdateVariant(
+  variantId: string,
+  updates: {
+    price?: number;
+    original_price?: number | null;
+    stock?: number;
+  }
+): Promise<{ success: boolean; error?: string }> {
+  if (!supabase) return { success: false, error: 'Database is not connected.' };
+
+  const payload: Record<string, any> = { updated_at: new Date().toISOString() };
+  if (updates.price !== undefined) {
+    if (isNaN(updates.price) || updates.price < 0) {
+      return { success: false, error: 'Price must be a non-negative number.' };
+    }
+    payload.price = Math.round(updates.price);
+  }
+  if (updates.original_price !== undefined) {
+    payload.original_price =
+      updates.original_price === null || isNaN(updates.original_price)
+        ? null
+        : Math.round(updates.original_price);
+  }
+  if (updates.stock !== undefined) {
+    payload.stock = Math.max(0, Math.round(updates.stock));
+  }
+
+  try {
+    const { error } = await supabase
+      .from('product_variants')
+      .update(payload)
+      .eq('id', variantId);
+
+    if (error) {
+      return { success: false, error: error.message };
+    }
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err?.message || 'Failed to update variant.' };
   }
 }
 

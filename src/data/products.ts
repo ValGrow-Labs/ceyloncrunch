@@ -914,15 +914,39 @@ export const INITIAL_PRODUCTS: Product[] = [
 
 export const INITIAL_REVIEWS: Record<string, Review[]> = {};
 
-// Helper: Calculate lowest in-stock variant price ("From Rs. X")
-export function getLowestPrice(product: Product): { price: number; inStock: boolean } {
+// Helper: Calculate lowest in-stock variant price ("From Rs. X") and any applicable discount
+export function getLowestPrice(product: Product): {
+  price: number;
+  inStock: boolean;
+  originalPrice?: number;
+  discountPercent?: number;
+} {
   const inStockVariants = product.variants.filter((v) => v.stock > 0);
-  if (inStockVariants.length > 0) {
-    const minPrice = Math.min(...inStockVariants.map((v) => v.price));
-    return { price: minPrice, inStock: true };
+  const pool = inStockVariants.length > 0 ? inStockVariants : product.variants;
+  if (!pool || pool.length === 0) {
+    return { price: 0, inStock: false };
   }
-  const nominalMin = Math.min(...product.variants.map((v) => v.price));
-  return { price: nominalMin, inStock: false };
+
+  let lowestVariant = pool[0];
+  for (let i = 1; i < pool.length; i++) {
+    if (pool[i].price < lowestVariant.price) {
+      lowestVariant = pool[i];
+    }
+  }
+
+  const price = lowestVariant.price;
+  const originalPrice = lowestVariant.originalPrice;
+  const discountPercent =
+    originalPrice && originalPrice > price
+      ? Math.round(((originalPrice - price) / originalPrice) * 100)
+      : undefined;
+
+  return {
+    price,
+    inStock: inStockVariants.length > 0,
+    originalPrice: originalPrice && originalPrice > price ? originalPrice : undefined,
+    discountPercent,
+  };
 }
 
 // Format Sri Lankan Rupee

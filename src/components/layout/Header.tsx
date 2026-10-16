@@ -3,10 +3,10 @@ import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'motion/react';
 import { useStore } from '../../lib/store';
 import { CATALOG_DIRECTORY } from '../../data/products';
-import { Search, ShoppingBag, Menu, X, Shield, ArrowRight, Phone, ChevronDown } from 'lucide-react';
+import { Search, ShoppingBag, Menu, X, UserRound, ArrowRight, Phone, ChevronDown } from 'lucide-react';
 
 export const Header: React.FC = () => {
-  const { itemCount } = useStore();
+  const { itemCount, patronProfile, isAdmin } = useStore();
   const navigate = useNavigate();
 
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -71,6 +71,11 @@ export const Header: React.FC = () => {
     }
   };
 
+  const handleShopButtonClick = () => {
+    setIsShopMenuOpen(false);
+    navigate('/shop');
+  };
+
   return (
     <>
       <header className="fixed top-0 left-0 w-full z-40 pt-safe bg-[#FBF7F0]/95 backdrop-blur-xl border-b border-[#EADFD0] shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
@@ -124,7 +129,7 @@ export const Header: React.FC = () => {
                 type="button"
                 aria-expanded={isShopMenuOpen}
                 aria-controls="shop-category-menu"
-                onClick={() => setIsShopMenuOpen((isOpen) => !isOpen)}
+                onClick={handleShopButtonClick}
                 className={`inline-flex items-center gap-1 hover:text-[#1F3D2B] transition-colors py-1 ${isShopMenuOpen ? 'text-[#1F3D2B] font-semibold border-b-2 border-[#1F3D2B]' : 'text-[#6B6B6B]'}`}
               >
                 <span>Shop</span>
@@ -144,18 +149,19 @@ export const Header: React.FC = () => {
                       {/* Category Headlines Only - Balanced 8-Column Grid */}
                       <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 lg:gap-4 items-end">
                         {[
-                          { title: 'NUTS', slug: 'nuts' },
-                          { title: 'DRIED FRUITS', slug: 'dried-fruits' },
-                          { title: 'DATES', slug: 'dates' },
-                          { title: 'SEEDS', slug: 'seeds' },
-                          { title: 'BERRIES', slug: 'berries' },
-                          { title: 'EXOTIC NUTS', slug: 'exotic-nuts' },
-                          { title: 'MIXES', slug: 'mixes' },
-                          { title: 'WHOLE SPICES', slug: 'spices' },
+                          { title: 'ALL PROVISIONS', slug: 'all', href: '/shop' },
+                          { title: 'NUTS', slug: 'nuts', href: '/category/nuts' },
+                          { title: 'DRIED FRUITS', slug: 'dried-fruits', href: '/category/dried-fruits' },
+                          { title: 'DATES', slug: 'dates', href: '/category/dates' },
+                          { title: 'SEEDS', slug: 'seeds', href: '/category/seeds' },
+                          { title: 'BERRIES', slug: 'berries', href: '/category/berries' },
+                          { title: 'EXOTIC NUTS', slug: 'exotic-nuts', href: '/category/exotic-nuts' },
+                          { title: 'MIXES', slug: 'mixes', href: '/category/mixes' },
+                          { title: 'WHOLE SPICES', slug: 'spices', href: '/category/spices' },
                         ].map((cat) => (
                           <Link
                             key={cat.slug}
-                            to={`/category/${cat.slug}`}
+                            to={cat.href}
                             onClick={() => setIsShopMenuOpen(false)}
                             className="group flex flex-col items-center justify-end h-11 pb-2.5 border-b-2 border-[#EADFD0] hover:border-[#B5741E] transition-all"
                           >
@@ -223,14 +229,18 @@ export const Header: React.FC = () => {
               )}
             </Link>
 
-            {/* Admin Icon */}
+            {/* Profile Icon */}
             <Link
-              to="/admin"
-              aria-label="Admin Portal"
-              title="Admin Portal"
-              className="w-8 h-8 rounded-full bg-[#1F3D2B] text-white flex items-center justify-center ml-0.5 hover:bg-[#162C1F] transition-colors shadow-xs"
+              to="/profile"
+              aria-label="Customer Profile"
+              title={patronProfile?.name ? `Customer Profile: ${patronProfile.name}` : 'Customer Profile & Orders'}
+              className="w-8 h-8 rounded-full bg-[#1F3D2B] text-white flex items-center justify-center ml-0.5 hover:bg-[#162C1F] transition-colors shadow-xs text-xs font-bold"
             >
-              <Shield className="w-4 h-4" />
+              {patronProfile?.name ? (
+                <span>{patronProfile.name.trim()[0].toUpperCase()}</span>
+              ) : (
+                <UserRound className="w-4 h-4" />
+              )}
             </Link>
 
           </div>
@@ -458,7 +468,12 @@ export const Header: React.FC = () => {
                     </Link>
                   </li>
                   <li>
-                    <Link to="/admin" onClick={() => setIsMenuOpen(false)} className="hover:text-[#1F3D2B] block py-1 font-semibold text-[#1F3D2B]">
+                    <Link to="/profile" onClick={() => setIsMenuOpen(false)} className="hover:text-[#1F3D2B] block py-1 font-semibold text-[#1F3D2B]">
+                      Customer Profile & Orders
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/admin" onClick={() => setIsMenuOpen(false)} className="hover:text-[#1F3D2B] block py-1 font-semibold text-[#8B5E3C]">
                       Admin Management Portal
                     </Link>
                   </li>

@@ -124,6 +124,31 @@ describe('Admin Product Inventory - Price & Image Management', () => {
       const updatedLowest = getLowestPrice(product);
       assert.equal(updatedLowest.price, 700, 'getLowestPrice should reflect the updated cheapest variant');
     });
+
+    it('calculates discount percentage and returns originalPrice on lowest variant', () => {
+      const product = products[0];
+      const lowestVariant = product.variants[0];
+      lowestVariant.price = 100;
+      lowestVariant.originalPrice = 500;
+
+      const result = getLowestPrice(product);
+      assert.equal(result.price, 100);
+      assert.equal(result.originalPrice, 500);
+      // ((500 - 100) / 500) * 100 = 80%
+      assert.equal(result.discountPercent, 80);
+    });
+
+    it('does not return discount if originalPrice is less than or equal to price', () => {
+      const product = products[0];
+      const lowestVariant = product.variants[0];
+      lowestVariant.price = 200;
+      lowestVariant.originalPrice = 200;
+
+      const result = getLowestPrice(product);
+      assert.equal(result.price, 200);
+      assert.equal(result.originalPrice, undefined);
+      assert.equal(result.discountPercent, undefined);
+    });
   });
 
   describe('Product Image Editing & Persistence', () => {
