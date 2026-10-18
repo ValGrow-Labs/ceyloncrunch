@@ -102,26 +102,27 @@ export const Home: React.FC = () => {
             initial={{ scale: 1.05, opacity: 0.9 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 1.6, ease: 'easeOut' }}
-            className="absolute inset-0 w-full h-full object-cover object-[78%_center] sm:object-[72%_center] lg:object-[80%_center]"
+            className="absolute inset-0 w-full h-full object-cover object-[88%_center] xs:object-[82%_center] sm:object-[74%_center] lg:object-[80%_center]"
           />
-          {/* Subtle readability gradient on small screens only */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#FBF7F0]/95 via-[#FBF7F0]/75 to-transparent sm:via-[#FBF7F0]/30 sm:to-transparent pointer-events-none" />
+          <div className="absolute inset-0 bg-[#FBF7F0]/20 pointer-events-none" />
+          {/* Directional readability gradient: clean cream backing behind left text, fully transparent over the bowl */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#FBF7F0] via-[#FBF7F0]/85 via-[48%] to-transparent to-[75%] sm:via-[#FBF7F0]/40 sm:via-[40%] sm:to-transparent pointer-events-none" />
 
-          <div className="relative z-10 max-w-[1440px] mx-auto flex items-center min-h-[420px] xs:min-h-[460px] sm:min-h-[440px] md:min-h-[480px] lg:min-h-[520px]">
-            {/* Hero Copy */}
-            <div className="w-full px-4 xs:px-5 sm:pl-8 sm:pr-4 md:pl-12 lg:pl-20 lg:pr-6 py-10 xs:py-12 sm:py-10 lg:py-16 flex flex-col items-center text-center sm:items-start sm:text-left space-y-3 sm:space-y-4 lg:space-y-5">
+          <div className="relative z-10 max-w-[1440px] mx-auto flex items-center min-h-[340px] xs:min-h-[380px] sm:min-h-[440px] md:min-h-[480px] lg:min-h-[520px]">
+            {/* Hero Copy: Always Left-Aligned across all screen sizes and mobile phones */}
+            <div className="w-full pl-4 xs:pl-6 sm:pl-8 md:pl-12 lg:pl-20 pr-3 sm:pr-6 py-7 xs:py-9 sm:py-12 lg:py-16 flex flex-col items-start text-left space-y-2.5 xs:space-y-3 sm:space-y-4 lg:space-y-5">
               {/* Eyebrow */}
               <motion.div
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.1 }}
-                className="flex items-center justify-center sm:justify-start gap-1.5 sm:gap-2 text-[#1B5132] font-sans text-[10px] md:text-[11px] lg:text-xs font-semibold uppercase tracking-[0.14em]"
+                className="flex items-center justify-start gap-1.5 sm:gap-2 text-[#1B5132] font-sans text-[9px] xs:text-[10px] md:text-[11px] lg:text-xs font-semibold uppercase tracking-[0.12em] xs:tracking-[0.14em]"
               >
                 <span className="w-2.5 h-[1px] bg-[#1B5132]/50" />
                 <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#1B5132] shrink-0 animate-leaf-sway" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66l.95-2.3c.48.17.98.3 1.34.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8Z" />
                 </svg>
-                <span>Ceylon Crunch — Established 2026</span>
+                <span className="whitespace-nowrap">Ceylon Crunch — Established 2026</span>
                 <span className="w-4 sm:w-6 lg:w-10 h-[1px] bg-[#1B5132]/40" />
               </motion.div>
 
@@ -130,7 +131,7 @@ export const Home: React.FC = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
-                className="font-serif text-2xl xs:text-3xl sm:text-[36px] md:text-[44px] lg:text-[54px] font-bold text-[#0F3822] tracking-tight leading-[1.1] uppercase"
+                className="font-serif text-[22px] xs:text-[28px] sm:text-[36px] md:text-[44px] lg:text-[54px] font-bold text-[#0F3822] tracking-tight leading-[1.08] sm:leading-[1.1] uppercase max-w-[66%] xs:max-w-[62%] sm:max-w-[52%] md:max-w-lg lg:max-w-xl"
               >
                 Good Products. <br />
                 <span className="text-[#B5741E]">
@@ -143,32 +144,32 @@ export const Home: React.FC = () => {
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.32 }}
-                className="font-sans text-xs sm:text-xs md:text-sm lg:text-base text-[#4A4A4A] leading-relaxed max-w-md"
+                className="font-sans text-[11px] xs:text-xs md:text-sm lg:text-base text-[#4A4A4A] leading-relaxed max-w-[64%] xs:max-w-[60%] sm:max-w-[50%] md:max-w-md"
               >
                 Quality nuts, dried fruits, dates, seeds and more — selected with care and delivered to your doorstep.
               </motion.p>
 
-              {/* CTA Buttons */}
+              {/* CTA Buttons: Side-by-side & left-aligned on all screen sizes */}
               <motion.div
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.44 }}
-                className="flex flex-col xs:flex-row items-stretch xs:items-center justify-center sm:justify-start gap-2.5 sm:gap-3 pt-1 w-full xs:w-auto"
+                className="flex flex-row flex-wrap items-center justify-start gap-2 xs:gap-2.5 sm:gap-3 pt-1 w-auto"
               >
                 <Link
                   to="/shop"
-                  className="group min-h-[42px] sm:min-h-[44px] lg:min-h-[48px] px-6 sm:px-6 lg:px-8 rounded-full bg-[#1B5132] hover:bg-[#143E26] text-white font-sans text-xs lg:text-sm font-semibold inline-flex items-center justify-center gap-2 shadow-sm hover:shadow-md hover:-translate-y-0.5 active:scale-[0.98] transition-all duration-200"
+                  className="group whitespace-nowrap min-h-[36px] xs:min-h-[40px] sm:min-h-[44px] lg:min-h-[48px] px-3.5 xs:px-4.5 sm:px-6 lg:px-8 rounded-full bg-[#1B5132] hover:bg-[#143E26] text-white font-sans text-[11px] xs:text-xs lg:text-sm font-semibold inline-flex items-center justify-center gap-1.5 sm:gap-2 shadow-sm hover:shadow-md hover:-translate-y-0.5 active:scale-[0.98] transition-all duration-200"
                 >
                   <ShoppingCart className="w-3.5 h-3.5 lg:w-4 lg:h-4" />
                   <span>Shop Now</span>
-                  <ArrowRight className="w-3.5 h-3.5 lg:w-4 lg:h-4 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="w-3 h-3 xs:w-3.5 xs:h-3.5 lg:w-4 lg:h-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
                 <Link
                   to="/our-story"
-                  className="group min-h-[42px] sm:min-h-[44px] lg:min-h-[48px] px-6 sm:px-6 lg:px-8 rounded-full bg-[#FAF8F4]/90 hover:bg-white text-[#1B5132] border border-[#1B5132]/60 font-sans text-xs lg:text-sm font-semibold inline-flex items-center justify-center gap-1.5 hover:-translate-y-0.5 transition-all duration-200"
+                  className="group whitespace-nowrap min-h-[36px] xs:min-h-[40px] sm:min-h-[44px] lg:min-h-[48px] px-3.5 xs:px-4.5 sm:px-6 lg:px-8 rounded-full bg-[#FAF8F4]/90 hover:bg-white text-[#1B5132] border border-[#1B5132]/60 font-sans text-[11px] xs:text-xs lg:text-sm font-semibold inline-flex items-center justify-center gap-1 sm:gap-1.5 hover:-translate-y-0.5 transition-all duration-200"
                 >
                   <span>Our Story</span>
-                  <ArrowRight className="w-3.5 h-3.5 lg:w-4 lg:h-4 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="w-3 h-3 xs:w-3.5 xs:h-3.5 lg:w-4 lg:h-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </motion.div>
             </div>

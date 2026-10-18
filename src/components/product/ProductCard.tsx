@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { Product, getLowestPrice, formatRs } from '../../data/products';
 import { useStore } from '../../lib/store';
-import { Plus, Check, Lock } from 'lucide-react';
+import { Plus, Check, Lock, Star } from 'lucide-react';
 
 interface ProductCardProps {
   product: Product;
@@ -15,7 +15,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, compact = fal
   const [imageError, setImageError] = useState(false);
   const [justAdded, setJustAdded] = useState(false);
 
-  const { price, inStock } = getLowestPrice(product);
+  const { price, inStock, originalPrice, discountPercent } = getLowestPrice(product);
 
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -69,7 +69,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, compact = fal
         {/* Subtle Hover Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-[#1F3D2B]/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
-        {/* Floating Badge */}
+        {/* Floating Category/Feature Badge (Top Left) */}
         {product.badge && (
           <div className="absolute top-2.5 left-2.5 z-10">
             <span
@@ -79,6 +79,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, compact = fal
             </span>
           </div>
         )}
+
       </Link>
 
       <div className="p-2.5 sm:p-3.5 flex flex-col flex-1 justify-between bg-white">
@@ -89,17 +90,32 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, compact = fal
           <h3 className="font-serif text-sm sm:text-[15px] leading-snug text-[#1F3D2B] font-semibold line-clamp-1 group-hover:text-[#B5741E] transition-colors duration-200">
             {product.name}
           </h3>
-          <p className="text-[10px] sm:text-[11px] text-[#6B6B6B] mt-0.5 line-clamp-1">
-            {product.origin}
-          </p>
+          <div className="mt-1 flex items-center gap-1 text-[10px] sm:text-[11px] leading-none">
+            <Star className="w-3 h-3 fill-[#D9A441] text-[#D9A441]" aria-hidden="true" />
+            <span className="font-semibold text-[#2B2B2B]">{product.rating.toFixed(1)}</span>
+            <span className="text-[#6B6B6B]">({product.reviewCount})</span>
+          </div>
         </Link>
 
         <div className="flex items-center justify-between gap-1.5 pt-2.5 sm:pt-3 mt-1.5 border-t border-[#EADFD0]/60">
           <div className="min-w-0 flex-1">
-            <span className="text-[9px] sm:text-[10px] text-[#6B6B6B] block leading-none font-medium">From</span>
-            <span className="font-sans font-bold text-[#1F3D2B] text-xs sm:text-[15px] tabular-nums truncate block">
-              {formatRs(price)}
-            </span>
+            {discountPercent && discountPercent > 0 && (
+              <div className="flex items-center gap-1.5 leading-none mb-1">
+                <span className="px-1.5 py-0.5 rounded text-[9px] sm:text-[10px] font-bold bg-[#E8F5E9] text-[#1B5E20] border border-[#A5D6A7] leading-none">
+                  {discountPercent}% OFF
+                </span>
+              </div>
+            )}
+            <div className="flex items-baseline gap-1.5 flex-wrap">
+              {originalPrice && originalPrice > price && (
+                <span className="text-[10px] sm:text-xs text-[#8C827A] line-through tabular-nums leading-none font-normal">
+                  {formatRs(originalPrice)}
+                </span>
+              )}
+              <span className="font-sans font-bold text-[#1F3D2B] text-xs sm:text-[15px] tabular-nums leading-none">
+                {formatRs(price)}
+              </span>
+            </div>
           </div>
 
           {inStock ? (

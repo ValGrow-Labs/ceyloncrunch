@@ -1,0 +1,1154 @@
+[
+  {
+    "id": "0fa865e4-0802-4ba8-8c3b-0b8010e8dcd9",
+    "product_id": "c6c67137-5963-468c-bbb9-d66119930362",
+    "weight": "100g",
+    "price": 450,
+    "original_price": 518,
+    "stock": 25,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "fccbdebc-9f0d-4886-b2ad-e9fe8a00eaf3",
+    "product_id": "c6c67137-5963-468c-bbb9-d66119930362",
+    "weight": "250g",
+    "price": 950,
+    "original_price": 1093,
+    "stock": 20,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "f8539e0a-5043-46e4-a880-8f137a916d48",
+    "product_id": "c6c67137-5963-468c-bbb9-d66119930362",
+    "weight": "500g",
+    "price": 1800,
+    "original_price": 2016,
+    "stock": 15,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "f287d0c2-f90a-4112-90db-0afba4153ae0",
+    "product_id": "c6c67137-5963-468c-bbb9-d66119930362",
+    "weight": "1kg",
+    "price": 3450,
+    "original_price": 3795,
+    "stock": 10,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "8dd69181-685f-47e6-8e32-13395c884801",
+    "product_id": "5f7242f5-8d7d-4124-b403-6841ac445511",
+    "weight": "100g",
+    "price": 650,
+    "original_price": 747,
+    "stock": 25,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "9fc61c63-1acf-4d4c-95ef-47b862b51ebd",
+    "product_id": "5f7242f5-8d7d-4124-b403-6841ac445511",
+    "weight": "250g",
+    "price": 1450,
+    "original_price": 1667,
+    "stock": 20,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "f3718f6c-6ac2-428a-ba64-5bc9906ee223",
+    "product_id": "5f7242f5-8d7d-4124-b403-6841ac445511",
+    "weight": "500g",
+    "price": 2750,
+    "original_price": 3080,
+    "stock": 15,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "0a68b041-f6ca-40f0-b33b-1b26505a150e",
+    "product_id": "5f7242f5-8d7d-4124-b403-6841ac445511",
+    "weight": "1kg",
+    "price": 5200,
+    "original_price": 5720,
+    "stock": 10,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "e288471a-1104-40ee-a1f6-400bf96520d1",
+    "product_id": "2da96274-a4d0-40ed-b4c8-c1e994988122",
+    "weight": "100g",
+    "price": 420,
+    "original_price": 483,
+    "stock": 25,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "49fecfea-a61d-474a-a1cd-c85463124b59",
+    "product_id": "2da96274-a4d0-40ed-b4c8-c1e994988122",
+    "weight": "250g",
+    "price": 890,
+    "original_price": 1023,
+    "stock": 20,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "8a169d83-6aaf-4eea-bb25-bd866fd59dec",
+    "product_id": "2da96274-a4d0-40ed-b4c8-c1e994988122",
+    "weight": "500g",
+    "price": 1700,
+    "original_price": 1904,
+    "stock": 15,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "c5fdaa93-6d34-47d8-b121-6d7eecf3713f",
+    "product_id": "2da96274-a4d0-40ed-b4c8-c1e994988122",
+    "weight": "1kg",
+    "price": 3250,
+    "original_price": 3575,
+    "stock": 10,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "0626d769-5396-4901-87b6-d48a28df08f2",
+    "product_id": "95ce321a-1b46-46af-9c69-505de9a13e81",
+    "weight": "100g",
+    "price": 850,
+    "original_price": 977,
+    "stock": 25,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "23cbf9e5-da44-4735-9df6-95eb0fcca239",
+    "product_id": "95ce321a-1b46-46af-9c69-505de9a13e81",
+    "weight": "250g",
+    "price": 1890,
+    "original_price": 2174,
+    "stock": 20,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "42b88ba2-6243-4d66-ae4e-3f2d62afab81",
+    "product_id": "95ce321a-1b46-46af-9c69-505de9a13e81",
+    "weight": "500g",
+    "price": 3600,
+    "original_price": 4032,
+    "stock": 15,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "ac3c90a4-7da4-4deb-b435-7bdf1ef74b01",
+    "product_id": "95ce321a-1b46-46af-9c69-505de9a13e81",
+    "weight": "1kg",
+    "price": 6900,
+    "original_price": 7590,
+    "stock": 10,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "26219efb-fdc5-4a48-a353-a7ac268bab65",
+    "product_id": "f36e0c6c-f64b-4e45-bd45-1f373ebec19d",
+    "weight": "100g",
+    "price": 590,
+    "original_price": 679,
+    "stock": 25,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "35349537-b271-4fd4-a9a2-d13c35fc478d",
+    "product_id": "f36e0c6c-f64b-4e45-bd45-1f373ebec19d",
+    "weight": "250g",
+    "price": 1290,
+    "original_price": 1483,
+    "stock": 20,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "caadec23-b704-4f5c-bc13-baeaafbb91aa",
+    "product_id": "f36e0c6c-f64b-4e45-bd45-1f373ebec19d",
+    "weight": "500g",
+    "price": 2450,
+    "original_price": 2744,
+    "stock": 15,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "79074c5c-2bbf-4598-9bad-24e21b7b10dd",
+    "product_id": "f36e0c6c-f64b-4e45-bd45-1f373ebec19d",
+    "weight": "1kg",
+    "price": 4650,
+    "original_price": 5115,
+    "stock": 10,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "c960863b-7954-4006-b4d0-9f94739241e4",
+    "product_id": "65920cb7-b9b7-4973-ad49-79771ee187e1",
+    "weight": "100g",
+    "price": 890,
+    "original_price": 1023,
+    "stock": 25,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "0f00432f-52d2-4521-928a-3b17a89d10aa",
+    "product_id": "65920cb7-b9b7-4973-ad49-79771ee187e1",
+    "weight": "250g",
+    "price": 1950,
+    "original_price": 2243,
+    "stock": 20,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "f45d81cb-472a-4d18-96ee-bd94af5899fb",
+    "product_id": "65920cb7-b9b7-4973-ad49-79771ee187e1",
+    "weight": "500g",
+    "price": 3750,
+    "original_price": 4200,
+    "stock": 15,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "6b4e9698-6682-4f49-bf89-98202abdd53d",
+    "product_id": "65920cb7-b9b7-4973-ad49-79771ee187e1",
+    "weight": "1kg",
+    "price": 7200,
+    "original_price": 7920,
+    "stock": 10,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "cbf91161-6386-4ef5-8027-a4477b91fb52",
+    "product_id": "0de271b4-a544-42a6-a718-b3fc150a5046",
+    "weight": "100g",
+    "price": 550,
+    "original_price": 633,
+    "stock": 25,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "d598df3c-36df-49bb-9ca5-24c0acfdded0",
+    "product_id": "0de271b4-a544-42a6-a718-b3fc150a5046",
+    "weight": "250g",
+    "price": 1190,
+    "original_price": 1369,
+    "stock": 20,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "5e6b3f32-f4b0-48b6-ac4f-a417aea03c4a",
+    "product_id": "0de271b4-a544-42a6-a718-b3fc150a5046",
+    "weight": "500g",
+    "price": 2250,
+    "original_price": 2520,
+    "stock": 15,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "63a6972f-496e-4901-9406-4ea278792b10",
+    "product_id": "0de271b4-a544-42a6-a718-b3fc150a5046",
+    "weight": "1kg",
+    "price": 4250,
+    "original_price": 4675,
+    "stock": 10,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "9871721e-22e4-4bb0-ae8f-1c7aaf9d8820",
+    "product_id": "2eb9cd1d-5950-4b08-90d4-222be309496a",
+    "weight": "100g",
+    "price": 620,
+    "original_price": 713,
+    "stock": 25,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "f3744222-6a8c-47cf-93e5-d7bcae60266a",
+    "product_id": "2eb9cd1d-5950-4b08-90d4-222be309496a",
+    "weight": "250g",
+    "price": 1350,
+    "original_price": 1552,
+    "stock": 20,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "c2193630-c71d-4199-842f-1dc4c35b2bc8",
+    "product_id": "2eb9cd1d-5950-4b08-90d4-222be309496a",
+    "weight": "500g",
+    "price": 2550,
+    "original_price": 2856,
+    "stock": 15,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "59379201-2e7e-4076-97fd-92dd489c357f",
+    "product_id": "2eb9cd1d-5950-4b08-90d4-222be309496a",
+    "weight": "1kg",
+    "price": 4800,
+    "original_price": 5280,
+    "stock": 10,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "b78a2ea1-97d0-4c81-abbf-ced8894d6671",
+    "product_id": "aa9847bb-f81e-480e-abd6-9460f327521f",
+    "weight": "100g",
+    "price": 480,
+    "original_price": 552,
+    "stock": 25,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "9f6c5937-d32e-4d1b-a5fc-d8fff20b1aff",
+    "product_id": "aa9847bb-f81e-480e-abd6-9460f327521f",
+    "weight": "250g",
+    "price": 1050,
+    "original_price": 1208,
+    "stock": 20,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "5762f9f4-7ba8-483f-90bf-88da077fc121",
+    "product_id": "aa9847bb-f81e-480e-abd6-9460f327521f",
+    "weight": "500g",
+    "price": 1980,
+    "original_price": 2218,
+    "stock": 15,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "12339f85-3f2e-4439-9078-f5c365b3b89a",
+    "product_id": "aa9847bb-f81e-480e-abd6-9460f327521f",
+    "weight": "1kg",
+    "price": 3750,
+    "original_price": 4125,
+    "stock": 10,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "0140f7d5-7524-40c9-b3c7-84f758ef4c2f",
+    "product_id": "e7da64da-17b3-49ab-b834-91284f054496",
+    "weight": "100g",
+    "price": 690,
+    "original_price": 793,
+    "stock": 25,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "a1559f50-f44d-419b-b810-065ef34f0338",
+    "product_id": "e7da64da-17b3-49ab-b834-91284f054496",
+    "weight": "250g",
+    "price": 1490,
+    "original_price": 1713,
+    "stock": 20,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "81cada08-b181-49de-ad1e-0d5c1f1a8297",
+    "product_id": "e7da64da-17b3-49ab-b834-91284f054496",
+    "weight": "500g",
+    "price": 2850,
+    "original_price": 3192,
+    "stock": 15,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "d7c4cab1-3edf-4803-b938-af457e8f2c4b",
+    "product_id": "e7da64da-17b3-49ab-b834-91284f054496",
+    "weight": "1kg",
+    "price": 5400,
+    "original_price": 5940,
+    "stock": 10,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "12711869-6f9f-4651-ac3f-f8e66940ee1e",
+    "product_id": "1d12b853-a83f-455a-8a18-d94bcbc48d37",
+    "weight": "100g",
+    "price": 580,
+    "original_price": 667,
+    "stock": 25,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "ea36d5cc-f212-4e32-bdda-81699e115e0d",
+    "product_id": "1d12b853-a83f-455a-8a18-d94bcbc48d37",
+    "weight": "250g",
+    "price": 1250,
+    "original_price": 1438,
+    "stock": 20,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "e3131b5b-7a16-40f7-8720-2dde9373b672",
+    "product_id": "1d12b853-a83f-455a-8a18-d94bcbc48d37",
+    "weight": "500g",
+    "price": 2350,
+    "original_price": 2632,
+    "stock": 15,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "78c0fa87-2cb7-4dec-8920-782f9144c1ea",
+    "product_id": "1d12b853-a83f-455a-8a18-d94bcbc48d37",
+    "weight": "1kg",
+    "price": 4450,
+    "original_price": 4895,
+    "stock": 10,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "33d396b2-cc7a-43a1-be76-8f419e53e8f3",
+    "product_id": "872a1360-4db3-497c-bdec-716455fec778",
+    "weight": "100g",
+    "price": 520,
+    "original_price": 598,
+    "stock": 25,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "d6f679cb-83e7-4a40-9cb0-df53689da774",
+    "product_id": "872a1360-4db3-497c-bdec-716455fec778",
+    "weight": "250g",
+    "price": 1150,
+    "original_price": 1323,
+    "stock": 20,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "2178ecdf-ab5d-4d09-b177-8c4a2b20ff56",
+    "product_id": "872a1360-4db3-497c-bdec-716455fec778",
+    "weight": "500g",
+    "price": 2180,
+    "original_price": 2442,
+    "stock": 15,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "8b855c2d-06e6-49b7-b90f-1fe3aba4578b",
+    "product_id": "872a1360-4db3-497c-bdec-716455fec778",
+    "weight": "1kg",
+    "price": 4100,
+    "original_price": 4510,
+    "stock": 10,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "ba321935-bb68-45cd-9041-d5c8a1a9dc89",
+    "product_id": "7ffe336b-3434-4afd-a32e-c7a032bba8f3",
+    "weight": "100g",
+    "price": 950,
+    "original_price": 1093,
+    "stock": 25,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "ca4f1129-64d2-4620-9016-c57357d897bf",
+    "product_id": "7ffe336b-3434-4afd-a32e-c7a032bba8f3",
+    "weight": "250g",
+    "price": 2100,
+    "original_price": 2415,
+    "stock": 20,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "5b82a4b8-4085-4284-a55b-ed6b410586c5",
+    "product_id": "7ffe336b-3434-4afd-a32e-c7a032bba8f3",
+    "weight": "500g",
+    "price": 3980,
+    "original_price": 4458,
+    "stock": 15,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "6c3fa2ee-a01c-4bc9-8486-6ec90ed85628",
+    "product_id": "7ffe336b-3434-4afd-a32e-c7a032bba8f3",
+    "weight": "1kg",
+    "price": 7600,
+    "original_price": 8360,
+    "stock": 10,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "9af113c3-e812-4197-8148-7122b37fe9b6",
+    "product_id": "b928fb7c-bd26-443e-ac18-70f991d5f221",
+    "weight": "100g",
+    "price": 790,
+    "original_price": 908,
+    "stock": 25,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "cbd93fb1-b286-48fc-b3e2-1bb2ee2cb312",
+    "product_id": "b928fb7c-bd26-443e-ac18-70f991d5f221",
+    "weight": "250g",
+    "price": 1750,
+    "original_price": 2012,
+    "stock": 20,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "c5a78830-00bc-49ff-af03-f42f08d01d59",
+    "product_id": "b928fb7c-bd26-443e-ac18-70f991d5f221",
+    "weight": "500g",
+    "price": 3350,
+    "original_price": 3752,
+    "stock": 15,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "18b25652-54fd-4c4a-b8d2-d1a7d114614d",
+    "product_id": "b928fb7c-bd26-443e-ac18-70f991d5f221",
+    "weight": "1kg",
+    "price": 6400,
+    "original_price": 7040,
+    "stock": 10,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "a7ac241f-a064-42da-9509-95b020613385",
+    "product_id": "2345008d-b425-49c6-bfcc-924930573c1e",
+    "weight": "100g",
+    "price": 440,
+    "original_price": 506,
+    "stock": 25,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "ddf329dd-e46a-4ff6-899f-8d54271bff54",
+    "product_id": "2345008d-b425-49c6-bfcc-924930573c1e",
+    "weight": "250g",
+    "price": 920,
+    "original_price": 1058,
+    "stock": 20,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "b6b7e5ee-9b91-4d82-a54e-1c0928b56010",
+    "product_id": "2345008d-b425-49c6-bfcc-924930573c1e",
+    "weight": "500g",
+    "price": 1750,
+    "original_price": 1960,
+    "stock": 15,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "d2696f8e-1632-488e-95db-37f2a39563b2",
+    "product_id": "2345008d-b425-49c6-bfcc-924930573c1e",
+    "weight": "1kg",
+    "price": 3300,
+    "original_price": 3630,
+    "stock": 10,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "df03d1aa-2a1b-4f39-9cf3-7c92638acede",
+    "product_id": "e5754cb4-5271-4f4b-a942-03cf690b8b4f",
+    "weight": "100g",
+    "price": 620,
+    "original_price": 713,
+    "stock": 25,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "de16bc63-88e8-4fa3-85b5-891e8737d3a2",
+    "product_id": "e5754cb4-5271-4f4b-a942-03cf690b8b4f",
+    "weight": "250g",
+    "price": 1350,
+    "original_price": 1552,
+    "stock": 20,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "7f42d48d-ba39-42a2-93a1-5a41b54b25ce",
+    "product_id": "e5754cb4-5271-4f4b-a942-03cf690b8b4f",
+    "weight": "500g",
+    "price": 2550,
+    "original_price": 2856,
+    "stock": 15,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "5c79bb51-3171-4c3d-9835-198b7b8e0374",
+    "product_id": "e5754cb4-5271-4f4b-a942-03cf690b8b4f",
+    "weight": "1kg",
+    "price": 4850,
+    "original_price": 5335,
+    "stock": 10,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "78d03ba4-daec-4928-8f5e-bb6768f71f0e",
+    "product_id": "db80b4aa-2ae8-4049-9436-e7c1da733c5e",
+    "weight": "100g",
+    "price": 490,
+    "original_price": 564,
+    "stock": 25,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "e8a32263-735a-4aae-8af5-7ec80fd8393b",
+    "product_id": "db80b4aa-2ae8-4049-9436-e7c1da733c5e",
+    "weight": "250g",
+    "price": 1080,
+    "original_price": 1242,
+    "stock": 20,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "d61fe0d4-7188-4e4b-bddd-21e662b0caef",
+    "product_id": "db80b4aa-2ae8-4049-9436-e7c1da733c5e",
+    "weight": "500g",
+    "price": 2050,
+    "original_price": 2296,
+    "stock": 15,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "1b7a80b7-7b00-4e80-a29d-9f06b9b97f19",
+    "product_id": "db80b4aa-2ae8-4049-9436-e7c1da733c5e",
+    "weight": "1kg",
+    "price": 3900,
+    "original_price": 4290,
+    "stock": 10,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "077361e5-f6b9-4883-8d3b-0ea55c703412",
+    "product_id": "032de5b1-c5ba-4e24-b33e-db987daaf54e",
+    "weight": "100g",
+    "price": 380,
+    "original_price": 437,
+    "stock": 25,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "2bbbb142-81f3-402f-acbf-9fbbe8dc8585",
+    "product_id": "032de5b1-c5ba-4e24-b33e-db987daaf54e",
+    "weight": "250g",
+    "price": 790,
+    "original_price": 908,
+    "stock": 20,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "77cbd1da-622d-4b93-8de2-09e655b4d4e8",
+    "product_id": "032de5b1-c5ba-4e24-b33e-db987daaf54e",
+    "weight": "500g",
+    "price": 1480,
+    "original_price": 1658,
+    "stock": 15,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "d899dbb3-861a-40b8-8a70-eedbd0bb18e0",
+    "product_id": "032de5b1-c5ba-4e24-b33e-db987daaf54e",
+    "weight": "1kg",
+    "price": 2800,
+    "original_price": 3080,
+    "stock": 10,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "1fd28659-35a2-4ebb-b4e2-e5e07804d397",
+    "product_id": "83faba56-7617-4262-a5fb-030664d851c9",
+    "weight": "100g",
+    "price": 420,
+    "original_price": 483,
+    "stock": 25,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "3eea3f78-8392-42bf-8826-9ba03d5cb963",
+    "product_id": "83faba56-7617-4262-a5fb-030664d851c9",
+    "weight": "250g",
+    "price": 890,
+    "original_price": 1023,
+    "stock": 20,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "46f79dac-f4e0-4608-b12e-2fe630f381ec",
+    "product_id": "83faba56-7617-4262-a5fb-030664d851c9",
+    "weight": "500g",
+    "price": 1680,
+    "original_price": 1882,
+    "stock": 15,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "96689b37-825b-417e-9ed0-c60846b9d783",
+    "product_id": "83faba56-7617-4262-a5fb-030664d851c9",
+    "weight": "1kg",
+    "price": 3150,
+    "original_price": 3465,
+    "stock": 10,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "2951594f-a200-4830-9f30-8d8c91472818",
+    "product_id": "352cec00-5f69-45df-858b-7b8e49b35078",
+    "weight": "100g",
+    "price": 320,
+    "original_price": 368,
+    "stock": 25,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "cb256841-84e7-4b43-b042-a5f21e1ec2c2",
+    "product_id": "352cec00-5f69-45df-858b-7b8e49b35078",
+    "weight": "250g",
+    "price": 690,
+    "original_price": 793,
+    "stock": 20,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "a9cdaf82-57b4-4c77-9858-1f3f2acf91bb",
+    "product_id": "352cec00-5f69-45df-858b-7b8e49b35078",
+    "weight": "500g",
+    "price": 1280,
+    "original_price": 1434,
+    "stock": 15,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "1de786a0-dde2-4a25-9ffa-1df7838733be",
+    "product_id": "352cec00-5f69-45df-858b-7b8e49b35078",
+    "weight": "1kg",
+    "price": 2390,
+    "original_price": 2629,
+    "stock": 10,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "f532ae33-e626-4774-bacd-86d3d8fcbb29",
+    "product_id": "04dea125-81d5-4adb-b51d-b48fdae55852",
+    "weight": "100g",
+    "price": 850,
+    "original_price": 977,
+    "stock": 25,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "47c24cab-2693-4f22-911b-5115a5fb0668",
+    "product_id": "04dea125-81d5-4adb-b51d-b48fdae55852",
+    "weight": "250g",
+    "price": 1950,
+    "original_price": 2243,
+    "stock": 20,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "67f4a63a-bd69-4c17-a017-d86feda2edc0",
+    "product_id": "04dea125-81d5-4adb-b51d-b48fdae55852",
+    "weight": "500g",
+    "price": 3700,
+    "original_price": 4144,
+    "stock": 15,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "fae9b72b-3347-4803-94f2-66a0e86ee1b3",
+    "product_id": "04dea125-81d5-4adb-b51d-b48fdae55852",
+    "weight": "1kg",
+    "price": 7100,
+    "original_price": 7810,
+    "stock": 10,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "5e7449af-3660-4b0a-bfa3-497b11473595",
+    "product_id": "1a0e8f2b-592d-4bae-b552-b3579b4814aa",
+    "weight": "100g",
+    "price": 450,
+    "original_price": 518,
+    "stock": 25,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "b9481298-93f9-48bb-91e1-25803ce5a3ed",
+    "product_id": "1a0e8f2b-592d-4bae-b552-b3579b4814aa",
+    "weight": "250g",
+    "price": 980,
+    "original_price": 1127,
+    "stock": 20,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "ca0c1dea-8e0c-4a33-8155-aded5370fe22",
+    "product_id": "1a0e8f2b-592d-4bae-b552-b3579b4814aa",
+    "weight": "500g",
+    "price": 1850,
+    "original_price": 2072,
+    "stock": 15,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "5cc36852-5c0b-46a9-bf61-88fbb7422e4b",
+    "product_id": "1a0e8f2b-592d-4bae-b552-b3579b4814aa",
+    "weight": "1kg",
+    "price": 3500,
+    "original_price": 3850,
+    "stock": 10,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "c18d5f11-55e6-48fd-96b8-8ab2ee41a2aa",
+    "product_id": "61472ae1-180b-46f8-84bb-97af201f610a",
+    "weight": "100g",
+    "price": 490,
+    "original_price": 564,
+    "stock": 25,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "94e678dc-c96c-432a-aa5b-1ff96994fefb",
+    "product_id": "61472ae1-180b-46f8-84bb-97af201f610a",
+    "weight": "250g",
+    "price": 1100,
+    "original_price": 1265,
+    "stock": 20,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "00bc22aa-0b9e-4d4c-a696-fb22bafc458f",
+    "product_id": "61472ae1-180b-46f8-84bb-97af201f610a",
+    "weight": "500g",
+    "price": 2050,
+    "original_price": 2296,
+    "stock": 15,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "c6db5fac-bbc9-4e16-9c23-88e7e203f488",
+    "product_id": "61472ae1-180b-46f8-84bb-97af201f610a",
+    "weight": "1kg",
+    "price": 3900,
+    "original_price": 4290,
+    "stock": 10,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "68573327-8abb-4ed2-8f22-d98c2aeac348",
+    "product_id": "0e39a704-d8c5-4614-8742-e0d0c66b378a",
+    "weight": "100g",
+    "price": 550,
+    "original_price": 633,
+    "stock": 25,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "6c6716c9-12e7-4e29-a8f9-7cda7d74499d",
+    "product_id": "0e39a704-d8c5-4614-8742-e0d0c66b378a",
+    "weight": "250g",
+    "price": 1200,
+    "original_price": 1380,
+    "stock": 20,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "2c401079-e4ca-4bcf-87cf-c7dd6e5fa714",
+    "product_id": "0e39a704-d8c5-4614-8742-e0d0c66b378a",
+    "weight": "500g",
+    "price": 2250,
+    "original_price": 2520,
+    "stock": 15,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "73f49d84-7eb1-41ff-bafe-ee89c9c484e2",
+    "product_id": "0e39a704-d8c5-4614-8742-e0d0c66b378a",
+    "weight": "1kg",
+    "price": 4200,
+    "original_price": 4620,
+    "stock": 10,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "17283855-c66c-4232-83c5-18c815180494",
+    "product_id": "9ef839c0-2cea-4f70-8f34-9b3f31cafed0",
+    "weight": "100g",
+    "price": 540,
+    "original_price": 621,
+    "stock": 25,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "d6c9573f-5e24-4d8d-9f93-d8f76721b003",
+    "product_id": "9ef839c0-2cea-4f70-8f34-9b3f31cafed0",
+    "weight": "250g",
+    "price": 1190,
+    "original_price": 1369,
+    "stock": 20,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "6442bc0e-eccb-443f-aa12-1b9647dc89b6",
+    "product_id": "9ef839c0-2cea-4f70-8f34-9b3f31cafed0",
+    "weight": "500g",
+    "price": 2250,
+    "original_price": 2520,
+    "stock": 15,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "71fd6728-9b59-41f9-b1e6-0939b4336c1d",
+    "product_id": "9ef839c0-2cea-4f70-8f34-9b3f31cafed0",
+    "weight": "1kg",
+    "price": 4250,
+    "original_price": 4675,
+    "stock": 10,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "137b78d2-0ef6-441d-9b14-27bccf8fed98",
+    "product_id": "f5125f62-5496-40c3-8b60-9cb5c25a1474",
+    "weight": "100g",
+    "price": 450,
+    "original_price": 518,
+    "stock": 25,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "4b5b164e-e58c-4eec-9fc6-4eb726c8c199",
+    "product_id": "f5125f62-5496-40c3-8b60-9cb5c25a1474",
+    "weight": "250g",
+    "price": 980,
+    "original_price": 1127,
+    "stock": 20,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "96579f62-fcca-439e-8fa2-97f73502e56f",
+    "product_id": "f5125f62-5496-40c3-8b60-9cb5c25a1474",
+    "weight": "500g",
+    "price": 1850,
+    "original_price": 2072,
+    "stock": 15,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "463c4edd-bc29-4be1-80b4-1153c6f94547",
+    "product_id": "f5125f62-5496-40c3-8b60-9cb5c25a1474",
+    "weight": "1kg",
+    "price": 3500,
+    "original_price": 3850,
+    "stock": 10,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "0dfa00ae-caf1-4dab-ae16-899528cd070e",
+    "product_id": "998a8467-13fe-46aa-b8bf-f06c6203e8ce",
+    "weight": "100g",
+    "price": 390,
+    "original_price": 448,
+    "stock": 25,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "71a58234-829b-42d6-9003-1896775a125d",
+    "product_id": "998a8467-13fe-46aa-b8bf-f06c6203e8ce",
+    "weight": "250g",
+    "price": 850,
+    "original_price": 977,
+    "stock": 20,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "b3ca2816-4327-444d-aab6-443244dc77f8",
+    "product_id": "998a8467-13fe-46aa-b8bf-f06c6203e8ce",
+    "weight": "500g",
+    "price": 1600,
+    "original_price": 1792,
+    "stock": 15,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "768a409d-136c-4cc1-8d2d-6edd55f7fbec",
+    "product_id": "998a8467-13fe-46aa-b8bf-f06c6203e8ce",
+    "weight": "1kg",
+    "price": 3000,
+    "original_price": 3300,
+    "stock": 10,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "c65aa6ad-5054-47aa-af19-54ecb59d676c",
+    "product_id": "ad85edeb-add6-40bf-a9a5-7d5af131aba9",
+    "weight": "100g",
+    "price": 360,
+    "original_price": 414,
+    "stock": 25,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "6b354b28-6b67-4abc-9a52-1520a17e726e",
+    "product_id": "ad85edeb-add6-40bf-a9a5-7d5af131aba9",
+    "weight": "250g",
+    "price": 790,
+    "original_price": 908,
+    "stock": 20,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "e5d57fef-7b21-447b-b19c-e4b7e1514666",
+    "product_id": "ad85edeb-add6-40bf-a9a5-7d5af131aba9",
+    "weight": "500g",
+    "price": 1480,
+    "original_price": 1658,
+    "stock": 15,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "7ee8e21e-aa8d-4794-9353-c58fd61bfde4",
+    "product_id": "ad85edeb-add6-40bf-a9a5-7d5af131aba9",
+    "weight": "1kg",
+    "price": 2800,
+    "original_price": 3080,
+    "stock": 10,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "713e3b78-5140-42db-9489-486423036eda",
+    "product_id": "da439b56-62a9-42da-9462-eda0f772b258",
+    "weight": "100g",
+    "price": 380,
+    "original_price": 437,
+    "stock": 25,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "61b27000-887b-448f-9ebd-4a8fb0f8d620",
+    "product_id": "da439b56-62a9-42da-9462-eda0f772b258",
+    "weight": "250g",
+    "price": 820,
+    "original_price": 943,
+    "stock": 20,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "33a5ec54-0d14-4d43-9365-f9743ea58040",
+    "product_id": "da439b56-62a9-42da-9462-eda0f772b258",
+    "weight": "500g",
+    "price": 1550,
+    "original_price": 1736,
+    "stock": 15,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "e320b01e-67db-475b-89ec-696b9f752906",
+    "product_id": "da439b56-62a9-42da-9462-eda0f772b258",
+    "weight": "1kg",
+    "price": 2950,
+    "original_price": 3245,
+    "stock": 10,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "4265a5ff-0192-4c3c-8500-a80516125728",
+    "product_id": "c2f339d6-9f0c-4ab3-b43c-5d365d7b35df",
+    "weight": "100g",
+    "price": 420,
+    "original_price": 483,
+    "stock": 25,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "6d2c6ed8-047f-4dba-b302-b6061d8756fc",
+    "product_id": "c2f339d6-9f0c-4ab3-b43c-5d365d7b35df",
+    "weight": "250g",
+    "price": 920,
+    "original_price": 1058,
+    "stock": 20,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "3af5c536-5a15-457e-b9cd-bd692d9df957",
+    "product_id": "c2f339d6-9f0c-4ab3-b43c-5d365d7b35df",
+    "weight": "500g",
+    "price": 1750,
+    "original_price": 1960,
+    "stock": 15,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "e127d9da-c74e-4d7b-9594-5471761639ac",
+    "product_id": "c2f339d6-9f0c-4ab3-b43c-5d365d7b35df",
+    "weight": "1kg",
+    "price": 3300,
+    "original_price": 3630,
+    "stock": 10,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "7654ccc4-0962-4d61-b749-3b4b5cbb9930",
+    "product_id": "4fe4c915-914d-455d-9807-13b7902aa55e",
+    "weight": "100g",
+    "price": 460,
+    "original_price": 529,
+    "stock": 25,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "8524ff40-69b0-49d4-9eea-a03bfb9ec46b",
+    "product_id": "4fe4c915-914d-455d-9807-13b7902aa55e",
+    "weight": "250g",
+    "price": 990,
+    "original_price": 1139,
+    "stock": 20,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "6e57276b-3216-4d94-9ea4-6ab3fc1007cb",
+    "product_id": "4fe4c915-914d-455d-9807-13b7902aa55e",
+    "weight": "500g",
+    "price": 1880,
+    "original_price": 2106,
+    "stock": 15,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "618c93b8-4a1a-4397-a95f-761ee205a743",
+    "product_id": "4fe4c915-914d-455d-9807-13b7902aa55e",
+    "weight": "1kg",
+    "price": 3550,
+    "original_price": 3905,
+    "stock": 10,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "3b1f898d-aec3-41d9-9591-e542887be834",
+    "product_id": "081bc49b-4466-4b43-9e78-ca57e6f95403",
+    "weight": "100g",
+    "price": 360,
+    "original_price": 414,
+    "stock": 25,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "3b2010bb-ba0e-461c-9444-70be721088a3",
+    "product_id": "081bc49b-4466-4b43-9e78-ca57e6f95403",
+    "weight": "250g",
+    "price": 780,
+    "original_price": 897,
+    "stock": 20,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "2e42db55-597d-4327-80f7-e4e021ab8915",
+    "product_id": "081bc49b-4466-4b43-9e78-ca57e6f95403",
+    "weight": "500g",
+    "price": 1460,
+    "original_price": 1635,
+    "stock": 15,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "14161b15-68a6-46ca-94d6-7624902a5df6",
+    "product_id": "081bc49b-4466-4b43-9e78-ca57e6f95403",
+    "weight": "1kg",
+    "price": 2750,
+    "original_price": 3025,
+    "stock": 10,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  }
+]

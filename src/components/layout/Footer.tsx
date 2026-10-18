@@ -102,11 +102,6 @@ export const Footer: React.FC = () => {
                   Corporate &amp; Bulk Orders
                 </Link>
               </li>
-              <li>
-                <Link to="/admin" className="hover:text-[#C9A84C] transition-colors text-xs font-semibold">
-                  Admin Portal
-                </Link>
-              </li>
             </ul>
           </div>
 
@@ -139,6 +134,11 @@ export const Footer: React.FC = () => {
               <li>
                 <Link to="/track" className="hover:text-[#C9A84C] transition-colors">
                   Track Your Order
+                </Link>
+              </li>
+              <li>
+                <Link to="/profile" className="hover:text-[#C9A84C] transition-colors">
+                  Customer Account &amp; Login
                 </Link>
               </li>
             </ul>

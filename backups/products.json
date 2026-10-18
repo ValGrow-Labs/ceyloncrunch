@@ -1,0 +1,812 @@
+[
+  {
+    "id": "c6c67137-5963-468c-bbb9-d66119930362",
+    "slug": "black-raisins",
+    "name": "Black Raisins",
+    "subtitle": "Naturally Sweet & Seedless · Sun-Dried",
+    "category": "dried-fruits",
+    "badge": "Sun-Dried",
+    "origin": "Selected Mediterranean Vineyards",
+    "roast_style": "Sun-dried raw whole vine fruit",
+    "rating": 4.9,
+    "review_count": 24,
+    "images": [
+      "/products/dried-fruits/black-raisins.jpeg"
+    ],
+    "description": "Naturally sun-dried plump black raisins with rich natural sweetness, succulent texture, and high iron and antioxidant content. Excellent for soaking, daily vitality, and wholesome baking.",
+    "extended_about": [
+      "Carefully harvested from sun-drenched vineyards and gently sun-dried to lock in natural sugars and dense minerals.",
+      "100% seedless with a luscious chew and clean finish without artificial additives."
+    ],
+    "ingredients": "100% Sun-Dried Seedless Black Raisins",
+    "storage": "Store in an airtight container in a cool, dry pantry.",
+    "shelf_life": "9 Months",
+    "allergen_notice": "Processed in a facility that handles tree nuts and seeds.",
+    "is_featured": true,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "5f7242f5-8d7d-4124-b403-6841ac445511",
+    "slug": "dried-apricots",
+    "name": "Dried Apricots",
+    "subtitle": "Tender Sun-Dried Mediterranean Apricots",
+    "category": "dried-fruits",
+    "badge": "High Fibre",
+    "origin": "Sun-Drenched Mediterranean Orchards",
+    "roast_style": "Naturally sun-cured whole pitted fruit",
+    "rating": 4.8,
+    "review_count": 31,
+    "images": [
+      "/products/dried-fruits/dried-apricots.jpeg"
+    ],
+    "description": "Plump, golden-orange dried apricots with a delicate honeyed aroma, chewy bite, and rich vitamin A profile. A nourishing sweet snack for all ages.",
+    "extended_about": [
+      "Grown in mountain valleys where hot sunny days and cool nights produce unusually sweet, plump apricots.",
+      "Carefully hand-pitted and sun-dried to preserve soft, moist fruit centers."
+    ],
+    "ingredients": "100% Whole Dried Apricots",
+    "storage": "Keep refrigerated or in cool dry storage.",
+    "shelf_life": "8 Months",
+    "allergen_notice": "Processed in a facility that handles tree nuts.",
+    "is_featured": true,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "2da96274-a4d0-40ed-b4c8-c1e994988122",
+    "slug": "dried-banana",
+    "name": "Dried Natural Bananas",
+    "subtitle": "Chewy Sun-Cured Sweet Banana Slices",
+    "category": "dried-fruits",
+    "badge": "Potassium Rich",
+    "origin": "Ceylon Tropical Plantations",
+    "roast_style": "Dehydrated raw sweet banana coins",
+    "rating": 4.7,
+    "review_count": 19,
+    "images": [
+      "/products/dried-fruits/dried-banana.jpeg"
+    ],
+    "description": "Naturally sweet dried banana slices prepared without added sugar or artificial preservatives. Excellent energy-boosting bite for workouts, trail walks, and breakfast bowls.",
+    "extended_about": [
+      "Harvested at peak ripeness from certified Sri Lankan tropical growers.",
+      "Retains concentrated potassium, dietary fibre, and natural fruit sugars."
+    ],
+    "ingredients": "100% Ripe Dehydrated Bananas",
+    "storage": "Store in an airtight container in a cool pantry.",
+    "shelf_life": "6 Months",
+    "allergen_notice": "All-natural fruit. Packaged in a facility handling tree nuts.",
+    "is_featured": false,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "95ce321a-1b46-46af-9c69-505de9a13e81",
+    "slug": "dried-cherries",
+    "name": "Dried Cherries",
+    "subtitle": "Tart & Sweet Ruby Red Pitted Cherries",
+    "category": "dried-fruits",
+    "badge": "Antioxidant Rich",
+    "origin": "Montmorency Valley Orchards",
+    "roast_style": "Sun-cured and infused whole berries",
+    "rating": 4.9,
+    "review_count": 28,
+    "images": [
+      "/products/dried-fruits/dried-cherries.jpeg"
+    ],
+    "description": "Vibrant, tangy-sweet dried ruby cherries bursting with natural flavour. Perfect for breakfast cereals, artisan sourdough baking, salads, and charcuterie boards.",
+    "extended_about": [
+      "Pitted carefully while fresh and gently dried to retain their intense crimson tone and juicy bite.",
+      "Naturally abundant in anthocyanins and restorative plant antioxidants."
+    ],
+    "ingredients": "Dried Pitted Red Cherries, Natural Fruit Juice",
+    "storage": "Store in a cool dry space.",
+    "shelf_life": "8 Months",
+    "allergen_notice": "May contain occasional pit fragments.",
+    "is_featured": true,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "f36e0c6c-f64b-4e45-bd45-1f373ebec19d",
+    "slug": "dried-cranberries",
+    "name": "Dried Cranberries",
+    "subtitle": "Gently Infused Crisp Whole Berries",
+    "category": "dried-fruits",
+    "badge": "Immunity Boost",
+    "origin": "Highland Pure Bogs",
+    "roast_style": "Air-dried whole plump cranberries",
+    "rating": 4.8,
+    "review_count": 36,
+    "images": [
+      "/products/dried-fruits/dried-cranberries.jpeg"
+    ],
+    "description": "Vibrant crimson dried cranberries with the classic sweet-tart balance. Excellent in oatmeals, trail mixes, festive salads, and holiday baking.",
+    "extended_about": [
+      "Picked from pristine cool climate bogs and gently infused to temper natural tartness.",
+      "Celebrated for urinary tract and gut microbiome wellness."
+    ],
+    "ingredients": "Dried Whole Cranberries, Natural Apple Juice Concentrate",
+    "storage": "Store in cool pantry conditions.",
+    "shelf_life": "9 Months",
+    "allergen_notice": "Packed in a facility handling tree nuts and seeds.",
+    "is_featured": false,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "65920cb7-b9b7-4973-ad49-79771ee187e1",
+    "slug": "dried-figs",
+    "name": "Dried Figs",
+    "subtitle": "Large Golden Garland Sun-Dried Figs",
+    "category": "dried-fruits",
+    "badge": "Calcium & Iron",
+    "origin": "Aegean Basin Terraces",
+    "roast_style": "Naturally sun-dried whole figs",
+    "rating": 5,
+    "review_count": 42,
+    "images": [
+      "/products/dried-fruits/dried-figs.jpeg"
+    ],
+    "description": "Soft, chewy dried figs filled with natural crunchy seeds and luscious honey sweetness. Renowned for digestive vitality and exceptional calcium density.",
+    "extended_about": [
+      "Sun-dried on traditional wooden racks under Mediterranean sunshine.",
+      "Eaten whole or soaked overnight in warm water for traditional morning vitality."
+    ],
+    "ingredients": "100% Whole Sun-Dried Figs (Anjeer)",
+    "storage": "Keep sealed in cool temperatures.",
+    "shelf_life": "8 Months",
+    "allergen_notice": "Processed in a facility handling tree nuts.",
+    "is_featured": true,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "0de271b4-a544-42a6-a718-b3fc150a5046",
+    "slug": "dried-kiwi",
+    "name": "Dried Kiwi Slices",
+    "subtitle": "Zesty Emerald Green Fruit Coins",
+    "category": "dried-fruits",
+    "badge": "Vitamin C Boost",
+    "origin": "Pristine Mountain Valleys",
+    "roast_style": "Low-heat dehydrated kiwi wheels",
+    "rating": 4.7,
+    "review_count": 15,
+    "images": [
+      "/products/dried-fruits/dried-kiwi.jpeg"
+    ],
+    "description": "Bright and pleasantly tart dried kiwi rings with tiny crunchy seeds. Delicious gourmet fruit treat with remarkable vitamin C retention and striking presentation.",
+    "extended_about": [
+      "Sliced evenly from fresh, fully ripened kiwifruit and low-temperature dried to retain green chlorophyll and zingy flavor."
+    ],
+    "ingredients": "100% Sliced Dehydrated Kiwi",
+    "storage": "Store away from direct moisture.",
+    "shelf_life": "7 Months",
+    "allergen_notice": "May contain traces of tree nuts.",
+    "is_featured": false,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "2eb9cd1d-5950-4b08-90d4-222be309496a",
+    "slug": "dried-mango",
+    "name": "Dried Tropical Mango Strips",
+    "subtitle": "Chewy Sun-Ripened Sweet Alphonso & Willard Strips",
+    "category": "dried-fruits",
+    "badge": "100% Natural",
+    "origin": "Ceylon Coastal & Dry Zone Groves",
+    "roast_style": "Solar-dehydrated mango spears",
+    "rating": 4.9,
+    "review_count": 47,
+    "images": [
+      "/products/dried-fruits/dried-mango.jpeg"
+    ],
+    "description": "Thick cut, vibrant sunshine-yellow dried mango slices packed with intense natural tropical sweetness and chewiness. Zero added sugar or colorings.",
+    "extended_about": [
+      "Sourced directly from local Sri Lankan orchards during peak harvest season.",
+      "Naturally full of beta-carotene, vitamin C, and wholesome fiber."
+    ],
+    "ingredients": "100% Ripe Mango Strips",
+    "storage": "Store in an airtight jar in a cool place.",
+    "shelf_life": "8 Months",
+    "allergen_notice": "All-natural fruit.",
+    "is_featured": true,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "aa9847bb-f81e-480e-abd6-9460f327521f",
+    "slug": "dried-papaya",
+    "name": "Dried Golden Papaya Spears",
+    "subtitle": "Tender Red Lady Papaya Spears",
+    "category": "dried-fruits",
+    "badge": "Digestive Enzymes",
+    "origin": "Tropical Agro Orchards, Sri Lanka",
+    "roast_style": "Gently dehydrated papaya spears",
+    "rating": 4.6,
+    "review_count": 18,
+    "images": [
+      "/products/dried-fruits/dried-papaya.jpeg"
+    ],
+    "description": "Subtly sweet dried papaya spears rich in natural papain enzymes, beta carotene, and dietary fibre. A light, easy-to-digest tropical provision.",
+    "extended_about": [
+      "Dehydrated under hygienic low-temperature conditions to preserve wholesome fruit integrity."
+    ],
+    "ingredients": "100% Ripe Papaya",
+    "storage": "Store in a dry cool place.",
+    "shelf_life": "7 Months",
+    "allergen_notice": "Packaged in a nut-handling environment.",
+    "is_featured": false,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "e7da64da-17b3-49ab-b834-91284f054496",
+    "slug": "dried-peach",
+    "name": "Dried Peach Halves",
+    "subtitle": "Velvety Sun-Dried Stone Fruit Halves",
+    "category": "dried-fruits",
+    "badge": "Sweet & Tangy",
+    "origin": "Highland Fruit Foothills",
+    "roast_style": "Sun-dried pitted peach halves",
+    "rating": 4.8,
+    "review_count": 22,
+    "images": [
+      "/products/dried-fruits/dried-peach.jpeg"
+    ],
+    "description": "Large, luscious dried peach halves with a deep amber hue and aromatic stone-fruit fragrance. Full of natural sweetness, provitamin A, and potassium.",
+    "extended_about": [
+      "Whole peaches hand-halved and sun-cured naturally on orchard trays."
+    ],
+    "ingredients": "100% Sun-Dried Pitted Peaches",
+    "storage": "Keep cool and dry.",
+    "shelf_life": "8 Months",
+    "allergen_notice": "Processed in a facility handling tree nuts.",
+    "is_featured": false,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "1d12b853-a83f-455a-8a18-d94bcbc48d37",
+    "slug": "dried-pineapple",
+    "name": "Dried Ceylon Pineapple Rings",
+    "subtitle": "Mauritius Gold Pineapple Wheels",
+    "category": "dried-fruits",
+    "badge": "Enzyme Rich",
+    "origin": "Gampaha Valley, Sri Lanka",
+    "roast_style": "Solar-cured pineapple wheels",
+    "rating": 4.9,
+    "review_count": 39,
+    "images": [
+      "/products/dried-fruits/dried-pineapple.jpeg"
+    ],
+    "description": "Dehydrated slices of famous Sri Lankan Mauritius pineapples. Tangy, concentrated sweetness with natural bromelain enzyme benefits and satisfying chewy rings.",
+    "extended_about": [
+      "Grown in the fertile red soils of western Sri Lanka and sliced fresh within hours of harvest."
+    ],
+    "ingredients": "100% Natural Dried Pineapple",
+    "storage": "Airtight container in pantry.",
+    "shelf_life": "6 Months",
+    "allergen_notice": "All-natural fruit.",
+    "is_featured": true,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "872a1360-4db3-497c-bdec-716455fec778",
+    "slug": "dried-plums",
+    "name": "Dried Plums (Aaloobukhaara)",
+    "subtitle": "Sweet & Sour Sun-Cured Heritage Plums",
+    "category": "dried-fruits",
+    "badge": "Traditional Taste",
+    "origin": "Pristine Himalayan Foothills",
+    "roast_style": "Naturally sun-cured whole plums",
+    "rating": 4.7,
+    "review_count": 21,
+    "images": [
+      "/products/dried-fruits/dried-plums.jpeg"
+    ],
+    "description": "Plump, juicy dried plums renowned across South Asian culinary traditions for refreshing sweet-sour chutneys, stews, biryanis, or direct wholesome snacking.",
+    "extended_about": [
+      "Hand-sorted for size, moisture, and classic tangy-sweet richness."
+    ],
+    "ingredients": "Sun-Dried Plums (Aaloobukhaara)",
+    "storage": "Cool dry storage.",
+    "shelf_life": "9 Months",
+    "allergen_notice": "Contains natural pits. Handle with care.",
+    "is_featured": false,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "7ffe336b-3434-4afd-a32e-c7a032bba8f3",
+    "slug": "dried-strawberries",
+    "name": "Whole Dried Strawberries",
+    "subtitle": "Intensely Sweet Nuwara Eliya Mountain Strawberries",
+    "category": "dried-fruits",
+    "badge": "Artisan Harvest",
+    "origin": "Nuwara Eliya Highlands, Sri Lanka",
+    "roast_style": "Dehydrated whole alpine berries",
+    "rating": 5,
+    "review_count": 45,
+    "images": [
+      "/products/dried-fruits/dried-strawberries.jpeg"
+    ],
+    "description": "Exquisite whole dried strawberries with concentrated berry perfume, gentle tartness, and luxurious ruby color. Perfect for breakfast bowls, granola, and gifting.",
+    "extended_about": [
+      "Grown in the misty, cool mountains of Nuwara Eliya and gently dried to preserve their natural heart shape and aroma."
+    ],
+    "ingredients": "Whole Dehydrated Strawberries",
+    "storage": "Keep tightly sealed in a cool pantry.",
+    "shelf_life": "6 Months",
+    "allergen_notice": "All-natural fruit.",
+    "is_featured": true,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "b928fb7c-bd26-443e-ac18-70f991d5f221",
+    "slug": "gojiberries",
+    "name": "Himalayan Goji Berries",
+    "subtitle": "Ancient Superfood Wolfberries · Sun-Dried",
+    "category": "dried-fruits",
+    "badge": "Superfood",
+    "origin": "Tibetan Plateau Valleys",
+    "roast_style": "Sun-dried raw whole wolfberries",
+    "rating": 4.9,
+    "review_count": 33,
+    "images": [
+      "/products/dried-fruits/gojiberries.jpeg"
+    ],
+    "description": "Authentic nutrient-dense dried wolfberries with deep crimson color, gentle herbaceous sweetness, and extraordinary zeaxanthin and antioxidant levels.",
+    "extended_about": [
+      "Prized for millennia in traditional herbalism for supporting eye health, stamina, and cellular longevity."
+    ],
+    "ingredients": "100% Raw Dried Goji Berries",
+    "storage": "Cool, dark, dry conditions.",
+    "shelf_life": "10 Months",
+    "allergen_notice": "Packaged in a facility handling tree nuts.",
+    "is_featured": false,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "2345008d-b425-49c6-bfcc-924930573c1e",
+    "slug": "golden-raisins",
+    "name": "Golden Raisins (Sultanas)",
+    "subtitle": "Honey-Sweet Seedless Golden Sultanas",
+    "category": "dried-fruits",
+    "badge": "Clean & Tender",
+    "origin": "Valley Vineyards",
+    "roast_style": "Sun-cured seedless white grapes",
+    "rating": 4.8,
+    "review_count": 29,
+    "images": [
+      "/products/dried-fruits/golden-raisins.jpeg"
+    ],
+    "description": "Radiant golden raisins with soft, melt-in-the-mouth texture and honey-like sweetness. Essential for Sri Lankan biryanis, watalappam, yellow rice, and morning oats.",
+    "extended_about": [
+      "Carefully washed, stemmed, and sorted for consistent golden colour and plumpness."
+    ],
+    "ingredients": "100% Seedless Golden Raisins",
+    "storage": "Airtight storage.",
+    "shelf_life": "9 Months",
+    "allergen_notice": "Packaged in a facility handling tree nuts.",
+    "is_featured": false,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "e5754cb4-5271-4f4b-a942-03cf690b8b4f",
+    "slug": "pitted-prunes",
+    "name": "Tender Pitted Prunes",
+    "subtitle": "Moist & Plump French D'Agen Dried Plums",
+    "category": "dried-fruits",
+    "badge": "Digestive Health",
+    "origin": "Pristine Orchard Valleys",
+    "roast_style": "Steam-tenderized pitted dried plums",
+    "rating": 4.9,
+    "review_count": 38,
+    "images": [
+      "/products/dried-fruits/pitted-prunes.jpeg"
+    ],
+    "description": "Naturally sweet, tender, stone-free pitted prunes famous for promoting gut health and gentle digestion. Rich in sorbitol, potassium, and bone-strengthening vitamin K.",
+    "extended_about": [
+      "Pitted without tearing the fruit meat, leaving a plump, succulent prune ready to eat."
+    ],
+    "ingredients": "100% Pitted Dried Prunes",
+    "storage": "Refrigerate after opening for peak freshness.",
+    "shelf_life": "9 Months",
+    "allergen_notice": "May contain occasional pit fragments.",
+    "is_featured": true,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "db80b4aa-2ae8-4049-9436-e7c1da733c5e",
+    "slug": "apricot-seeds",
+    "name": "Sweet Apricot Kernels (Seeds)",
+    "subtitle": "Sun-Dried Natural Sweet Kernels",
+    "category": "seeds",
+    "badge": "Nutrient Dense",
+    "origin": "Highland Mountain Orchards",
+    "roast_style": "Raw sun-dried sweet kernels",
+    "rating": 4.8,
+    "review_count": 20,
+    "images": [
+      "/products/seeds/apricot-seeds.jpeg"
+    ],
+    "description": "Crisp and almond-like sweet apricot kernels, rich in plant protein, dietary fiber, and healthy monounsaturated fatty acids. Delicious direct snack.",
+    "extended_about": [
+      "Selected strictly from sweet apricot varieties with zero bitterness."
+    ],
+    "ingredients": "100% Sweet Apricot Kernels",
+    "storage": "Airtight cool pantry.",
+    "shelf_life": "8 Months",
+    "allergen_notice": "Contains stone-fruit kernels.",
+    "is_featured": false,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "032de5b1-c5ba-4e24-b33e-db987daaf54e",
+    "slug": "black-seeds",
+    "name": "Black Seeds (Nigella Sativa / Kalonji)",
+    "subtitle": "Blessed Seed · High Thymoquinone & Purity Tested",
+    "category": "seeds",
+    "badge": "Immunity Vitality",
+    "origin": "Traditional Agro Holdings",
+    "roast_style": "Cleaned raw whole seeds",
+    "rating": 5,
+    "review_count": 52,
+    "images": [
+      "/products/seeds/black-seeds.jpeg"
+    ],
+    "description": "Revered for centuries across Ayurvedic and prophetic medicine. Aromatic, pitch-black seeds with intense herbal pungency and scientifically verified thymoquinone potency.",
+    "extended_about": [
+      "Carefully machine-cleaned and triple-sieved to remove dust and debris.",
+      "Enjoy whole with honey, brewed as herbal tea, or sprinkled over artisan breads."
+    ],
+    "ingredients": "100% Pure Nigella Sativa Seeds (Kalonji)",
+    "storage": "Cool, dark dry container.",
+    "shelf_life": "12 Months",
+    "allergen_notice": "Pure whole spice seed.",
+    "is_featured": true,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "83faba56-7617-4262-a5fb-030664d851c9",
+    "slug": "chia-seeds",
+    "name": "Raw Organic Chia Seeds",
+    "subtitle": "Triple-Cleaned Black Salvia Hispanica Seeds",
+    "category": "seeds",
+    "badge": "Omega-3 & Fibre",
+    "origin": "South American Volcanic Soils",
+    "roast_style": "Raw unprocessed whole seeds",
+    "rating": 4.9,
+    "review_count": 64,
+    "images": [
+      "/products/seeds/chia-seeds.jpeg"
+    ],
+    "description": "Super-clean black chia seeds that swell into a rich gel. Provides immense plant omega-3s, soluble fibre, and lasting hydration for active lifestyles.",
+    "extended_about": [
+      "Certified 99.9% purity seed grade with zero grit or sediment.",
+      "Mix into water, smoothies, overnight puddings, or juices for sustained endurance."
+    ],
+    "ingredients": "100% Whole Chia Seeds",
+    "storage": "Sealed in a dry, cool jar.",
+    "shelf_life": "12 Months",
+    "allergen_notice": "Gluten-free seed.",
+    "is_featured": true,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "352cec00-5f69-45df-858b-7b8e49b35078",
+    "slug": "flax-seeds",
+    "name": "Golden Flax Seeds (Alsi)",
+    "subtitle": "Cold-Grown Lignan & Omega-3 Powerhouse",
+    "category": "seeds",
+    "badge": "Heart Healthy",
+    "origin": "Prairie Harvest Farms",
+    "roast_style": "Cleaned raw golden seeds",
+    "rating": 4.8,
+    "review_count": 34,
+    "images": [
+      "/products/seeds/flax-seeds.jpeg"
+    ],
+    "description": "Golden flax seeds with a clean nutty aroma. Exceptionally high in ALA omega-3 and lignans. Ideal for smoothies, fresh milling, rotis, and baking.",
+    "extended_about": [
+      "Golden varieties feature a milder, more delicate taste than brown flaxseeds."
+    ],
+    "ingredients": "100% Whole Golden Flax Seeds",
+    "storage": "Store in a cool pantry or fridge.",
+    "shelf_life": "10 Months",
+    "allergen_notice": "Gluten-free.",
+    "is_featured": false,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "04dea125-81d5-4adb-b51d-b48fdae55852",
+    "slug": "hemp-seeds",
+    "name": "Shelled Hemp Hearts (Seeds)",
+    "subtitle": "Raw Soft Nutty Hearts · Complete Plant Protein",
+    "category": "seeds",
+    "badge": "Complete Protein",
+    "origin": "Canadian Organic Valleys",
+    "roast_style": "Mechanically hulled raw hemp hearts",
+    "rating": 5,
+    "review_count": 41,
+    "images": [
+      "/products/seeds/hemp-seeds.jpeg"
+    ],
+    "description": "Tender, creamy shelled hemp hearts containing all 9 essential amino acids with an optimal 3:1 ratio of omega-6 to omega-3 fatty acids. Soft enough to eat by the spoonful.",
+    "extended_about": [
+      "Gently mechanically hulled without heat or chemical treatment to preserve live enzymes."
+    ],
+    "ingredients": "100% Raw Shelled Hemp Hearts",
+    "storage": "Keep refrigerated after opening.",
+    "shelf_life": "8 Months",
+    "allergen_notice": "Pure hulled seeds.",
+    "is_featured": true,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "1a0e8f2b-592d-4bae-b552-b3579b4814aa",
+    "slug": "melon-seeds",
+    "name": "Musk Melon Seeds (Magaz)",
+    "subtitle": "White Hulled Cantaloupe Kernels",
+    "category": "seeds",
+    "badge": "Cooling & Delicate",
+    "origin": "Sun-Warmed Agricultural Plains",
+    "roast_style": "Naturally hulled melon kernels",
+    "rating": 4.7,
+    "review_count": 16,
+    "images": [
+      "/products/seeds/melon-seeds.jpeg"
+    ],
+    "description": "Sweet, creamy hulled musk melon seeds used in traditional royal confectionery, creamy curries, dessert gravies, and cooling summer drinks.",
+    "extended_about": [
+      "Carefully washed, hulled, and sun-dried for a pure ivory white kernel."
+    ],
+    "ingredients": "100% Hulled Musk Melon Seeds (Magaz)",
+    "storage": "Airtight jar in a cool cupboard.",
+    "shelf_life": "9 Months",
+    "allergen_notice": "Hulled seed kernel.",
+    "is_featured": false,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "61472ae1-180b-46f8-84bb-97af201f610a",
+    "slug": "moringa-powder",
+    "name": "Pure Ceylon Moringa Leaf Powder",
+    "subtitle": "Shade-Dried Miracle Tree Supergreen",
+    "category": "seeds",
+    "badge": "Ceylon Green Miracle",
+    "origin": "Dry Zone Groves, Sri Lanka",
+    "roast_style": "Low-temperature dehydrated and micro-milled",
+    "rating": 4.9,
+    "review_count": 48,
+    "images": [
+      "/products/seeds/moringa-powder.jpeg"
+    ],
+    "description": "Micro-milled vibrant green powder made from 100% organically grown Sri Lankan drumstick (murunga) leaves. Rich in bioavailable iron, calcium, and 46 antioxidants.",
+    "extended_about": [
+      "Shade-dried immediately upon harvest to prevent heat breakdown of vitamins.",
+      "Stir half a teaspoon into warm water, morning green juices, or dhal curries."
+    ],
+    "ingredients": "100% Pure Moringa Oleifera Leaf Powder",
+    "storage": "Keep in an airtight tin away from direct sunlight.",
+    "shelf_life": "12 Months",
+    "allergen_notice": "Pure single-origin leaf powder.",
+    "is_featured": true,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "0e39a704-d8c5-4614-8742-e0d0c66b378a",
+    "slug": "psyllium-husk",
+    "name": "Whole Psyllium Husk (Isabgol)",
+    "subtitle": "Pure Dietary Soluble Fiber Flakes",
+    "category": "seeds",
+    "badge": "Digestive Wellness",
+    "origin": "Selected Agro Fields",
+    "roast_style": "Milled seed husk flakes",
+    "rating": 4.8,
+    "review_count": 37,
+    "images": [
+      "/products/seeds/psyllium-husk.jpeg"
+    ],
+    "description": "Gentle, soluble dietary fibre flakes that support smooth digestion, regular bowel movements, and gut motility when mixed with warm water, juice, or curd.",
+    "extended_about": [
+      "99% grade white husk with high swelling capacity and zero grit."
+    ],
+    "ingredients": "100% Pure Psyllium Husk (Plantago ovata)",
+    "storage": "Store in a dry pantry away from moisture.",
+    "shelf_life": "14 Months",
+    "allergen_notice": "Drink with adequate water.",
+    "is_featured": false,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "9ef839c0-2cea-4f70-8f34-9b3f31cafed0",
+    "slug": "pumpkin-seeds",
+    "name": "Raw AAA Pepitas (Pumpkin Seeds)",
+    "subtitle": "Dark Green Jumbo Austrian Style Pepitas",
+    "category": "seeds",
+    "badge": "Zinc & Magnesium",
+    "origin": "Certified Organic Plantations",
+    "roast_style": "Raw hulled dark green pepitas",
+    "rating": 5,
+    "review_count": 58,
+    "images": [
+      "/products/seeds/pumpkin-seeds.jpeg"
+    ],
+    "description": "Crisp, whole dark-green pumpkin seed kernels without hulls. Abundant in dietary zinc, magnesium, and restorative antioxidants for restorative sleep and vitality.",
+    "extended_about": [
+      "Naturally hull-less variety selected for its high oil density and sweet nutty flavor."
+    ],
+    "ingredients": "100% Hulled Pumpkin Seeds (Pepitas)",
+    "storage": "Airtight dry glass container.",
+    "shelf_life": "9 Months",
+    "allergen_notice": "Allergen-free natural seed.",
+    "is_featured": true,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "f5125f62-5496-40c3-8b60-9cb5c25a1474",
+    "slug": "quinoa-seeds",
+    "name": "Royal Organic Quinoa Seeds",
+    "subtitle": "Saponin-Free Pre-Washed Andean Grains",
+    "category": "seeds",
+    "badge": "Gluten-Free Grain",
+    "origin": "Altiplano Plateaus",
+    "roast_style": "De-saponified raw whole quinoa grain",
+    "rating": 4.8,
+    "review_count": 26,
+    "images": [
+      "/products/seeds/quinoa-seeds.jpeg"
+    ],
+    "description": "Wholesome complete-protein ancient seed grain. Pre-washed to eliminate bitterness and cooks into a light, fluffy, nutty rice alternative in 15 minutes.",
+    "extended_about": [
+      "Contains all nine essential amino acids with low glycemic impact."
+    ],
+    "ingredients": "100% Organic Quinoa Seeds",
+    "storage": "Cool dry pantry storage.",
+    "shelf_life": "12 Months",
+    "allergen_notice": "Gluten-free.",
+    "is_featured": false,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "998a8467-13fe-46aa-b8bf-f06c6203e8ce",
+    "slug": "rosemary",
+    "name": "Aromatic Whole Dried Rosemary",
+    "subtitle": "Mountain-Grown Needle Leaves",
+    "category": "seeds",
+    "badge": "Herb & Culinary",
+    "origin": "Sun-Drenched Mediterranean Terraces",
+    "roast_style": "Naturally air-dried whole needle leaves",
+    "rating": 4.7,
+    "review_count": 17,
+    "images": [
+      "/products/seeds/rosemary.jpeg"
+    ],
+    "description": "Pungent, piney dried rosemary needle leaves rich in rosmarinic acid and natural botanical oils. Ideal for herbal infusions, sourdough baking, roast potatoes, and marinades.",
+    "extended_about": [
+      "Hand-harvested prior to flowering for maximum essential oil density."
+    ],
+    "ingredients": "100% Dried Whole Rosemary Leaves",
+    "storage": "Airtight spice jar away from light.",
+    "shelf_life": "12 Months",
+    "allergen_notice": "Pure dried herb.",
+    "is_featured": false,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "ad85edeb-add6-40bf-a9a5-7d5af131aba9",
+    "slug": "sesame-seeds",
+    "name": "Black Sesame Seeds (Kala Til)",
+    "subtitle": "Unpolished Natural Black Sesame",
+    "category": "seeds",
+    "badge": "Calcium Rich",
+    "origin": "Dry Zone Organic Allotments, Sri Lanka",
+    "roast_style": "Triple-sieved raw black sesame",
+    "rating": 4.8,
+    "review_count": 29,
+    "images": [
+      "/products/seeds/sesame-seeds.jpeg"
+    ],
+    "description": "Naturally unpolished black sesame seeds with an earthy aroma and deep mineral richness. High in plant calcium, iron, and lignans for hair and bone strength.",
+    "extended_about": [
+      "Grown traditionally in the dry agricultural zones of northern and eastern Sri Lanka."
+    ],
+    "ingredients": "100% Natural Black Sesame Seeds",
+    "storage": "Sealed cool pantry.",
+    "shelf_life": "10 Months",
+    "allergen_notice": "Contains sesame.",
+    "is_featured": false,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "da439b56-62a9-42da-9462-eda0f772b258",
+    "slug": "sunflower-seeds",
+    "name": "Shelled Raw Sunflower Seeds",
+    "subtitle": "Tender Kernel Seeds · High Vitamin E",
+    "category": "seeds",
+    "badge": "Vitamin E Rich",
+    "origin": "Rolling Sunflower Basins",
+    "roast_style": "Mechanically hulled raw kernel seeds",
+    "rating": 4.9,
+    "review_count": 43,
+    "images": [
+      "/products/seeds/sunflower-seeds.jpeg"
+    ],
+    "description": "Plump, grey-striped sunflower seed hearts with a pleasant buttery snap. Loaded with cellular protective vitamin E, selenium, and copper for heart health.",
+    "extended_about": [
+      "Triple cleaned and screened for intact, fresh kernels without bitter shells."
+    ],
+    "ingredients": "100% Shelled Raw Sunflower Kernels",
+    "storage": "Keep dry and cool.",
+    "shelf_life": "9 Months",
+    "allergen_notice": "Packaged in a nut-handling environment.",
+    "is_featured": true,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "c2f339d6-9f0c-4ab3-b43c-5d365d7b35df",
+    "slug": "watermelon-seeds",
+    "name": "Hulled Watermelon Kernels (Magaz)",
+    "subtitle": "Crisp White Nutrient-Dense Seed Kernels",
+    "category": "seeds",
+    "badge": "Protein Dense",
+    "origin": "Fertile River Basins",
+    "roast_style": "Hulled raw white watermelon seeds",
+    "rating": 4.7,
+    "review_count": 18,
+    "images": [
+      "/products/seeds/watermelon-seeds.jpeg"
+    ],
+    "description": "Carefully hulled watermelon seed kernels, packed with plant protein, B vitamins, and healthy unsaturated fats. Great snack or culinary thickening agent.",
+    "extended_about": [
+      "Light, crunchy kernels with a delicate buttery flavor."
+    ],
+    "ingredients": "100% Hulled Watermelon Kernels",
+    "storage": "Airtight storage.",
+    "shelf_life": "9 Months",
+    "allergen_notice": "Pure seed kernel.",
+    "is_featured": false,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "4fe4c915-914d-455d-9807-13b7902aa55e",
+    "slug": "white-quinoa",
+    "name": "Pearl White Organic Quinoa",
+    "subtitle": "Delicate Fluffy Ancient Seed Grain",
+    "category": "seeds",
+    "badge": "Ancient Grain",
+    "origin": "High Andean Terraces",
+    "roast_style": "Triple-washed raw pearl quinoa",
+    "rating": 4.8,
+    "review_count": 25,
+    "images": [
+      "/products/seeds/white-quinoa.jpeg"
+    ],
+    "description": "Mild, delicate pearl-white quinoa seeds with gentle fluffiness and subtle nutty taste. Cooks in 15 minutes as a nutritious gluten-free staple.",
+    "extended_about": [
+      "The classic white variety is the fluffiest and quickest cooking of all quinoa strains."
+    ],
+    "ingredients": "100% Pearl White Quinoa Seeds",
+    "storage": "Airtight container in dry place.",
+    "shelf_life": "12 Months",
+    "allergen_notice": "Gluten-free seed.",
+    "is_featured": false,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  },
+  {
+    "id": "081bc49b-4466-4b43-9e78-ca57e6f95403",
+    "slug": "white-sesame",
+    "name": "Natural Hulled White Sesame Seeds (Safed Til)",
+    "subtitle": "Aromatic Golden-Ivory Sweet Seeds",
+    "category": "seeds",
+    "badge": "Traditional Garnish",
+    "origin": "Dry Zone Agro Orchards, Sri Lanka",
+    "roast_style": "Gently hulled and cleaned white seeds",
+    "rating": 4.9,
+    "review_count": 35,
+    "images": [
+      "/products/seeds/white-sesame.jpeg"
+    ],
+    "description": "Clean, aromatic white sesame seeds with pleasant sweetness when toasted. Ideal for traditional Sri Lankan sweetmeats, tahini, stir-fries, and bakery garnishing.",
+    "extended_about": [
+      "Hulled gently using clean water washing without chemical bleach."
+    ],
+    "ingredients": "100% Natural White Sesame Seeds",
+    "storage": "Dry sealed pantry.",
+    "shelf_life": "10 Months",
+    "allergen_notice": "Contains sesame.",
+    "is_featured": true,
+    "created_at": "2026-10-14T16:01:14.769531+00:00"
+  }
+]

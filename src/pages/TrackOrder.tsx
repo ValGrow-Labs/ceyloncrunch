@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
-import { useStore } from '../lib/store';
+import { useStore, Order } from '../lib/store';
+import { trackOrderRpc } from '../lib/supabase';
 import { formatRs } from '../data/products';
 import {
   ArrowLeft,
@@ -29,6 +30,7 @@ export const TrackOrder: React.FC = () => {
   const [orderInput, setOrderInput] = useState(urlOrder || '');
   const [phoneInput, setPhoneInput] = useState(urlPhone || '');
   const [hasSearched, setHasSearched] = useState(Boolean(urlOrder && urlPhone));
+  const [remoteOrder, setRemoteOrder] = useState<Order | null>(null);
 
   const [copiedWaybill, setCopiedWaybill] = useState(false);
 
@@ -43,8 +45,100 @@ export const TrackOrder: React.FC = () => {
     }
   }, [urlOrder, urlPhone]);
 
+  // Sync with live Supabase database via SECURITY DEFINER track_order RPC
+  useEffect(() => {
+    if (!hasSearched || !orderInput.trim() || !phoneInput.trim()) {
+      setRemoteOrder(null);
+      return;
+    }
+
+    const local = lookupOrder(orderInput, phoneInput);
+    if (local) {
+      setRemoteOrder(local);
+      return;
+    }
+
+    trackOrderRpc(orderInput.trim(), phoneInput.trim()).then((res) => {
+      if (res.found && res.order) {
+        const o = res.order;
+        const mapped: Order = {
+          id: o.id,
+          createdAt: o.created_at ? new Date(o.created_at).toLocaleDateString() : 'Recent',
+          customer: {
+            name: 'Valued Patron',
+            phone: phoneInput.trim(),
+          },
+          shippingAddress: {
+            street: 'Island-wide Express',
+            city: o.shipping_city,
+            district: o.shipping_district,
+          },
+          paymentMethod: o.payment_method as any,
+          paymentStatus: o.payment_status as any,
+          paymentSlipUrl: o.payment_slip_url || undefined,
+          subtotal: Number(o.subtotal),
+          deliveryFee: Number(o.delivery_fee),
+          total: Number(o.total),
+          status: o.status as any,
+          waybill: o.waybill || 'CLN-DISPATCH-LK',
+          estimatedArrival: o.estimated_arrival || '1-2 business days',
+          items: (o.items || []).map((it) => ({
+            productId: '',
+            variantId: '',
+            productName: it.product_name,
+            variantWeight: it.variant_weight,
+            price: Number(it.price),
+            quantity: it.quantity,
+            image: it.image || '',
+            slug: '',
+          })),
+          timeline: [
+            {
+              status: 'placed',
+              title: 'Order Placed',
+              timestamp: o.created_at ? new Date(o.created_at).toLocaleDateString() : 'Recorded',
+              description: 'Web checkout verified & tokenized',
+              completed: true,
+            },
+            {
+              status: 'confirmed',
+              title: 'Order Confirmed',
+              timestamp: 'Status verified',
+              description: o.payment_method === 'cod' ? 'Payment due on delivery' : 'Awaiting payment verification',
+              completed: ['confirmed', 'packed', 'dispatched', 'delivered'].includes(o.status),
+            },
+            {
+              status: 'packed',
+              title: 'Small-Batch Packed',
+              timestamp: 'Fulfillment queue',
+              description: 'Aroma-sealed foil packaging',
+              completed: ['packed', 'dispatched', 'delivered'].includes(o.status),
+            },
+            {
+              status: 'dispatched',
+              title: 'Dispatched & In Transit',
+              timestamp: 'Courier handover',
+              description: 'Pronto Tracked Courier',
+              completed: ['dispatched', 'delivered'].includes(o.status),
+            },
+            {
+              status: 'delivered',
+              title: 'Delivered',
+              timestamp: 'Final destination',
+              description: 'Recipient signature',
+              completed: o.status === 'delivered',
+            },
+          ],
+        };
+        setRemoteOrder(mapped);
+      } else {
+        setRemoteOrder(null);
+      }
+    });
+  }, [hasSearched, orderInput, phoneInput]);
+
   // Find order
-  const activeOrder = hasSearched ? lookupOrder(orderInput, phoneInput) : null;
+  const activeOrder = hasSearched ? (lookupOrder(orderInput, phoneInput) || remoteOrder) : null;
 
   const handleLookupSubmit = (e: React.FormEvent) => {
     e.preventDefault();
