@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { useStore, Order, SavedAddress } from '../lib/store';
 import { formatRs, Product } from '../data/products';
 import { trackOrderRpc, supabase } from '../lib/supabase';
@@ -31,6 +31,12 @@ import {
   Printer,
   AlertCircle,
   LogIn,
+  LogOut,
+  Eye,
+  EyeOff,
+  ShieldCheck,
+  Lock,
+  RefreshCw,
   Store,
 } from 'lucide-react';
 
@@ -108,8 +114,14 @@ const ACTIVE_VOUCHERS: VoucherItem[] = [
 
 type ProfileTab = 'orders' | 'addresses' | 'wishlist' | 'perks' | 'preferences';
 
-export const Profile: React.FC = () => {
+export interface ProfileProps {
+  defaultMode?: 'signin' | 'signup';
+}
+
+export const Profile: React.FC<ProfileProps> = ({ defaultMode }) => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
   const {
     patronProfile,
     updatePatronProfile,
@@ -125,29 +137,16 @@ export const Profile: React.FC = () => {
     products,
     addToCart,
     showToast,
+    customerEmail,
+    isCustomerLoggedIn,
+    loginCustomer,
+    signupCustomer,
+    logoutCustomer,
   } = useStore();
 
   const [activeTab, setActiveTab] = useState<ProfileTab>('orders');
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
   const [copiedWaybill, setCopiedWaybill] = useState<string | null>(null);
-
-  // Customer session state
-  const [customerEmail, setCustomerEmail] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!supabase) return;
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user?.email) {
-        setCustomerEmail(session.user.email);
-      }
-    });
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setCustomerEmail(session?.user?.email || null);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
 
   // Search & Filter Orders
   const [orderSearchQuery, setOrderSearchQuery] = useState('');
@@ -190,11 +189,35 @@ export const Profile: React.FC = () => {
 
   // Customer Auth Modal State (Supabase / Guest)
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin');
+  const [authMode, setAuthMode] = useState<'signin' | 'signup'>(defaultMode || 'signin');
   const [authEmail, setAuthEmail] = useState('');
   const [authPassword, setAuthPassword] = useState('');
+  const [authName, setAuthName] = useState('');
+  const [authPhone, setAuthPhone] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [authLoading, setAuthLoading] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  // Auto-open Customer Auth Modal for /login, /signin, /register, /signup or query params
+  useEffect(() => {
+    const path = location.pathname.toLowerCase();
+    const action = searchParams.get('action') || searchParams.get('mode');
+
+    if (path === '/register' || path === '/signup' || action === 'register' || action === 'signup' || defaultMode === 'signup') {
+      if (!customerEmail) {
+        setAuthMode('signup');
+        setAuthError(null);
+        setIsAuthModalOpen(true);
+      }
+    } else if (path === '/login' || path === '/signin' || action === 'login' || action === 'signin' || defaultMode === 'signin') {
+      if (!customerEmail) {
+        setAuthMode('signin');
+        setAuthError(null);
+        setIsAuthModalOpen(true);
+      }
+    }
+  }, [location.pathname, searchParams, defaultMode, customerEmail]);
 
   // Total spent calculation
   const totalSpent = useMemo(() => {
@@ -435,47 +458,55 @@ export const Profile: React.FC = () => {
   // Customer Supabase Auth Submit
   const handleAuthSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!supabase) {
-      showToast('Customer account service is offline.');
-      return;
-    }
     setAuthLoading(true);
     setAuthError(null);
 
     try {
       if (authMode === 'signin') {
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email: authEmail.trim(),
-          password: authPassword,
-        });
-        if (error) throw error;
-        if (data.user) {
-          updatePatronProfile({
-            email: data.user.email || patronProfile.email,
-          });
-          setCustomerEmail(data.user.email || null);
-          showToast(`Welcome back, ${data.user.email}!`);
-          setIsAuthModalOpen(false);
+        const result = await loginCustomer(authEmail, authPassword);
+        if (!result.success) {
+          throw new Error(result.error || 'Authentication failed. Please check your credentials.');
+        }
+        showToast(`Welcome back, ${authEmail}!`);
+        setIsAuthModalOpen(false);
+        setAuthPassword('');
+        if (['/login', '/signin', '/register', '/signup'].includes(location.pathname.toLowerCase())) {
+          navigate('/profile', { replace: true });
         }
       } else {
-        const { data, error } = await supabase.auth.signUp({
-          email: authEmail.trim(),
-          password: authPassword,
-        });
-        if (error) throw error;
-        if (data.user) {
-          updatePatronProfile({
-            email: data.user.email || patronProfile.email,
-          });
-          setCustomerEmail(data.user.email || null);
-          showToast('Customer account created! Please verify your email.');
-          setIsAuthModalOpen(false);
+        if (authPassword.length < 6) {
+          throw new Error('Password must be at least 6 characters.');
+        }
+        const result = await signupCustomer(authEmail, authPassword, authName, authPhone);
+        if (!result.success) {
+          throw new Error(result.error || 'Registration failed. Please try again.');
+        }
+        showToast('Customer account created! Welcome to Ceylon Crunch.');
+        setIsAuthModalOpen(false);
+        setAuthPassword('');
+        if (['/login', '/signin', '/register', '/signup'].includes(location.pathname.toLowerCase())) {
+          navigate('/profile', { replace: true });
         }
       }
     } catch (err: any) {
       setAuthError(err?.message || 'Authentication error. Please verify credentials.');
     } finally {
       setAuthLoading(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    if (!window.confirm('Are you sure you want to log out of your customer account?')) {
+      return;
+    }
+    setIsLoggingOut(true);
+    try {
+      await logoutCustomer();
+      showToast('Logged out successfully. You are now browsing in guest mode.');
+    } catch {
+      showToast('Error during sign out.');
+    } finally {
+      setIsLoggingOut(false);
     }
   };
 
@@ -533,6 +564,238 @@ export const Profile: React.FC = () => {
     }
   };
 
+  // When customer is not authenticated, show the Customer Login / Registration page first.
+  // Upon successful login or registration, the profile page opens immediately!
+  if (!customerEmail) {
+    return (
+      <div className="flex flex-col w-full space-y-6 max-w-xl mx-auto pb-16 pt-2 sm:pt-4">
+        {/* Breadcrumb Navigation */}
+        <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs text-[#6B6B6B]">
+          <Link to="/" className="hover:text-[#1F3D2B] transition-colors">
+            Home
+          </Link>
+          <span>/</span>
+          <span className="text-[#1F3D2B] font-medium">
+            {authMode === 'signin' ? 'Customer Sign In' : 'Create Customer Account'}
+          </span>
+        </nav>
+
+        {/* Customer Login / Register Card */}
+        <div className="bg-white rounded-3xl border border-[#EADFD0] p-6 sm:p-10 shadow-lg space-y-6">
+          {/* Header */}
+          <div className="text-center space-y-2">
+            <div className="w-14 h-14 rounded-2xl bg-[#1F3D2B] text-[#C5A059] flex items-center justify-center mx-auto shadow-md">
+              <UserRound className="w-7 h-7" />
+            </div>
+            <h1 className="font-serif text-2xl sm:text-3xl font-bold text-[#1F3D2B] tracking-tight">
+              {authMode === 'signin' ? 'Customer Sign In' : 'Create Customer Account'}
+            </h1>
+            <p className="text-xs sm:text-sm text-[#6B6B6B] max-w-md mx-auto leading-relaxed">
+              {authMode === 'signin'
+                ? 'Sign in to access your orders, track shipments, and manage saved addresses.'
+                : 'Register a customer account for instant order tracking and saved preferences.'}
+            </p>
+          </div>
+
+          {/* Toggle Tabs */}
+          <div className="flex items-center p-1 bg-[#FAF8F4] border border-[#EADFD0] rounded-2xl max-w-xs mx-auto">
+            <button
+              type="button"
+              onClick={() => {
+                setAuthMode('signin');
+                setAuthError(null);
+              }}
+              className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                authMode === 'signin'
+                  ? 'bg-[#1F3D2B] text-white shadow-xs'
+                  : 'text-[#6B6B6B] hover:text-[#1F3D2B]'
+              }`}
+            >
+              <LogIn className="w-3.5 h-3.5" />
+              <span>Sign In</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setAuthMode('signup');
+                setAuthError(null);
+              }}
+              className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                authMode === 'signup'
+                  ? 'bg-[#1F3D2B] text-white shadow-xs'
+                  : 'text-[#6B6B6B] hover:text-[#1F3D2B]'
+              }`}
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>Create Account</span>
+            </button>
+          </div>
+
+          {/* Form */}
+          <form onSubmit={handleAuthSubmit} className="space-y-4 pt-1">
+            {authMode === 'signup' && (
+              <>
+                <div>
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-[#8B5E3C] mb-1.5">
+                    Full Name
+                  </label>
+                  <div className="relative flex items-center">
+                    <UserRound className="w-4 h-4 text-[#8B5E3C] absolute left-3.5" />
+                    <input
+                      type="text"
+                      placeholder="e.g. Priyantha Perera"
+                      value={authName}
+                      onChange={(e) => setAuthName(e.target.value)}
+                      className="w-full pl-10 pr-3.5 py-2.5 sm:py-3 bg-[#FAF8F4] border border-[#EADFD0] rounded-xl text-sm text-[#1F3D2B] focus:bg-white focus:outline-none focus:border-[#1F3D2B] shadow-2xs"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-[#8B5E3C] mb-1.5">
+                    Mobile Phone
+                  </label>
+                  <div className="relative flex items-center">
+                    <Phone className="w-4 h-4 text-[#8B5E3C] absolute left-3.5" />
+                    <input
+                      type="tel"
+                      placeholder="e.g. 077 123 4567"
+                      value={authPhone}
+                      onChange={(e) => setAuthPhone(e.target.value)}
+                      className="w-full pl-10 pr-3.5 py-2.5 sm:py-3 bg-[#FAF8F4] border border-[#EADFD0] rounded-xl text-sm text-[#1F3D2B] focus:bg-white focus:outline-none focus:border-[#1F3D2B] shadow-2xs"
+                    />
+                  </div>
+                </div>
+              </>
+            )}
+
+            <div>
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-[#8B5E3C] mb-1.5">
+                Email Address
+              </label>
+              <div className="relative flex items-center">
+                <Mail className="w-4 h-4 text-[#8B5E3C] absolute left-3.5" />
+                <input
+                  type="email"
+                  required
+                  placeholder="customer@example.com"
+                  value={authEmail}
+                  onChange={(e) => setAuthEmail(e.target.value)}
+                  className="w-full pl-10 pr-3.5 py-2.5 sm:py-3 bg-[#FAF8F4] border border-[#EADFD0] rounded-xl text-sm text-[#1F3D2B] focus:bg-white focus:outline-none focus:border-[#1F3D2B] shadow-2xs"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-[#8B5E3C] mb-1.5">
+                Password
+              </label>
+              <div className="relative flex items-center">
+                <Lock className="w-4 h-4 text-[#8B5E3C] absolute left-3.5" />
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  required
+                  placeholder="••••••••"
+                  value={authPassword}
+                  onChange={(e) => setAuthPassword(e.target.value)}
+                  className="w-full pl-10 pr-10 py-2.5 sm:py-3 bg-[#FAF8F4] border border-[#EADFD0] rounded-xl text-sm text-[#1F3D2B] focus:bg-white focus:outline-none focus:border-[#1F3D2B] shadow-2xs"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3.5 text-[#6B6B6B] hover:text-[#1F3D2B] cursor-pointer"
+                  tabIndex={-1}
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+              {authMode === 'signup' && (
+                <p className="text-[11px] text-[#6B6B6B] mt-1">Must be at least 6 characters</p>
+              )}
+            </div>
+
+            {authError && (
+              <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-start gap-2.5 animate-in fade-in">
+                <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-rose-600" />
+                <span>{authError}</span>
+              </div>
+            )}
+
+            <div className="pt-2">
+              <button
+                type="submit"
+                disabled={authLoading}
+                className="w-full py-3 rounded-xl bg-[#1F3D2B] hover:bg-[#162C1F] text-white text-xs sm:text-sm font-bold transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 active:scale-[0.99]"
+              >
+                {authLoading ? (
+                  <>
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                    <span>{authMode === 'signin' ? 'Authenticating...' : 'Creating Account...'}</span>
+                  </>
+                ) : authMode === 'signin' ? (
+                  <>
+                    <LogIn className="w-3.5 h-3.5" />
+                    <span>Sign In to Profile</span>
+                  </>
+                ) : (
+                  <>
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Create Customer Account</span>
+                  </>
+                )}
+              </button>
+            </div>
+
+            <div className="text-center pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setAuthMode(authMode === 'signin' ? 'signup' : 'signin');
+                  setAuthError(null);
+                }}
+                className="text-xs text-[#8B5E3C] hover:text-[#1F3D2B] hover:underline cursor-pointer font-medium"
+              >
+                {authMode === 'signin'
+                  ? "Don't have an account yet? Create one here"
+                  : 'Already registered? Sign in here'}
+              </button>
+            </div>
+          </form>
+
+          {/* Quick Assurance Badges */}
+          <div className="pt-4 border-t border-[#EADFD0] grid grid-cols-1 sm:grid-cols-3 gap-3 text-center">
+            <div className="p-2.5 rounded-xl bg-[#FAF8F4] border border-[#EADFD0]/80">
+              <Truck className="w-4 h-4 text-[#8B5E3C] mx-auto mb-1" />
+              <p className="text-[11px] font-bold text-[#1F3D2B]">Order Tracking</p>
+              <p className="text-[10px] text-[#6B6B6B]">Live dispatch status</p>
+            </div>
+            <div className="p-2.5 rounded-xl bg-[#FAF8F4] border border-[#EADFD0]/80">
+              <MapPin className="w-4 h-4 text-[#8B5E3C] mx-auto mb-1" />
+              <p className="text-[11px] font-bold text-[#1F3D2B]">Saved Addresses</p>
+              <p className="text-[10px] text-[#6B6B6B]">1-click easy checkout</p>
+            </div>
+            <div className="p-2.5 rounded-xl bg-[#FAF8F4] border border-[#EADFD0]/80">
+              <ShieldCheck className="w-4 h-4 text-[#8B5E3C] mx-auto mb-1" />
+              <p className="text-[11px] font-bold text-[#1F3D2B]">Secure Account</p>
+              <p className="text-[10px] text-[#6B6B6B]">Encrypted patron data</p>
+            </div>
+          </div>
+
+          {/* Single Order Tracking Callout */}
+          <div className="text-center pt-1">
+            <Link
+              to="/track"
+              className="inline-flex items-center gap-1.5 text-xs text-[#6B6B6B] hover:text-[#1F3D2B] transition-colors"
+            >
+              <span>Need to track an order without signing in?</span>
+              <span className="font-semibold text-[#8B5E3C] underline">Track Order →</span>
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6 sm:space-y-8 pb-12 animate-in fade-in duration-300">
       {/* Breadcrumb Navigation */}
@@ -577,12 +840,23 @@ export const Profile: React.FC = () => {
             <div className="space-y-1.5">
               <div className="flex flex-wrap items-center gap-2">
                 <h1 className="font-serif text-2xl sm:text-3xl font-bold tracking-tight text-[#FBF7F0]">
-                  {patronProfile.name ? patronProfile.name : 'Valued Customer'}
+                  {patronProfile.name
+                    ? patronProfile.name
+                    : customerEmail
+                    ? customerEmail.split('@')[0]
+                    : 'Valued Customer'}
                 </h1>
-                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-sans font-semibold bg-[#C5A059]/20 text-[#C5A059] border border-[#C5A059]/40">
-                  <Sparkles className="w-3 h-3" />
-                  <span>Customer Account</span>
-                </span>
+                {customerEmail ? (
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-sans font-semibold bg-[#2E7D4F]/30 text-[#85E3A0] border border-[#2E7D4F]/60 shadow-xs">
+                    <span className="w-2 h-2 rounded-full bg-[#34D399] animate-pulse" />
+                    <span>Verified Customer</span>
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-sans font-semibold bg-[#C5A059]/20 text-[#C5A059] border border-[#C5A059]/40">
+                    <Sparkles className="w-3 h-3" />
+                    <span>Guest Patron Mode</span>
+                  </span>
+                )}
               </div>
 
               <div className="flex flex-wrap items-center gap-y-1 gap-x-4 text-xs text-[#EADFD0]/80 font-sans">
@@ -600,10 +874,10 @@ export const Profile: React.FC = () => {
                   </button>
                 )}
 
-                {patronProfile.email ? (
+                {customerEmail || patronProfile.email ? (
                   <span className="flex items-center gap-1.5">
                     <Mail className="w-3.5 h-3.5 text-[#C5A059]" />
-                    <span>{patronProfile.email}</span>
+                    <span>{customerEmail || patronProfile.email}</span>
                   </span>
                 ) : (
                   <button
@@ -632,13 +906,13 @@ export const Profile: React.FC = () => {
                 setProfileForm({
                   name: patronProfile.name,
                   phone: patronProfile.phone,
-                  email: patronProfile.email,
+                  email: customerEmail || patronProfile.email,
                   city: patronProfile.city,
                   district: patronProfile.district,
                 });
                 setIsProfileModalOpen(true);
               }}
-              className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-[#FBF7F0] text-xs font-semibold backdrop-blur-xs border border-white/20 transition-all flex items-center gap-1.5 active:scale-98"
+              className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-[#FBF7F0] text-xs font-semibold backdrop-blur-xs border border-white/20 transition-all flex items-center gap-1.5 active:scale-98 cursor-pointer"
             >
               <Edit2 className="w-3.5 h-3.5" />
               <span>Edit Details</span>
@@ -647,20 +921,39 @@ export const Profile: React.FC = () => {
             <button
               type="button"
               onClick={() => setShowLinkOrderModal(true)}
-              className="px-4 py-2 rounded-xl bg-[#C5A059] hover:bg-[#d8b56d] text-[#1F3D2B] text-xs font-bold shadow-md transition-all flex items-center gap-1.5 active:scale-98"
+              className="px-4 py-2 rounded-xl bg-[#C5A059] hover:bg-[#d8b56d] text-[#1F3D2B] text-xs font-bold shadow-md transition-all flex items-center gap-1.5 active:scale-98 cursor-pointer"
             >
               <Search className="w-3.5 h-3.5" />
               <span>Find Guest Order</span>
             </button>
 
-            {!customerEmail && (
+            {customerEmail ? (
               <button
                 type="button"
-                onClick={() => setIsAuthModalOpen(true)}
-                title="Customer Sign In"
-                className="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold border border-white/20 transition-colors flex items-center gap-1.5"
+                onClick={handleLogout}
+                disabled={isLoggingOut}
+                title="Log out of customer account"
+                className="px-4 py-2 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 text-rose-200 text-xs font-semibold backdrop-blur-xs border border-rose-400/40 transition-all flex items-center gap-1.5 active:scale-98 cursor-pointer disabled:opacity-50"
               >
-                <LogIn className="w-3.5 h-3.5" />
+                {isLoggingOut ? (
+                  <RefreshCw className="w-3.5 h-3.5 animate-spin text-rose-300" />
+                ) : (
+                  <LogOut className="w-3.5 h-3.5 text-rose-300" />
+                )}
+                <span>{isLoggingOut ? 'Logging out...' : 'Log Out'}</span>
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  setAuthMode('signin');
+                  setAuthError(null);
+                  setIsAuthModalOpen(true);
+                }}
+                title="Customer Sign In"
+                className="px-4 py-2 rounded-xl bg-white hover:bg-[#FAF8F4] text-[#1F3D2B] text-xs font-bold shadow-md transition-all flex items-center gap-1.5 active:scale-98 cursor-pointer"
+              >
+                <LogIn className="w-3.5 h-3.5 text-[#1F3D2B]" />
                 <span>Customer Login</span>
               </button>
             )}
@@ -717,6 +1010,51 @@ export const Profile: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Guest Mode Callout Banner */}
+      {!customerEmail && (
+        <div className="rounded-2xl bg-gradient-to-r from-[#FAF8F4] via-white to-[#FAF8F4] border border-[#EADFD0] p-4 sm:p-5 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-start gap-3.5">
+            <div className="w-10 h-10 rounded-xl bg-[#1F3D2B]/10 text-[#1F3D2B] flex items-center justify-center shrink-0 mt-0.5">
+              <ShieldCheck className="w-5 h-5 text-[#8B5E3C]" />
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-[#1F3D2B]">
+                Access Cross-Device Order Sync &amp; Saved Addresses
+              </h3>
+              <p className="text-xs text-[#6B6B6B] mt-0.5 max-w-xl">
+                Sign in or register for a free Ceylon Crunch customer account to track your orders in real time, save delivery addresses, and sync your cart &amp; wishlist across devices.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto">
+            <button
+              type="button"
+              onClick={() => {
+                setAuthMode('signin');
+                setAuthError(null);
+                setIsAuthModalOpen(true);
+              }}
+              className="flex-1 sm:flex-none px-4 py-2 rounded-xl bg-[#1F3D2B] hover:bg-[#162C1F] text-white text-xs font-semibold shadow-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+            >
+              <LogIn className="w-3.5 h-3.5" />
+              <span>Sign In</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setAuthMode('signup');
+                setAuthError(null);
+                setIsAuthModalOpen(true);
+              }}
+              className="flex-1 sm:flex-none px-4 py-2 rounded-xl bg-white hover:bg-[#FAF8F4] text-[#1F3D2B] border border-[#EADFD0] text-xs font-semibold transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>Create Account</span>
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Tabs Navigation */}
       <div className="border-b border-[#EADFD0] flex items-center gap-1 sm:gap-2 overflow-x-auto no-scrollbar pt-2">
@@ -1532,9 +1870,64 @@ export const Profile: React.FC = () => {
                 </div>
               </div>
 
+              <div className="bg-white rounded-2xl p-6 border border-[#EADFD0] space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-serif text-base font-bold text-[#1F3D2B]">
+                    Account &amp; Authentication
+                  </h3>
+                  {customerEmail ? (
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-[#2E7D4F]/15 text-[#1F3D2B] border border-[#2E7D4F]/30">
+                      <span className="w-2 h-2 rounded-full bg-[#2E7D4F]" />
+                      Signed In
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-[#C5A059]/20 text-[#8B5E3C] border border-[#C5A059]/40">
+                      Guest Session
+                    </span>
+                  )}
+                </div>
+
+                <p className="text-xs text-[#6B6B6B] leading-relaxed">
+                  {customerEmail
+                    ? `You are signed in as ${customerEmail}. Your orders, saved addresses, and profile details are synchronized.`
+                    : 'You are currently browsing as a guest. Sign in or create an account to sync your orders across devices.'}
+                </p>
+
+                <div className="pt-1 flex flex-wrap gap-2.5">
+                  {customerEmail ? (
+                    <button
+                      type="button"
+                      onClick={handleLogout}
+                      disabled={isLoggingOut}
+                      className="px-4 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
+                    >
+                      {isLoggingOut ? (
+                        <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                      ) : (
+                        <LogOut className="w-3.5 h-3.5" />
+                      )}
+                      <span>{isLoggingOut ? 'Logging out...' : 'Log Out of Account'}</span>
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAuthMode('signin');
+                        setAuthError(null);
+                        setIsAuthModalOpen(true);
+                      }}
+                      className="px-4 py-2 rounded-xl bg-[#1F3D2B] hover:bg-[#162C1F] text-white text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-xs cursor-pointer"
+                    >
+                      <LogIn className="w-3.5 h-3.5" />
+                      <span>Sign In / Create Account</span>
+                    </button>
+                  )}
+                </div>
+              </div>
+
               <div className="bg-white rounded-2xl p-6 border border-[#EADFD0] space-y-3">
                 <h3 className="font-serif text-base font-bold text-[#1F3D2B]">
-                  Privacy & Stored Device Data
+                  Privacy &amp; Stored Device Data
                 </h3>
                 <p className="text-xs text-[#6B6B6B] leading-relaxed">
                   Your delivery address and customer profile are remembered securely in this browser for seamless checkout.
@@ -2126,49 +2519,137 @@ export const Profile: React.FC = () => {
           <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 border border-[#EADFD0] shadow-2xl space-y-4 relative">
             <button
               type="button"
-              onClick={() => setIsAuthModalOpen(false)}
+              onClick={() => {
+                setIsAuthModalOpen(false);
+                if (['/login', '/signin', '/register', '/signup'].includes(location.pathname.toLowerCase())) {
+                  navigate('/profile', { replace: true });
+                }
+              }}
               aria-label="Close modal"
-              className="absolute top-4 right-4 w-8 h-8 rounded-full bg-[#FAF8F4] flex items-center justify-center text-[#6B6B6B] hover:text-[#1F3D2B]"
+              className="absolute top-4 right-4 w-8 h-8 rounded-full bg-[#FAF8F4] flex items-center justify-center text-[#6B6B6B] hover:text-[#1F3D2B] transition-colors cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>
 
+            {/* Auth Mode Toggle Tabs */}
+            <div className="flex items-center p-1 bg-[#FAF8F4] border border-[#EADFD0] rounded-2xl">
+              <button
+                type="button"
+                onClick={() => {
+                  setAuthMode('signin');
+                  setAuthError(null);
+                }}
+                className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                  authMode === 'signin'
+                    ? 'bg-[#1F3D2B] text-white shadow-xs'
+                    : 'text-[#6B6B6B] hover:text-[#1F3D2B]'
+                }`}
+              >
+                <LogIn className="w-3.5 h-3.5" />
+                <span>Customer Sign In</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setAuthMode('signup');
+                  setAuthError(null);
+                }}
+                className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                  authMode === 'signup'
+                    ? 'bg-[#1F3D2B] text-white shadow-xs'
+                    : 'text-[#6B6B6B] hover:text-[#1F3D2B]'
+                }`}
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>Create Account</span>
+              </button>
+            </div>
+
             <div className="space-y-1">
               <h3 className="font-serif text-xl font-bold text-[#1F3D2B]">
-                {authMode === 'signin' ? 'Customer Sign In' : 'Create Customer Account'}
+                {authMode === 'signin' ? 'Welcome Back Patron' : 'Join Ceylon Crunch'}
               </h3>
               <p className="text-xs text-[#6B6B6B]">
-                Access your orders, saved delivery addresses, and wishlist from any device.
+                {authMode === 'signin'
+                  ? 'Sign in to access your orders, track shipments, and manage saved addresses.'
+                  : 'Register a customer account for instant order tracking and saved preferences.'}
               </p>
             </div>
 
-            <form onSubmit={handleAuthSubmit} className="space-y-3 pt-2">
+            <form onSubmit={handleAuthSubmit} className="space-y-3 pt-1">
+              {authMode === 'signup' && (
+                <>
+                  <div>
+                    <label className="block text-[11px] font-bold uppercase tracking-wider text-[#8B5E3C] mb-1">
+                      Full Name
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Priyantha Perera"
+                      value={authName}
+                      onChange={(e) => setAuthName(e.target.value)}
+                      className="w-full px-3.5 py-2.5 bg-[#FAF8F4] border border-[#EADFD0] rounded-xl text-sm text-[#1F3D2B] focus:outline-none focus:border-[#1F3D2B]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-bold uppercase tracking-wider text-[#8B5E3C] mb-1">
+                      Mobile Phone
+                    </label>
+                    <input
+                      type="tel"
+                      placeholder="e.g. 077 123 4567"
+                      value={authPhone}
+                      onChange={(e) => setAuthPhone(e.target.value)}
+                      className="w-full px-3.5 py-2.5 bg-[#FAF8F4] border border-[#EADFD0] rounded-xl text-sm text-[#1F3D2B] focus:outline-none focus:border-[#1F3D2B]"
+                    />
+                  </div>
+                </>
+              )}
+
               <div>
                 <label className="block text-[11px] font-bold uppercase tracking-wider text-[#8B5E3C] mb-1">
                   Email Address
                 </label>
-                <input
-                  type="email"
-                  required
-                  placeholder="customer@example.com"
-                  value={authEmail}
-                  onChange={(e) => setAuthEmail(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-[#FAF8F4] border border-[#EADFD0] rounded-xl text-sm text-[#1F3D2B] focus:outline-none focus:border-[#1F3D2B]"
-                />
+                <div className="relative flex items-center">
+                  <Mail className="w-4 h-4 text-[#8B5E3C] absolute left-3.5" />
+                  <input
+                    type="email"
+                    required
+                    placeholder="customer@example.com"
+                    value={authEmail}
+                    onChange={(e) => setAuthEmail(e.target.value)}
+                    className="w-full pl-10 pr-3.5 py-2.5 bg-[#FAF8F4] border border-[#EADFD0] rounded-xl text-sm text-[#1F3D2B] focus:outline-none focus:border-[#1F3D2B]"
+                  />
+                </div>
               </div>
 
               <div>
                 <label className="block text-[11px] font-bold uppercase tracking-wider text-[#8B5E3C] mb-1">
                   Password
                 </label>
-                <input
-                  type="password"
-                  required
-                  placeholder="••••••••"
-                  value={authPassword}
-                  onChange={(e) => setAuthPassword(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-[#FAF8F4] border border-[#EADFD0] rounded-xl text-sm text-[#1F3D2B] focus:outline-none focus:border-[#1F3D2B]"
-                />
+                <div className="relative flex items-center">
+                  <Lock className="w-4 h-4 text-[#8B5E3C] absolute left-3.5" />
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    required
+                    placeholder="••••••••"
+                    value={authPassword}
+                    onChange={(e) => setAuthPassword(e.target.value)}
+                    className="w-full pl-10 pr-10 py-2.5 bg-[#FAF8F4] border border-[#EADFD0] rounded-xl text-sm text-[#1F3D2B] focus:outline-none focus:border-[#1F3D2B]"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 text-[#6B6B6B] hover:text-[#1F3D2B]"
+                    tabIndex={-1}
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+                {authMode === 'signup' && (
+                  <p className="text-[11px] text-[#6B6B6B] mt-1">Must be at least 6 characters</p>
+                )}
               </div>
 
               {authError && (
@@ -2182,23 +2663,29 @@ export const Profile: React.FC = () => {
                 <button
                   type="submit"
                   disabled={authLoading}
-                  className="w-full py-2.5 rounded-xl bg-[#1F3D2B] hover:bg-[#162C1F] text-white text-xs font-bold transition-all shadow-sm"
+                  className="w-full py-2.5 rounded-xl bg-[#1F3D2B] hover:bg-[#162C1F] text-white text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                 >
-                  {authLoading
-                    ? 'Connecting...'
-                    : authMode === 'signin'
-                    ? 'Sign In to My Account'
-                    : 'Create Customer Account'}
+                  {authLoading ? (
+                    <>
+                      <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                      <span>{authMode === 'signin' ? 'Authenticating...' : 'Creating Account...'}</span>
+                    </>
+                  ) : authMode === 'signin' ? (
+                    'Sign In to My Account'
+                  ) : (
+                    'Create Customer Account'
+                  )}
                 </button>
               </div>
 
               <div className="text-center pt-2">
                 <button
                   type="button"
-                  onClick={() =>
-                    setAuthMode(authMode === 'signin' ? 'signup' : 'signin')
-                  }
-                  className="text-xs text-[#8B5E3C] hover:underline"
+                  onClick={() => {
+                    setAuthMode(authMode === 'signin' ? 'signup' : 'signin');
+                    setAuthError(null);
+                  }}
+                  className="text-xs text-[#8B5E3C] hover:underline cursor-pointer"
                 >
                   {authMode === 'signin'
                     ? "New customer? Create an account"

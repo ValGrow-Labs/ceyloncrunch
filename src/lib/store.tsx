@@ -179,6 +179,13 @@ interface StoreContextType {
   showToast: (message: string, actionLabel?: string, onAction?: () => void) => void;
   hideToast: () => void;
 
+  // Customer Session
+  customerEmail: string | null;
+  isCustomerLoggedIn: boolean;
+  loginCustomer: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  signupCustomer: (email: string, password: string, name?: string, phone?: string) => Promise<{ success: boolean; error?: string }>;
+  logoutCustomer: () => Promise<void>;
+
   // Admin Session
   isAdmin: boolean;
   isAdminLoading: boolean;
@@ -332,6 +339,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [isAdminLoading, setIsAdminLoading] = useState<boolean>(true);
   const [adminEmail, setAdminEmail] = useState<string | null>(null);
+  const [customerEmail, setCustomerEmail] = useState<string | null>(null);
 
   useEffect(() => {
     try {
@@ -342,6 +350,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     if (!client) {
       setIsAdmin(false);
       setIsAdminLoading(false);
+      setCustomerEmail(null);
       return;
     }
 
@@ -351,6 +360,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     client.auth.getSession().then(async ({ data: { session } }) => {
       if (!isMounted) return;
       if (session?.user) {
+        setCustomerEmail(session.user.email || null);
         const { data: adminRow } = await client
           .from('admins')
           .select('role')
@@ -367,6 +377,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         if (isMounted) {
           setIsAdmin(false);
           setAdminEmail(null);
+          setCustomerEmail(null);
           setIsAdminLoading(false);
         }
       }
@@ -376,6 +387,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const { data: { subscription } } = client.auth.onAuthStateChange(async (_event, session) => {
       if (!isMounted) return;
       if (session?.user) {
+        setCustomerEmail(session.user.email || null);
         const { data: adminRow } = await client
           .from('admins')
           .select('role')
@@ -392,6 +404,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         if (isMounted) {
           setIsAdmin(false);
           setAdminEmail(null);
+          setCustomerEmail(null);
           setIsAdminLoading(false);
         }
       }
@@ -1345,6 +1358,92 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
     setIsAdmin(false);
     setAdminEmail(null);
+    setCustomerEmail(null);
+  };
+
+  // Customer Login, Signup, and Logout
+  const loginCustomer = async (
+    email: string,
+    password: string
+  ): Promise<{ success: boolean; error?: string }> => {
+    if (!supabase) {
+      return { success: false, error: 'Database service is offline.' };
+    }
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password,
+      });
+      if (error) {
+        return { success: false, error: error.message };
+      }
+      if (data.user) {
+        setCustomerEmail(data.user.email || null);
+        const meta = data.user.user_metadata || {};
+        const metaName = meta.full_name || meta.name;
+        const metaPhone = meta.phone;
+        updatePatronProfile({
+          email: data.user.email || undefined,
+          ...(metaName ? { name: metaName } : {}),
+          ...(metaPhone ? { phone: metaPhone } : {}),
+        });
+        return { success: true };
+      }
+      return { success: false, error: 'No user data received.' };
+    } catch (err: any) {
+      return { success: false, error: err?.message || 'Login failed.' };
+    }
+  };
+
+  const signupCustomer = async (
+    email: string,
+    password: string,
+    name?: string,
+    phone?: string
+  ): Promise<{ success: boolean; error?: string }> => {
+    if (!supabase) {
+      return { success: false, error: 'Database service is offline.' };
+    }
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email: email.trim(),
+        password,
+        options: {
+          data: {
+            full_name: name?.trim() || '',
+            phone: phone?.trim() || '',
+          },
+        },
+      });
+      if (error) {
+        return { success: false, error: error.message };
+      }
+      if (data.user) {
+        setCustomerEmail(data.user.email || null);
+        updatePatronProfile({
+          email: data.user.email || undefined,
+          ...(name?.trim() ? { name: name.trim() } : {}),
+          ...(phone?.trim() ? { phone: phone.trim() } : {}),
+        });
+        return { success: true };
+      }
+      return { success: false, error: 'Registration failed.' };
+    } catch (err: any) {
+      return { success: false, error: err?.message || 'Registration failed.' };
+    }
+  };
+
+  const logoutCustomer = async () => {
+    if (supabase) {
+      try {
+        await supabase.auth.signOut();
+      } catch (err) {
+        console.warn('Customer signOut error:', err);
+      }
+    }
+    setCustomerEmail(null);
+    setIsAdmin(false);
+    setAdminEmail(null);
   };
 
   // Patron Profile & Address methods
@@ -1500,6 +1599,11 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         toast,
         showToast,
         hideToast,
+        customerEmail,
+        isCustomerLoggedIn: Boolean(customerEmail),
+        loginCustomer,
+        signupCustomer,
+        logoutCustomer,
         isAdmin,
         isAdminLoading,
         adminEmail,

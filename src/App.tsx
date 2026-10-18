@@ -105,6 +105,10 @@ export default function App() {
               <Route path="/admin/*" element={<Admin />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/account" element={<Profile />} />
+              <Route path="/login" element={<Profile defaultMode="signin" />} />
+              <Route path="/signin" element={<Profile defaultMode="signin" />} />
+              <Route path="/register" element={<Profile defaultMode="signup" />} />
+              <Route path="/signup" element={<Profile defaultMode="signup" />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>

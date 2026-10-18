@@ -15,12 +15,14 @@ import {
   Truck,
   ExternalLink,
   Eye,
+  EyeOff,
   X,
   FileText,
   Database,
   RefreshCw,
   Image as ImageIcon,
   Mail,
+  Store,
   Upload,
   Save,
   RotateCcw,
@@ -246,6 +248,7 @@ export const Admin: React.FC = () => {
   // Supabase Auth credentials input
   const [emailInput, setEmailInput] = useState('admin@ceyloncrunch.lk');
   const [passwordInput, setPasswordInput] = useState('');
+  const [showAdminPassword, setShowAdminPassword] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
@@ -401,7 +404,7 @@ export const Admin: React.FC = () => {
           Atelier Admin Portal
         </h1>
         <p className="text-xs text-[#6B6B6B] text-center mb-6">
-          Supabase Auth Protected • Single Source of Truth Console
+          Restricted management console • Accessible exclusively via /admin
         </p>
 
         <form onSubmit={handleLogin} className="w-full bg-white border border-[#EADFD0] rounded-2xl p-6 shadow-sm space-y-4">
@@ -432,7 +435,7 @@ export const Admin: React.FC = () => {
             <div className="relative flex items-center">
               <Lock className="w-4 h-4 text-[#8B5E3C] absolute left-3.5" />
               <input
-                type="password"
+                type={showAdminPassword ? 'text' : 'password'}
                 required
                 value={passwordInput}
                 onChange={(e) => {
@@ -440,8 +443,16 @@ export const Admin: React.FC = () => {
                   if (loginError) setLoginError(null);
                 }}
                 placeholder="••••••••••••"
-                className="w-full h-11 pl-10 pr-3.5 bg-[#f6f3f2] rounded-xl border border-[#EADFD0] text-sm text-[#1F3D2B] focus:bg-white focus:outline-none focus:border-[#1F3D2B]"
+                className="w-full h-11 pl-10 pr-10 bg-[#f6f3f2] rounded-xl border border-[#EADFD0] text-sm text-[#1F3D2B] focus:bg-white focus:outline-none focus:border-[#1F3D2B]"
               />
+              <button
+                type="button"
+                onClick={() => setShowAdminPassword(!showAdminPassword)}
+                className="absolute right-3 text-[#6B6B6B] hover:text-[#1F3D2B] cursor-pointer"
+                tabIndex={-1}
+              >
+                {showAdminPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
             </div>
           </div>
 
@@ -466,6 +477,15 @@ export const Admin: React.FC = () => {
               <span>Login to Console</span>
             )}
           </button>
+
+          <div className="text-center pt-2 border-t border-[#EADFD0]/60">
+            <Link
+              to="/"
+              className="text-xs text-[#8B5E3C] hover:text-[#1F3D2B] hover:underline transition-colors font-medium"
+            >
+              ← Return to Customer Storefront
+            </Link>
+          </div>
         </form>
       </div>
     );
@@ -502,6 +522,13 @@ export const Admin: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-2">
+          <Link
+            to="/"
+            className="h-9 px-3 rounded-full bg-white hover:bg-[#FAF8F4] border border-[#EADFD0] text-xs font-semibold text-[#1F3D2B] flex items-center gap-1.5 transition-colors"
+          >
+            <Store className="w-3.5 h-3.5 text-[#8B5E3C]" />
+            <span className="hidden sm:inline">Storefront</span>
+          </Link>
           {adminEmail && (
             <span className="hidden sm:inline-flex items-center px-3 py-1 rounded-full text-[11px] font-semibold bg-[#EADFD0]/50 text-[#1F3D2B] border border-[#EADFD0]">
               {adminEmail}

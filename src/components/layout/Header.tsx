@@ -3,10 +3,10 @@ import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'motion/react';
 import { useStore } from '../../lib/store';
 import { CATALOG_DIRECTORY } from '../../data/products';
-import { Search, ShoppingBag, Menu, X, UserRound, ArrowRight, Phone, ChevronDown } from 'lucide-react';
+import { Search, ShoppingBag, Menu, X, UserRound, ArrowRight, Phone, ChevronDown, LogIn } from 'lucide-react';
 
 export const Header: React.FC = () => {
-  const { itemCount, patronProfile, isAdmin } = useStore();
+  const { itemCount, patronProfile, isAdmin, customerEmail } = useStore();
   const navigate = useNavigate();
 
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -229,18 +229,35 @@ export const Header: React.FC = () => {
               )}
             </Link>
 
-            {/* Profile Icon */}
+            {/* Customer Account / Sign In */}
             <Link
               to="/profile"
-              aria-label="Customer Profile"
-              title={patronProfile?.name ? `Customer Profile: ${patronProfile.name}` : 'Customer Profile & Orders'}
-              className="w-8 h-8 rounded-full bg-[#1F3D2B] text-white flex items-center justify-center ml-0.5 hover:bg-[#162C1F] transition-colors shadow-xs text-xs font-bold"
+              aria-label={customerEmail ? 'Customer Account & Orders' : 'Customer Sign In or Register'}
+              title={
+                customerEmail
+                  ? `Customer Account: ${patronProfile?.name || customerEmail} (Signed In)`
+                  : 'Customer Sign In & Registration'
+              }
+              className="relative flex items-center gap-1.5 px-2 py-1 rounded-full hover:bg-[#EADFD0]/40 transition-colors group"
             >
-              {patronProfile?.name ? (
-                <span>{patronProfile.name.trim()[0].toUpperCase()}</span>
-              ) : (
-                <UserRound className="w-4 h-4" />
-              )}
+              <div className="relative w-8 h-8 rounded-full bg-[#1F3D2B] text-white flex items-center justify-center shadow-xs text-xs font-bold group-hover:scale-105 transition-transform">
+                {patronProfile?.name ? (
+                  <span>{patronProfile.name.trim()[0].toUpperCase()}</span>
+                ) : customerEmail ? (
+                  <span>{customerEmail[0].toUpperCase()}</span>
+                ) : (
+                  <UserRound className="w-4 h-4" />
+                )}
+                {customerEmail && (
+                  <span
+                    className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-[#2E7D4F] border-2 border-white rounded-full"
+                    title="Customer Signed In"
+                  />
+                )}
+              </div>
+              <span className="hidden xl:inline text-xs font-semibold text-[#424843] group-hover:text-[#1F3D2B]">
+                {customerEmail ? (patronProfile?.name?.split(' ')[0] || 'My Account') : 'Sign In'}
+              </span>
             </Link>
 
           </div>
@@ -306,8 +323,59 @@ export const Header: React.FC = () => {
               </button>
             </div>
 
+            {/* Customer Account Quick Card */}
+            <div className="mt-4 p-3 bg-white border border-[#EADFD0] rounded-2xl flex items-center justify-between gap-3 shadow-2xs">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-9 h-9 rounded-full bg-[#1F3D2B] text-white flex items-center justify-center shrink-0 font-bold text-xs shadow-xs">
+                  {patronProfile?.name ? (
+                    <span>{patronProfile.name.trim()[0].toUpperCase()}</span>
+                  ) : customerEmail ? (
+                    <span>{customerEmail[0].toUpperCase()}</span>
+                  ) : (
+                    <UserRound className="w-4 h-4" />
+                  )}
+                </div>
+                <div className="min-w-0">
+                  <p className="text-xs font-bold text-[#1F3D2B] truncate leading-tight">
+                    {customerEmail ? (patronProfile?.name || customerEmail) : 'Customer Account'}
+                  </p>
+                  <p className="text-[10px] text-[#6B6B6B] truncate">
+                    {customerEmail ? 'Signed In Patron' : 'Track orders & saved items'}
+                  </p>
+                </div>
+              </div>
+              <div className="shrink-0 flex items-center gap-1.5">
+                {customerEmail ? (
+                  <Link
+                    to="/profile"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="px-3 py-1.5 rounded-xl bg-[#FAF8F4] border border-[#EADFD0] text-xs font-semibold text-[#1F3D2B] hover:bg-[#EADFD0] transition-colors"
+                  >
+                    Orders
+                  </Link>
+                ) : (
+                  <>
+                    <Link
+                      to="/login"
+                      onClick={() => setIsMenuOpen(false)}
+                      className="px-2.5 py-1.5 rounded-xl bg-[#1F3D2B] text-white text-[11px] font-bold hover:bg-[#162C1F] transition-colors shadow-2xs"
+                    >
+                      Login
+                    </Link>
+                    <Link
+                      to="/register"
+                      onClick={() => setIsMenuOpen(false)}
+                      className="px-2.5 py-1.5 rounded-xl bg-[#FAF8F4] border border-[#EADFD0] text-[#1F3D2B] text-[11px] font-bold hover:bg-[#EADFD0] transition-colors"
+                    >
+                      Join
+                    </Link>
+                  </>
+                )}
+              </div>
+            </div>
+
             {/* Menu Links */}
-            <div className="flex flex-col py-5 space-y-6 flex-1">
+            <div className="flex flex-col py-4 space-y-6 flex-1">
               {/* Shop Categories */}
               <div>
                 <span className="text-[11px] font-sans font-bold uppercase tracking-wider text-[#8B5E3C] block mb-2.5">
@@ -469,14 +537,23 @@ export const Header: React.FC = () => {
                   </li>
                   <li>
                     <Link to="/profile" onClick={() => setIsMenuOpen(false)} className="hover:text-[#1F3D2B] block py-1 font-semibold text-[#1F3D2B]">
-                      Customer Profile & Orders
+                      Customer Profile &amp; Orders
                     </Link>
                   </li>
-                  <li>
-                    <Link to="/admin" onClick={() => setIsMenuOpen(false)} className="hover:text-[#1F3D2B] block py-1 font-semibold text-[#8B5E3C]">
-                      Admin Management Portal
-                    </Link>
-                  </li>
+                  {!customerEmail ? (
+                    <>
+                      <li>
+                        <Link to="/login" onClick={() => setIsMenuOpen(false)} className="hover:text-[#1F3D2B] block py-1 text-sm text-[#424843]">
+                          Customer Login
+                        </Link>
+                      </li>
+                      <li>
+                        <Link to="/register" onClick={() => setIsMenuOpen(false)} className="hover:text-[#8B5E3C] block py-1 text-sm text-[#8B5E3C] font-medium">
+                          Create Account
+                        </Link>
+                      </li>
+                    </>
+                  ) : null}
                 </ul>
               </div>
             </div>
