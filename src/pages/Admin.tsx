@@ -503,24 +503,19 @@ export const Admin: React.FC = () => {
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
 
-  // Quick Passwordless Login
-  const handleQuickLogin = async () => {
-    setIsLoggingIn(true);
-    setLoginError(null);
-    const result = await loginAdmin();
-    setIsLoggingIn(false);
-    if (result.success) {
-      showToast('Logged in as Ceylon Crunch Atelier Administrator');
-    } else {
-      setLoginError(result.error || 'Failed to authenticate');
-    }
-  };
-
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    const email = emailInput.trim();
+    const password = passwordInput.trim();
+
+    if (!email || !password) {
+      setLoginError('Please enter both admin email and password.');
+      return;
+    }
+
     setLoginError(null);
     setIsLoggingIn(true);
-    const result = await loginAdmin(emailInput.trim(), passwordInput.trim());
+    const result = await loginAdmin(email, password);
     setIsLoggingIn(false);
     if (result.success) {
       setPasswordInput('');
@@ -676,46 +671,6 @@ export const Admin: React.FC = () => {
           </div>
 
           <div style={{ background: '#fff', borderRadius: 20, padding: 36, boxShadow: '0 4px 24px rgba(0,0,0,0.08)' }}>
-            <button
-              type="button"
-              onClick={handleQuickLogin}
-              disabled={isLoggingIn}
-              style={{
-                width: '100%',
-                padding: '14px',
-                background: '#1E5631',
-                color: '#fff',
-                border: 'none',
-                borderRadius: 50,
-                fontSize: 14,
-                fontWeight: 700,
-                cursor: isLoggingIn ? 'not-allowed' : 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 8,
-                transition: 'background 0.2s',
-                marginBottom: 20,
-              }}
-            >
-              {isLoggingIn ? (
-                <>
-                  <RefreshCw style={{ width: 16, height: 16, animation: 'spin 1s linear infinite' }} />
-                  <span>Entering Console...</span>
-                </>
-              ) : (
-                <span>⚡ Enter Admin Dashboard (No Password)</span>
-              )}
-            </button>
-
-            <div style={{ display: 'flex', alignItems: 'center', margin: '20px 0', gap: 10 }}>
-              <div style={{ flex: 1, height: 1, background: '#e5ddd0' }} />
-              <span style={{ fontSize: 11, color: '#888', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                or sign in with email
-              </span>
-              <div style={{ flex: 1, height: 1, background: '#e5ddd0' }} />
-            </div>
-
             <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
               <div>
                 <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#3d3d3d', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>
@@ -723,6 +678,7 @@ export const Admin: React.FC = () => {
                 </label>
                 <input
                   type="email"
+                  required
                   value={emailInput}
                   onChange={(e) => {
                     setEmailInput(e.target.value);
@@ -740,6 +696,7 @@ export const Admin: React.FC = () => {
                 <div style={{ position: 'relative' }}>
                   <input
                     type={showAdminPassword ? 'text' : 'password'}
+                    required
                     value={passwordInput}
                     onChange={(e) => {
                       setPasswordInput(e.target.value);
@@ -769,18 +726,30 @@ export const Admin: React.FC = () => {
                 disabled={isLoggingIn}
                 style={{
                   width: '100%',
-                  padding: '13px',
-                  background: '#FAF6EF',
-                  color: '#1E5631',
-                  border: '1.5px solid #e5ddd0',
+                  padding: '14px',
+                  background: '#1E5631',
+                  color: '#fff',
+                  border: 'none',
                   borderRadius: 50,
                   fontSize: 14,
-                  fontWeight: 600,
+                  fontWeight: 700,
                   cursor: isLoggingIn ? 'not-allowed' : 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 8,
                   transition: 'background 0.2s',
+                  marginTop: 4,
                 }}
               >
-                Sign In with Credentials
+                {isLoggingIn ? (
+                  <>
+                    <RefreshCw style={{ width: 16, height: 16, animation: 'spin 1s linear infinite' }} />
+                    <span>Signing in...</span>
+                  </>
+                ) : (
+                  <span>Sign In to Admin Dashboard</span>
+                )}
               </button>
             </form>
 

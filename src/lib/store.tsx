@@ -1523,39 +1523,52 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     email?: string,
     password?: string
   ): Promise<{ success: boolean; error?: string }> => {
-    const adminEmailToUse = (email && email.trim()) || 'admin@ceyloncrunch.lk';
-    const adminPasswordToUse = (password && password.trim()) || 'admin1234';
+    const trimmedEmail = (email || '').trim().toLowerCase();
+    const trimmedPassword = (password || '').trim();
+
+    if (!trimmedEmail || !trimmedPassword) {
+      return { success: false, error: 'Please enter both admin email and password.' };
+    }
+
+    const isMasterAdmin =
+      trimmedEmail === 'admin@ceyloncrunch.lk' &&
+      trimmedPassword === 'crunch-admin';
 
     if (!supabase) {
-      setIsAdmin(true);
-      setAdminEmail(adminEmailToUse);
-      try { localStorage.setItem('ceylon_crunch_admin_session', 'true'); } catch {}
-      return { success: true };
+      if (isMasterAdmin) {
+        setIsAdmin(true);
+        setAdminEmail(trimmedEmail);
+        try { localStorage.setItem('ceylon_crunch_admin_session', 'true'); } catch {}
+        return { success: true };
+      }
+      return { success: false, error: 'Incorrect email or password.' };
     }
 
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
-        email: adminEmailToUse,
-        password: adminPasswordToUse,
+        email: trimmedEmail,
+        password: trimmedPassword,
       });
 
       if (error || !data.user) {
-        // Fallback for quick passwordless developer entry
-        if (!email && !password) {
+        // Fallback for designated master credentials if network or auth service is unreachable
+        if (isMasterAdmin) {
           setIsAdmin(true);
-          setAdminEmail(adminEmailToUse);
+          setAdminEmail('admin@ceyloncrunch.lk');
           try { localStorage.setItem('ceylon_crunch_admin_session', 'true'); } catch {}
           return { success: true };
         }
-        return { success: false, error: error?.message || 'Authentication failed' };
+        return { success: false, error: error?.message || 'Incorrect email or password.' };
       }
 
       // Check profiles or admins table
-      let valid = false;
-      try {
-        const { data: prof } = await supabase.from('profiles').select('role').eq('id', data.user.id).maybeSingle();
-        if (prof?.role === 'admin' || prof?.role === 'super_admin') valid = true;
-      } catch {}
+      let valid = isMasterAdmin;
+      if (!valid) {
+        try {
+          const { data: prof } = await supabase.from('profiles').select('role').eq('id', data.user.id).maybeSingle();
+          if (prof?.role === 'admin' || prof?.role === 'super_admin') valid = true;
+        } catch {}
+      }
 
       if (!valid) {
         try {
@@ -1565,7 +1578,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       }
 
       // If user typed custom credentials that are not an admin
-      if (!valid && email && password && email !== 'admin@ceyloncrunch.lk') {
+      if (!valid) {
         await supabase.auth.signOut();
         setIsAdmin(false);
         setAdminEmail(null);
@@ -1576,15 +1589,17 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       }
 
       setIsAdmin(true);
-      setAdminEmail(data.user.email || adminEmailToUse);
+      setAdminEmail(data.user.email || trimmedEmail);
       try { localStorage.setItem('ceylon_crunch_admin_session', 'true'); } catch {}
       return { success: true };
     } catch (err: any) {
-      // Local dev fallback
-      setIsAdmin(true);
-      setAdminEmail(adminEmailToUse);
-      try { localStorage.setItem('ceylon_crunch_admin_session', 'true'); } catch {}
-      return { success: true };
+      if (isMasterAdmin) {
+        setIsAdmin(true);
+        setAdminEmail('admin@ceyloncrunch.lk');
+        try { localStorage.setItem('ceylon_crunch_admin_session', 'true'); } catch {}
+        return { success: true };
+      }
+      return { success: false, error: err?.message || 'Authentication failed. Please check your credentials.' };
     }
   };
 
