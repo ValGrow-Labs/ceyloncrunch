@@ -1,6 +1,6 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { useStore } from '../lib/store';
+import { useStore, Order } from '../lib/store';
 import { formatRs } from '../data/products';
 import {
   CheckCircle2,
@@ -15,13 +15,140 @@ import {
   Truck,
   ArrowRight,
   MessageCircle,
+  Loader2,
 } from 'lucide-react';
 
 export const OrderConfirmed: React.FC = () => {
   const { orderNumber } = useParams<{ orderNumber: string }>();
-  const { orders, uploadOrderSlip, showToast } = useStore();
+  const { orders, uploadOrderSlip, showToast, siteSettings } = useStore();
 
-  const order = orders.find((o) => o.id === orderNumber);
+  const [fetchedOrder, setFetchedOrder] = useState<Order | null>(null);
+  const [isLoadingOrder, setIsLoadingOrder] = useState(false);
+
+  // 1. Look in store state
+  let order = orders.find(
+    (o) =>
+      o.id === orderNumber ||
+      o.waybill === orderNumber ||
+      String(o.id).toLowerCase() === String(orderNumber).toLowerCase()
+  );
+
+  // 2. Look in localStorage fallback
+  if (!order) {
+    try {
+      const raw = localStorage.getItem('ceylon_crunch_orders');
+      if (raw) {
+        const parsed: Order[] = JSON.parse(raw);
+        order = parsed.find(
+          (o) =>
+            o.id === orderNumber ||
+            o.waybill === orderNumber ||
+            String(o.id).toLowerCase() === String(orderNumber).toLowerCase()
+        );
+      }
+    } catch {}
+  }
+
+  // 3. Fallback to fetched order from server
+  if (!order && fetchedOrder) {
+    order = fetchedOrder;
+  }
+
+  useEffect(() => {
+    if (!order && orderNumber) {
+      setIsLoadingOrder(true);
+      fetch('/api/get-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId: orderNumber }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success && data.order) {
+            const o = data.order;
+            const mappedOrder: Order = {
+              id: o.id,
+              createdAt: o.created_at ? new Date(o.created_at).toLocaleDateString() : 'Recent',
+              customer: {
+                name: o.customer_name || 'Customer',
+                phone: o.customer_phone || '',
+                email: o.customer_email || undefined,
+              },
+              shippingAddress: {
+                street: o.shipping_street || o.shipping_address || '',
+                city: o.shipping_city || o.city || '',
+                district: o.shipping_district || '',
+                postalCode: o.shipping_postal || undefined,
+                landmark: o.landmark || undefined,
+              },
+              paymentMethod: o.payment_method || 'cod',
+              paymentStatus: o.payment_status || (o.status === 'paid' ? 'paid' : 'pending'),
+              paymentSlipUrl: o.payment_slip_url || undefined,
+              orderNotes: o.order_notes || o.notes || undefined,
+              giftNote: o.gift_note || undefined,
+              subtotal: Number(o.subtotal || 0),
+              deliveryFee: Number(o.delivery_fee ?? o.delivery ?? 0),
+              total: Number(o.total || 0),
+              status: o.status || 'pending',
+              waybill: o.waybill || `CLN-${String(o.id).slice(0, 8).toUpperCase()}-LK`,
+              estimatedArrival: o.estimated_arrival || '1-2 business days',
+              items: (o.items || []).map((item: any) => ({
+                productId: item.product_id || item.id || '',
+                variantId: item.variant_id || item.id || '',
+                productName: item.product_name || item.name || 'Product',
+                variantWeight: item.variant_weight || item.variant || '',
+                price: Number(item.price || item.unit_price || 0),
+                quantity: Number(item.quantity || 1),
+                image: item.image || item.image_url || '',
+                slug: item.slug || '',
+              })),
+              timeline: [
+                {
+                  status: 'placed',
+                  title: 'Order Placed',
+                  timestamp: o.created_at ? new Date(o.created_at).toLocaleDateString() : 'Recorded',
+                  description: 'Web checkout verified & tokenized',
+                  completed: true,
+                },
+                {
+                  status: 'confirmed',
+                  title: 'Order Confirmed',
+                  timestamp: 'Status check',
+                  description: o.payment_method === 'cod' ? 'Payment due on delivery' : 'Awaiting payment verification',
+                  completed: ['confirmed', 'packed', 'dispatched', 'delivered'].includes(o.status),
+                },
+                {
+                  status: 'packed',
+                  title: 'Small-Batch Packed',
+                  timestamp: 'Fulfillment queue',
+                  description: 'Aroma-sealed foil packaging',
+                  completed: ['packed', 'dispatched', 'delivered'].includes(o.status),
+                },
+                {
+                  status: 'dispatched',
+                  title: 'Dispatched & In Transit',
+                  timestamp: 'Courier handover',
+                  description: 'Pronto Tracked Courier',
+                  completed: ['dispatched', 'delivered'].includes(o.status),
+                },
+                {
+                  status: 'delivered',
+                  title: 'Delivered',
+                  timestamp: 'Final destination',
+                  description: 'Recipient signature',
+                  completed: o.status === 'delivered',
+                },
+              ],
+            };
+            setFetchedOrder(mappedOrder);
+          }
+        })
+        .catch(() => {})
+        .finally(() => {
+          setIsLoadingOrder(false);
+        });
+    }
+  }, [order, orderNumber]);
 
   const [copiedCode, setCopiedCode] = useState(false);
   const [copiedAccount, setCopiedAccount] = useState(false);
@@ -30,6 +157,16 @@ export const OrderConfirmed: React.FC = () => {
   );
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  if (isLoadingOrder && !order) {
+    return (
+      <div className="py-24 text-center flex flex-col items-center">
+        <Loader2 className="w-8 h-8 animate-spin text-[#1F3D2B] mb-3" />
+        <h2 className="font-serif text-xl font-bold text-[#1F3D2B] mb-1">Retrieving Order Details</h2>
+        <p className="text-xs text-[#6B6B6B]">Connecting to Ceylon Crunch roastery ledger...</p>
+      </div>
+    );
+  }
 
   if (!order) {
     return (
@@ -176,21 +313,21 @@ export const OrderConfirmed: React.FC = () => {
           <div className="grid grid-cols-1 gap-1 text-xs text-[#2B2B2B] divide-y divide-[#EADFD0]/60">
             <div className="flex justify-between items-center py-2">
               <span className="text-[#6B6B6B]">Bank</span>
-              <span className="font-semibold text-[#1F3D2B]">Commercial Bank / Sampath Bank</span>
+              <span className="font-semibold text-[#1F3D2B]">{siteSettings?.bankName || 'Commercial Bank / Sampath Bank'}</span>
             </div>
             <div className="flex justify-between items-center py-2">
               <span className="text-[#6B6B6B]">Account Name</span>
-              <span className="font-semibold text-[#1F3D2B]">Ceylon Crunch (Pvt) Ltd</span>
+              <span className="font-semibold text-[#1F3D2B]">{siteSettings?.bankAccountName || 'Ceylon Crunch (Pvt) Ltd'}</span>
             </div>
             <div className="flex justify-between items-center py-2">
               <span className="text-[#6B6B6B]">Account Number</span>
               <div className="flex items-center gap-1.5">
                 <span className="font-sans font-bold text-[#1F3D2B] text-sm tabular-nums">
-                  1000 2489 8210
+                  {siteSettings?.bankAccountNumber || '1000 2489 8210'}
                 </span>
                 <button
                   type="button"
-                  onClick={() => handleCopyAccount('100024898210')}
+                  onClick={() => handleCopyAccount((siteSettings?.bankAccountNumber || '100024898210').replace(/\s+/g, ''))}
                   aria-label="Copy account number"
                   className="p-1 text-[#8B5E3C] hover:text-[#1F3D2B]"
                 >
@@ -200,7 +337,7 @@ export const OrderConfirmed: React.FC = () => {
             </div>
             <div className="flex justify-between items-center py-2">
               <span className="text-[#6B6B6B]">Branch</span>
-              <span className="font-semibold text-[#1F3D2B]">Kollupitiya (Colombo 03)</span>
+              <span className="font-semibold text-[#1F3D2B]">{siteSettings?.bankBranch || 'Kollupitiya (Colombo 03)'}</span>
             </div>
             <div className="flex justify-between items-center py-2">
               <span className="text-[#6B6B6B]">Transfer Reference</span>

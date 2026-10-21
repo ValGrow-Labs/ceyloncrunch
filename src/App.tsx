@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { StoreProvider } from './lib/store';
 import { ScrollToTop } from './components/layout/ScrollToTop';
 import { Header } from './components/layout/Header';
@@ -36,6 +36,80 @@ import { NotFound } from './pages/NotFound';
 import { Database, AlertTriangle } from 'lucide-react';
 import { isSupabaseConfigured } from './lib/supabase';
 
+
+function AppContent() {
+  const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith('/admin');
+
+  if (isAdminRoute) {
+    return (
+      <>
+        <Routes>
+          <Route path="/admin" element={<Admin />} />
+          <Route path="/admin/*" element={<Admin />} />
+        </Routes>
+        <Toast />
+      </>
+    );
+  }
+
+  return (
+    <div className="flex flex-col min-h-screen bg-[#FBF7F0] text-[#2B2B2B] antialiased overflow-x-clip">
+      {/* Header */}
+      <Header />
+
+      {/* Main Content Area */}
+      <main className="flex-1 w-full max-w-[1320px] mx-auto pt-20 sm:pt-24 lg:pt-28 px-4 sm:px-6 lg:px-8 pb-16 lg:pb-12">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/shop" element={<Shop />} />
+          <Route path="/category/:slug" element={<CategoryPage />} />
+          <Route path="/product/:slug" element={<ProductDetail />} />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/order/:orderNumber/confirmed" element={<OrderConfirmed />} />
+          <Route path="/track" element={<TrackOrder />} />
+          <Route path="/our-story" element={<OurStory />} />
+          <Route path="/about" element={<OurStory />} />
+          <Route path="/sourcing" element={<Sourcing />} />
+          <Route path="/quality-promise" element={<QualityPromise />} />
+          <Route path="/faq" element={<FAQ />} />
+          <Route path="/shipping" element={<Shipping />} />
+          <Route path="/delivery" element={<Shipping />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/gifting" element={<Gifting />} />
+          <Route path="/corporate" element={<Corporate />} />
+          <Route path="/bulk-orders" element={<Corporate />} />
+          <Route path="/reviews" element={<Reviews />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/terms-and-conditions" element={<TermsConditions />} />
+          <Route path="/refund-policy" element={<ReturnsRefunds />} />
+          <Route path="/returns" element={<ReturnsRefunds />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/account" element={<Profile />} />
+          <Route path="/login" element={<Profile defaultMode="signin" />} />
+          <Route path="/signin" element={<Profile defaultMode="signin" />} />
+          <Route path="/register" element={<Profile defaultMode="signup" />} />
+          <Route path="/signup" element={<Profile defaultMode="signup" />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </main>
+
+      {/* Footer */}
+      <Footer />
+
+      {/* Floating WhatsApp Action Button (Hidden on /checkout) */}
+      <WhatsAppButton />
+
+      {/* Mobile Bottom Tab Bar (< 1024px) */}
+      <MobileTabBar />
+
+      {/* Global Aria-Live Toast */}
+      <Toast />
+    </div>
+  );
+}
+
 export default function App() {
   if (!isSupabaseConfigured) {
     return (
@@ -70,61 +144,7 @@ export default function App() {
     <StoreProvider>
       <BrowserRouter>
         <ScrollToTop />
-        <div className="flex flex-col min-h-screen bg-[#FBF7F0] text-[#2B2B2B] antialiased overflow-x-clip">
-          {/* Header */}
-          <Header />
-
-          {/* Main Content Area */}
-          <main className="flex-1 w-full max-w-[1320px] mx-auto pt-20 sm:pt-24 lg:pt-28 px-4 sm:px-6 lg:px-8 pb-16 lg:pb-12">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/shop" element={<Shop />} />
-              <Route path="/category/:slug" element={<CategoryPage />} />
-              <Route path="/product/:slug" element={<ProductDetail />} />
-              <Route path="/cart" element={<Cart />} />
-              <Route path="/checkout" element={<Checkout />} />
-              <Route path="/order/:orderNumber/confirmed" element={<OrderConfirmed />} />
-              <Route path="/track" element={<TrackOrder />} />
-              <Route path="/our-story" element={<OurStory />} />
-              <Route path="/about" element={<OurStory />} />
-              <Route path="/sourcing" element={<Sourcing />} />
-              <Route path="/quality-promise" element={<QualityPromise />} />
-              <Route path="/faq" element={<FAQ />} />
-              <Route path="/shipping" element={<Shipping />} />
-              <Route path="/delivery" element={<Shipping />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/gifting" element={<Gifting />} />
-              <Route path="/corporate" element={<Corporate />} />
-              <Route path="/bulk-orders" element={<Corporate />} />
-              <Route path="/reviews" element={<Reviews />} />
-              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-              <Route path="/terms-and-conditions" element={<TermsConditions />} />
-              <Route path="/refund-policy" element={<ReturnsRefunds />} />
-              <Route path="/returns" element={<ReturnsRefunds />} />
-              <Route path="/admin" element={<Admin />} />
-              <Route path="/admin/*" element={<Admin />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/account" element={<Profile />} />
-              <Route path="/login" element={<Profile defaultMode="signin" />} />
-              <Route path="/signin" element={<Profile defaultMode="signin" />} />
-              <Route path="/register" element={<Profile defaultMode="signup" />} />
-              <Route path="/signup" element={<Profile defaultMode="signup" />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </main>
-
-          {/* Footer */}
-          <Footer />
-
-          {/* Floating WhatsApp Action Button (Hidden on /checkout) */}
-          <WhatsAppButton />
-
-          {/* Mobile Bottom Tab Bar (< 1024px) */}
-          <MobileTabBar />
-
-          {/* Global Aria-Live Toast */}
-          <Toast />
-        </div>
+        <AppContent />
       </BrowserRouter>
     </StoreProvider>
   );

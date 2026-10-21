@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useStore, normalizePhone, PaymentMethod } from '../lib/store';
 import { formatRs } from '../data/products';
@@ -56,16 +56,44 @@ export const Checkout: React.FC = () => {
     showToast,
     patronProfile,
     savedAddresses,
+    siteSettings,
   } = useStore();
 
-  // Redirect to cart if empty
-  if (cart.length === 0) {
-    navigate('/cart');
-  }
+  const [hasSubmitted, setHasSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Snapshot cart items and pricing to maintain stable UI during submission/confirmation
+  const [itemsSnapshot, setItemsSnapshot] = useState(cart);
+  const [subtotalSnapshot, setSubtotalSnapshot] = useState(cartSubtotal);
+  const [deliveryFeeSnapshot, setDeliveryFeeSnapshot] = useState(deliveryFee);
+  const [totalSnapshot, setTotalSnapshot] = useState(cartTotal);
+  const [countSnapshot, setCountSnapshot] = useState(itemCount);
+
+  useEffect(() => {
+    if (cart.length > 0) {
+      setItemsSnapshot(cart);
+      setSubtotalSnapshot(cartSubtotal);
+      setDeliveryFeeSnapshot(deliveryFee);
+      setTotalSnapshot(cartTotal);
+      setCountSnapshot(itemCount);
+    }
+  }, [cart, cartSubtotal, deliveryFee, cartTotal, itemCount]);
+
+  const activeCart = cart.length > 0 ? cart : itemsSnapshot;
+  const activeSubtotal = cart.length > 0 ? cartSubtotal : subtotalSnapshot;
+  const activeDeliveryFee = cart.length > 0 ? deliveryFee : deliveryFeeSnapshot;
+  const activeTotal = cart.length > 0 ? cartTotal : totalSnapshot;
+  const activeItemCount = cart.length > 0 ? itemCount : countSnapshot;
+
+  // Safe redirect ONLY if user landed on checkout with empty cart, and not during/after order submission
+  useEffect(() => {
+    if (cart.length === 0 && !hasSubmitted && !isSubmitting && itemsSnapshot.length === 0) {
+      navigate('/cart', { replace: true });
+    }
+  }, [cart.length, hasSubmitted, isSubmitting, itemsSnapshot.length, navigate]);
 
   // UI state
   const [isSummaryOpen, setIsSummaryOpen] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const defaultAddr = savedAddresses.find((a) => a.isDefault) || savedAddresses[0];
 
@@ -78,7 +106,16 @@ export const Checkout: React.FC = () => {
   const [city, setCity] = useState(defaultAddr?.city || patronProfile?.city || 'Colombo');
   const [district, setDistrict] = useState(defaultAddr?.district || patronProfile?.district || 'Colombo');
   const [postalCode, setPostalCode] = useState(defaultAddr?.postalCode || '');
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('cod');
+  const isCodEnabled = siteSettings?.enableCod !== false;
+  const isBankEnabled = siteSettings?.enableBankTransfer !== false;
+  const isPayhereEnabled = siteSettings?.enablePayhere !== false;
+
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(() => {
+    if (isCodEnabled) return 'cod';
+    if (isBankEnabled) return 'bank';
+    if (isPayhereEnabled) return 'card';
+    return 'cod';
+  });
   const [orderNotes, setOrderNotes] = useState(giftNote || '');
 
   // Validation errors
@@ -135,6 +172,7 @@ export const Checkout: React.FC = () => {
       return;
     }
 
+    setHasSubmitted(true);
     setIsSubmitting(true);
 
     try {
@@ -158,21 +196,22 @@ export const Checkout: React.FC = () => {
         paymentStatus: 'pending',
         orderNotes: orderNotes.trim() || undefined,
         giftNote: giftNote.trim() || undefined,
-        items: [...cart],
-        subtotal: cartSubtotal,
-        deliveryFee,
-        total: cartTotal,
+        items: activeCart.length > 0 ? [...activeCart] : [...cart],
+        subtotal: activeSubtotal,
+        deliveryFee: activeDeliveryFee,
+        total: activeTotal,
       });
 
-      setIsSubmitting(false);
-
       if (result.success && result.order) {
-        navigate(`/order/${result.order.id}/confirmed`);
+        navigate(`/order/${result.order.id}/confirmed`, { replace: true });
       } else {
+        setIsSubmitting(false);
+        setHasSubmitted(false);
         showToast(result.error || 'Failed to place order. Please review stock availability.');
       }
     } catch (err: any) {
       setIsSubmitting(false);
+      setHasSubmitted(false);
       showToast(err?.message || 'Failed to place order. Please review your connection.');
     }
   };
@@ -222,13 +261,13 @@ export const Checkout: React.FC = () => {
               <span className="font-serif text-base font-semibold text-[#1F3D2B] block leading-tight">
                 Order Summary
               </span>
-              <span className="text-xs text-[#6B6B6B]">{itemCount} artisan items</span>
+              <span className="text-xs text-[#6B6B6B]">{activeItemCount} artisan items</span>
             </div>
           </div>
 
           <div className="flex items-center gap-2">
             <span className="font-serif text-lg font-bold text-[#1F3D2B] tabular-nums">
-              {formatRs(cartTotal)}
+              {formatRs(activeTotal)}
             </span>
             <ChevronDown
               className={`w-4 h-4 text-[#6B6B6B] transition-transform duration-200 ${
@@ -242,7 +281,7 @@ export const Checkout: React.FC = () => {
           <div className="px-5 pb-5 pt-1 flex flex-col gap-3.5 border-t border-[#EADFD0] animate-in fade-in">
             {/* Items list */}
             <div className="flex flex-col gap-2.5 pt-2 divide-y divide-[#EADFD0]/60">
-              {cart.map((item) => (
+              {activeCart.map((item) => (
                 <div key={item.variantId} className="flex items-center justify-between gap-3 pt-2 first:pt-0">
                   <div className="flex items-center gap-3 min-w-0">
                     <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-[#f6f3f2] shrink-0 border border-[#EADFD0]">
@@ -269,17 +308,17 @@ export const Checkout: React.FC = () => {
             <div className="bg-[#f6f3f2] rounded-xl p-3.5 flex flex-col gap-2 text-xs text-[#424843] mt-2 border border-[#EADFD0]">
               <div className="flex justify-between">
                 <span>Subtotal</span>
-                <span className="font-semibold text-[#1F3D2B] tabular-nums">{formatRs(cartSubtotal)}</span>
+                <span className="font-semibold text-[#1F3D2B] tabular-nums">{formatRs(activeSubtotal)}</span>
               </div>
               <div className="flex justify-between">
                 <span>Standard Island Courier</span>
                 <span className="font-semibold text-[#1F3D2B] tabular-nums">
-                  {deliveryFee === 0 ? <span className="text-[#2E7D4F]">FREE</span> : formatRs(deliveryFee)}
+                  {activeDeliveryFee === 0 ? <span className="text-[#2E7D4F]">FREE</span> : formatRs(activeDeliveryFee)}
                 </span>
               </div>
               <div className="flex justify-between pt-2 border-t border-[#EADFD0] text-sm font-bold text-[#1F3D2B]">
                 <span>Estimated Total</span>
-                <span className="tabular-nums">{formatRs(cartTotal)}</span>
+                <span className="tabular-nums">{formatRs(activeTotal)}</span>
               </div>
             </div>
           </div>
@@ -567,108 +606,114 @@ export const Checkout: React.FC = () => {
 
           <div className="flex flex-col gap-3">
             {/* Option A: Cash on Delivery (COD) */}
-            <label
-              className={`flex items-start gap-3 p-4 rounded-xl cursor-pointer border transition-all ${
-                paymentMethod === 'cod'
-                  ? 'bg-[#f6f3f2] border-[#1F3D2B] shadow-[inset_0_0_0_1.5px_#1F3D2B]'
-                  : 'bg-white border-[#EADFD0] hover:bg-[#f6f3f2]/60'
-              }`}
-            >
-              <input
-                type="radio"
-                name="payment"
-                value="cod"
-                checked={paymentMethod === 'cod'}
-                onChange={() => setPaymentMethod('cod')}
-                className="mt-1 h-4 w-4 text-[#1F3D2B] accent-[#1F3D2B]"
-              />
-              <div className="flex flex-col min-w-0 flex-1">
-                <div className="flex items-center justify-between">
-                  <span className="font-sans text-sm font-bold text-[#1F3D2B]">
-                    Cash on Delivery (COD)
-                  </span>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#1F3D2B] text-white">
-                    Most Popular
-                  </span>
-                </div>
-                <p className="text-xs text-[#6B6B6B] mt-1 leading-relaxed">
-                  Pay with cash or local LANKAQR upon parcel arrival. Zero processing fees.
-                </p>
-              </div>
-            </label>
-
-            {/* Option B: Direct Bank Transfer */}
-            <label
-              className={`flex items-start gap-3 p-4 rounded-xl cursor-pointer border transition-all ${
-                paymentMethod === 'bank'
-                  ? 'bg-[#f6f3f2] border-[#1F3D2B] shadow-[inset_0_0_0_1.5px_#1F3D2B]'
-                  : 'bg-white border-[#EADFD0] hover:bg-[#f6f3f2]/60'
-              }`}
-            >
-              <input
-                type="radio"
-                name="payment"
-                value="bank"
-                checked={paymentMethod === 'bank'}
-                onChange={() => setPaymentMethod('bank')}
-                className="mt-1 h-4 w-4 text-[#1F3D2B] accent-[#1F3D2B]"
-              />
-              <div className="flex flex-col min-w-0 flex-1">
-                <div className="flex items-center justify-between">
-                  <span className="font-sans text-sm font-bold text-[#1F3D2B]">
-                    Direct Bank Transfer
-                  </span>
-                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#e4e2e1] text-[#424843]">
-                    Manual Slip
-                  </span>
-                </div>
-                <p className="text-xs text-[#6B6B6B] mt-1 leading-relaxed">
-                  Commercial Bank or Sampath Bank. Account credentials and your unique Order Reference will appear immediately on the next screen with slip upload.
-                </p>
-              </div>
-            </label>
-
-            {/* Option C: PayHere Online Payment Gateway */}
-            <label
-              className={`flex items-start gap-3 p-4 rounded-xl cursor-pointer border transition-all ${
-                paymentMethod === 'card'
-                  ? 'bg-[#f6f3f2] border-[#1F3D2B] shadow-[inset_0_0_0_1.5px_#1F3D2B]'
-                  : 'bg-white border-[#EADFD0] hover:bg-[#f6f3f2]/60'
-              }`}
-            >
-              <input
-                type="radio"
-                name="payment"
-                value="card"
-                checked={paymentMethod === 'card'}
-                onChange={() => setPaymentMethod('card')}
-                className="mt-1 h-4 w-4 text-[#1F3D2B] accent-[#1F3D2B]"
-              />
-              <div className="flex flex-col min-w-0 flex-1">
-                <div className="flex items-center justify-between flex-wrap gap-1">
-                  <span className="font-sans text-sm font-bold text-[#1F3D2B]">
-                    PayHere Online Payment Gateway
-                  </span>
-                  <div className="flex items-center gap-1">
-                    <span className="text-[9px] px-2 py-0.5 rounded bg-[#2455C6] text-white font-bold tracking-wide">
-                      PayHere
+            {isCodEnabled && (
+              <label
+                className={`flex items-start gap-3 p-4 rounded-xl cursor-pointer border transition-all ${
+                  paymentMethod === 'cod'
+                    ? 'bg-[#f6f3f2] border-[#1F3D2B] shadow-[inset_0_0_0_1.5px_#1F3D2B]'
+                    : 'bg-white border-[#EADFD0] hover:bg-[#f6f3f2]/60'
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="payment"
+                  value="cod"
+                  checked={paymentMethod === 'cod'}
+                  onChange={() => setPaymentMethod('cod')}
+                  className="mt-1 h-4 w-4 text-[#1F3D2B] accent-[#1F3D2B]"
+                />
+                <div className="flex flex-col min-w-0 flex-1">
+                  <div className="flex items-center justify-between">
+                    <span className="font-sans text-sm font-bold text-[#1F3D2B]">
+                      Cash on Delivery (COD)
                     </span>
-                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#f0eded] text-[#1F3D2B] font-bold">
-                      VISA
-                    </span>
-                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#f0eded] text-[#1F3D2B] font-bold">
-                      MC
-                    </span>
-                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#ffdcc5] text-[#301400] font-bold">
-                      LANKAQR
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#1F3D2B] text-white">
+                      Most Popular
                     </span>
                   </div>
+                  <p className="text-xs text-[#6B6B6B] mt-1 leading-relaxed">
+                    Pay with cash or local LANKAQR upon parcel arrival. Zero processing fees.
+                  </p>
                 </div>
-                <p className="text-xs text-[#6B6B6B] mt-1 leading-relaxed">
-                  Secure online payment via PayHere (Central Bank of Sri Lanka approved gateway) supporting Visa, Mastercard, Amex, LankaQR, Genie &amp; FriMi.
-                </p>
-              </div>
-            </label>
+              </label>
+            )}
+
+            {/* Option B: Direct Bank Transfer */}
+            {isBankEnabled && (
+              <label
+                className={`flex items-start gap-3 p-4 rounded-xl cursor-pointer border transition-all ${
+                  paymentMethod === 'bank'
+                    ? 'bg-[#f6f3f2] border-[#1F3D2B] shadow-[inset_0_0_0_1.5px_#1F3D2B]'
+                    : 'bg-white border-[#EADFD0] hover:bg-[#f6f3f2]/60'
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="payment"
+                  value="bank"
+                  checked={paymentMethod === 'bank'}
+                  onChange={() => setPaymentMethod('bank')}
+                  className="mt-1 h-4 w-4 text-[#1F3D2B] accent-[#1F3D2B]"
+                />
+                <div className="flex flex-col min-w-0 flex-1">
+                  <div className="flex items-center justify-between">
+                    <span className="font-sans text-sm font-bold text-[#1F3D2B]">
+                      Direct Bank Transfer
+                    </span>
+                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#e4e2e1] text-[#424843]">
+                      Manual Slip
+                    </span>
+                  </div>
+                  <p className="text-xs text-[#6B6B6B] mt-1 leading-relaxed">
+                    {siteSettings?.bankName || 'Commercial Bank or Sampath Bank'}. Account credentials and your unique Order Reference will appear immediately on the next screen with slip upload.
+                  </p>
+                </div>
+              </label>
+            )}
+
+            {/* Option C: PayHere Online Payment Gateway */}
+            {isPayhereEnabled && (
+              <label
+                className={`flex items-start gap-3 p-4 rounded-xl cursor-pointer border transition-all ${
+                  paymentMethod === 'card'
+                    ? 'bg-[#f6f3f2] border-[#1F3D2B] shadow-[inset_0_0_0_1.5px_#1F3D2B]'
+                    : 'bg-white border-[#EADFD0] hover:bg-[#f6f3f2]/60'
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="payment"
+                  value="card"
+                  checked={paymentMethod === 'card'}
+                  onChange={() => setPaymentMethod('card')}
+                  className="mt-1 h-4 w-4 text-[#1F3D2B] accent-[#1F3D2B]"
+                />
+                <div className="flex flex-col min-w-0 flex-1">
+                  <div className="flex items-center justify-between flex-wrap gap-1">
+                    <span className="font-sans text-sm font-bold text-[#1F3D2B]">
+                      PayHere Online Payment Gateway
+                    </span>
+                    <div className="flex items-center gap-1">
+                      <span className="text-[9px] px-2 py-0.5 rounded bg-[#2455C6] text-white font-bold tracking-wide">
+                        PayHere
+                      </span>
+                      <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#f0eded] text-[#1F3D2B] font-bold">
+                        VISA
+                      </span>
+                      <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#f0eded] text-[#1F3D2B] font-bold">
+                        MC
+                      </span>
+                      <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#ffdcc5] text-[#301400] font-bold">
+                        LANKAQR
+                      </span>
+                    </div>
+                  </div>
+                  <p className="text-xs text-[#6B6B6B] mt-1 leading-relaxed">
+                    Secure online payment via PayHere (Central Bank of Sri Lanka approved gateway) supporting Visa, Mastercard, Amex, LankaQR, Genie &amp; FriMi.
+                  </p>
+                </div>
+              </label>
+            )}
           </div>
         </section>
 
@@ -705,20 +750,20 @@ export const Checkout: React.FC = () => {
               <div className="flex flex-col">
                 <span className="text-[11px] text-[#6B6B6B]">Total to Pay (Island Delivery included)</span>
                 <span className="font-serif text-xl sm:text-2xl font-bold text-[#1F3D2B] tabular-nums">
-                  {formatRs(cartTotal)}
+                  {formatRs(activeTotal)}
                 </span>
               </div>
               <div className="flex items-center gap-1 px-3 py-1 bg-[#f6f3f2] border border-[#EADFD0] rounded-full text-xs font-semibold text-[#8B5E3C]">
-                <span>{itemCount} Items</span>
+                <span>{activeItemCount} Items</span>
               </div>
             </div>
 
             <button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSubmitting || hasSubmitted}
               className="w-full h-12 rounded-full bg-[#1F3D2B] hover:bg-[#162C1F] text-white text-sm font-semibold flex items-center justify-center gap-2 shadow-md active:scale-[0.99] transition-all disabled:opacity-80"
             >
-              {isSubmitting ? (
+              {isSubmitting || hasSubmitted ? (
                 <>
                   <Loader2 className="w-5 h-5 animate-spin" />
                   <span>Processing Order...</span>
