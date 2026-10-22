@@ -56,7 +56,7 @@ function AppShell() {
     <div className="flex flex-col min-h-screen bg-[#FBF7F0] text-[#2B2B2B] antialiased overflow-x-clip">
       <Header />
 
-      <main className="flex-1 w-full max-w-[1320px] mx-auto pt-20 sm:pt-24 lg:pt-28 pb-16 lg:pb-12 px-4 sm:px-6 lg:px-8">
+      <main className="flex-1 w-full max-w-[1320px] mx-auto pt-16 sm:pt-18 lg:pt-20 pb-16 lg:pb-12 px-4 sm:px-6 lg:px-8">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/shop" element={<Shop />} />

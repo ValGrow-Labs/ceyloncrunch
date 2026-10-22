@@ -15,11 +15,13 @@ import { ProductsTab } from '../components/admin/ProductsTab';
 import { CategoriesTab } from '../components/admin/CategoriesTab';
 import { CustomersTab } from '../components/admin/CustomersTab';
 import { InventoryTab } from '../components/admin/InventoryTab';
+import { TeamTab } from '../components/admin/TeamTab';
 import { NewsletterTab } from '../components/admin/NewsletterTab';
 import { HeroSectionTab } from '../components/admin/HeroSectionTab';
 import { HomepageSectionsTab } from '../components/admin/HomepageSectionsTab';
 import { NavigationTab } from '../components/admin/NavigationTab';
 import { FooterTab } from '../components/admin/FooterTab';
+import { PaymentsTab } from '../components/admin/PaymentsTab';
 import { SettingsTab } from '../components/admin/SettingsTab';
 import { RefreshCw } from 'lucide-react';
 
@@ -175,10 +177,10 @@ export const Admin: React.FC = () => {
   // 1. Session verification loader
   if (isAdminLoading) {
     return (
-      <div className="min-h-screen bg-[#0F172A] flex flex-col items-center justify-center p-4 text-center">
-        <RefreshCw className="w-8 h-8 text-[#C5A059] animate-spin mb-3" />
-        <p className="text-sm font-semibold text-white">Verifying administrator credentials...</p>
-        <p className="text-xs text-gray-400 mt-1">Checking secure session with Supabase</p>
+      <div className="min-h-screen bg-[#FAF7F2] flex flex-col items-center justify-center p-4 text-center">
+        <RefreshCw className="w-8 h-8 text-[#1E4E35] animate-spin mb-3" />
+        <p className="text-sm font-semibold text-[#1F3D2B]">Verifying administrator credentials...</p>
+        <p className="text-xs text-stone-500 mt-1">Checking secure session with Supabase</p>
       </div>
     );
   }
@@ -190,7 +192,7 @@ export const Admin: React.FC = () => {
 
   // 3. Authenticated: Render Full Modern Admin Panel
   return (
-    <div className="min-h-screen bg-[#F9FAFB] flex text-[#111827] antialiased">
+    <div className="min-h-screen bg-[#FAF7F2] flex text-[#111827] antialiased">
       {/* 3. Collapsible Dark Sidebar with all 13 items */}
       <AdminSidebar
         activeTab={activeTab}
@@ -277,6 +279,8 @@ export const Admin: React.FC = () => {
             />
           )}
 
+          {activeTab === 'team' && <TeamTab showToast={showToast} />}
+
           {activeTab === 'newsletter' && (
             <NewsletterTab
               subscribers={subscribers}
@@ -301,6 +305,8 @@ export const Admin: React.FC = () => {
           {activeTab === 'navigation' && <NavigationTab showToast={showToast} />}
 
           {activeTab === 'footer' && <FooterTab showToast={showToast} />}
+
+          {activeTab === 'payments' && <PaymentsTab showToast={showToast} />}
 
           {activeTab === 'settings' && (
             <SettingsTab

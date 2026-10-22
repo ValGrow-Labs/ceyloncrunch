@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Instagram, Facebook } from 'lucide-react';
+import { Instagram, Facebook, Phone, Mail, MapPin, Globe } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   return (
@@ -15,19 +15,19 @@ export const Footer: React.FC = () => {
               className="h-14 lg:h-16 w-auto object-contain"
             />
           </Link>
-          <p className="text-xs text-[#C4C4C4] font-medium uppercase tracking-widest">
-            Hand-harvested · Sun-cured · Ceylon Pure
+          <p className="text-xs sm:text-sm text-[#C4C4C4] font-medium tracking-wide">
+            A fresh selection of nuts, dates, dried fruits and more.
           </p>
         </div>
 
-        {/* Navigation Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 items-start">
-          {/* Shop */}
+        {/* Simplified Navigation Grid (3 Organized Columns) */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-10 items-start">
+          {/* SHOP */}
           <div className="space-y-3">
             <span className="font-sans text-xs font-bold uppercase tracking-wider text-[#C9A84C] block">
-              Shop
+              SHOP
             </span>
-            <ul className="space-y-2 text-sm text-[#C4C4C4]">
+            <ul className="space-y-2.5 text-sm text-[#C4C4C4]">
               <li>
                 <Link to="/shop" className="hover:text-[#C9A84C] transition-colors">
                   All Products
@@ -35,32 +35,17 @@ export const Footer: React.FC = () => {
               </li>
               <li>
                 <Link to="/category/nuts" className="hover:text-[#C9A84C] transition-colors">
-                  Nuts
+                  Nuts &amp; Seeds
                 </Link>
               </li>
               <li>
                 <Link to="/category/dried-fruits" className="hover:text-[#C9A84C] transition-colors">
-                  Dried Fruits
-                </Link>
-              </li>
-              <li>
-                <Link to="/category/dates" className="hover:text-[#C9A84C] transition-colors">
-                  Dates
-                </Link>
-              </li>
-              <li>
-                <Link to="/category/seeds" className="hover:text-[#C9A84C] transition-colors">
-                  Seeds
+                  Dates &amp; Dried Fruits
                 </Link>
               </li>
               <li>
                 <Link to="/category/spices" className="hover:text-[#C9A84C] transition-colors">
                   Spices
-                </Link>
-              </li>
-              <li>
-                <Link to="/category/seeds" className="hover:text-[#C9A84C] transition-colors">
-                  Healthy Snacks
                 </Link>
               </li>
               <li>
@@ -71,25 +56,20 @@ export const Footer: React.FC = () => {
             </ul>
           </div>
 
-          {/* Company */}
+          {/* ABOUT */}
           <div className="space-y-3">
             <span className="font-sans text-xs font-bold uppercase tracking-wider text-[#C9A84C] block">
-              Company
+              ABOUT
             </span>
-            <ul className="space-y-2 text-sm text-[#C4C4C4]">
+            <ul className="space-y-2.5 text-sm text-[#C4C4C4]">
               <li>
                 <Link to="/our-story" className="hover:text-[#C9A84C] transition-colors">
                   Our Story
                 </Link>
               </li>
               <li>
-                <Link to="/contact" className="hover:text-[#C9A84C] transition-colors">
-                  Contact Us
-                </Link>
-              </li>
-              <li>
                 <Link to="/reviews" className="hover:text-[#C9A84C] transition-colors">
-                  Reviews
+                  Customer Reviews
                 </Link>
               </li>
               <li>
@@ -99,18 +79,23 @@ export const Footer: React.FC = () => {
               </li>
               <li>
                 <Link to="/corporate" className="hover:text-[#C9A84C] transition-colors">
-                  Corporate &amp; Bulk Orders
+                  Corporate Orders
+                </Link>
+              </li>
+              <li>
+                <Link to="/contact" className="hover:text-[#C9A84C] transition-colors">
+                  Contact Us
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Help */}
+          {/* CUSTOMER CARE */}
           <div className="space-y-3">
             <span className="font-sans text-xs font-bold uppercase tracking-wider text-[#C9A84C] block">
-              Help
+              CUSTOMER CARE
             </span>
-            <ul className="space-y-2 text-sm text-[#C4C4C4]">
+            <ul className="space-y-2.5 text-sm text-[#C4C4C4]">
               <li>
                 <Link to="/delivery" className="hover:text-[#C9A84C] transition-colors">
                   Delivery Information
@@ -131,49 +116,83 @@ export const Footer: React.FC = () => {
                   Terms &amp; Conditions
                 </Link>
               </li>
-              <li>
-                <Link to="/track" className="hover:text-[#C9A84C] transition-colors">
-                  Track Your Order
-                </Link>
-              </li>
-              <li>
-                <Link to="/profile" className="hover:text-[#C9A84C] transition-colors">
-                  Customer Account &amp; Login
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Contact */}
-          <div className="space-y-3">
-            <span className="font-sans text-xs font-bold uppercase tracking-wider text-[#C9A84C] block">
-              CONTACT
-            </span>
-            <ul className="space-y-2 text-sm text-[#C4C4C4]">
-              <li>
-                <a
-                  href="tel:+94779443867"
-                  className="hover:text-[#C9A84C] transition-colors flex items-center gap-1.5"
-                  title="Call Ceylon Crunch"
-                >
-                  <span>+94 77 944 3867</span>
-                </a>
-              </li>
-              <li>
-                <a
-                  href="mailto:ceyloncrunch26@gmail.com"
-                  className="hover:text-[#C9A84C] transition-colors"
-                >
-                  ceyloncrunch26@gmail.com
-                </a>
-              </li>
-              <li className="pt-1">Colombo, Sri Lanka</li>
             </ul>
           </div>
         </div>
 
-        {/* Bottom Social & Copyright */}
-        <div className="pt-6 border-t border-[#3A3A3A] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#C4C4C4]">
+        {/* Dedicated Full-Width GET IN TOUCH Contact Section */}
+        <div className="w-full bg-[#1A1A1A] border border-[#2D2D2D] rounded-2xl p-5 sm:p-7 shadow-inner">
+          <div className="flex flex-col space-y-4">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-[#C9A84C]" />
+              <span className="font-sans text-xs sm:text-sm font-bold uppercase tracking-wider text-[#C9A84C]">
+                GET IN TOUCH
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6 pt-1">
+              {/* Phone */}
+              <div className="flex items-center gap-3 p-3.5 rounded-xl bg-[#222222] border border-[#333333] hover:border-[#C9A84C]/50 transition-colors">
+                <div className="w-10 h-10 rounded-full bg-[#111111] border border-[#3A3A3A] flex items-center justify-center text-[#C9A84C] shrink-0">
+                  <Phone className="w-4 h-4" />
+                </div>
+                <div className="min-w-0">
+                  <span className="text-[10px] uppercase font-bold tracking-wider text-[#8A8A8A] block">Phone</span>
+                  <a
+                    href="tel:+94779443867"
+                    className="text-sm font-medium text-[#F5F2EB] hover:text-[#C9A84C] transition-colors break-words"
+                    title="Call Ceylon Crunch"
+                  >
+                    +94 77 944 3867
+                  </a>
+                </div>
+              </div>
+
+              {/* Email */}
+              <div className="flex items-center gap-3 p-3.5 rounded-xl bg-[#222222] border border-[#333333] hover:border-[#C9A84C]/50 transition-colors">
+                <div className="w-10 h-10 rounded-full bg-[#111111] border border-[#3A3A3A] flex items-center justify-center text-[#C9A84C] shrink-0">
+                  <Mail className="w-4 h-4" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <span className="text-[10px] uppercase font-bold tracking-wider text-[#8A8A8A] block">Email</span>
+                  <a
+                    href="mailto:ceyloncrunch26@gmail.com"
+                    className="text-sm font-medium text-[#F5F2EB] hover:text-[#C9A84C] transition-colors break-all block leading-tight"
+                    title="Email Ceylon Crunch"
+                  >
+                    ceyloncrunch26@gmail.com
+                  </a>
+                </div>
+              </div>
+
+              {/* Location & Website */}
+              <div className="flex items-center gap-3 p-3.5 rounded-xl bg-[#222222] border border-[#333333] hover:border-[#C9A84C]/50 transition-colors">
+                <div className="w-10 h-10 rounded-full bg-[#111111] border border-[#3A3A3A] flex items-center justify-center text-[#C9A84C] shrink-0">
+                  <MapPin className="w-4 h-4" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <span className="text-[10px] uppercase font-bold tracking-wider text-[#8A8A8A] block">Location &amp; Web</span>
+                  <div className="flex items-center justify-between gap-2 flex-wrap">
+                    <span className="text-sm font-medium text-[#F5F2EB] break-words">
+                      Colombo, Sri Lanka
+                    </span>
+                    <a
+                      href="/"
+                      className="inline-flex items-center gap-1 text-xs text-[#C9A84C] hover:underline"
+                    >
+                      <Globe className="w-3 h-3" />
+                      <span>ceyloncrunch.com</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom Social & Exact Copyright */}
+        <div className="pt-4 border-t border-[#3A3A3A] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#C4C4C4]">
+          {/* Social Icons */}
           <div className="flex items-center gap-3">
             <a
               href="https://www.instagram.com/ceyloncrunch_lk?rpxt=MTFtbnNwcTU3ZTZnNQ%3D%3D&utm_source=qr"
@@ -219,12 +238,12 @@ export const Footer: React.FC = () => {
               </svg>
             </a>
           </div>
-          <p className="text-center sm:text-right">© 2026 Ceylon Crunch. All rights reserved. Handcrafted in Sri Lanka.</p>
-        </div>
 
-        {/* Developer Credit */}
-        <div className="pt-2 text-center text-xs text-[#8A8A8A]">
-          Designed &amp; Developed by <span className="font-bold text-[#C9A84C]">ValGrow Labs</span>
+          {/* Exact Copyright */}
+          <div className="text-center sm:text-right text-xs text-[#C4C4C4] leading-relaxed font-sans">
+            <p>© 2026 Ceylon Crunch (Pvt) Ltd.</p>
+            <p>Colombo, Sri Lanka</p>
+          </div>
         </div>
       </div>
     </footer>

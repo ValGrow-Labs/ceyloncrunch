@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { useStore } from '../lib/store';
@@ -8,64 +8,32 @@ import { ArrowRight, Store, ShieldCheck, Leaf, ShoppingCart, Truck, Heart } from
 export const Home: React.FC = () => {
   const { products } = useStore();
 
-  // Selected favorites
-  const favorites = products.filter((p) => p.isFeatured);
-
-  const categories = [
-    {
-      name: 'Nuts',
-      slug: 'nuts',
-      image: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a5/Bowl_of_Cashews_and_Almonds_%2848140118636%29.jpg/960px-Bowl_of_Cashews_and_Almonds_%2848140118636%29.jpg',
-      description: 'Walnuts, Almonds, Cashew & Pistachio',
-    },
-    {
-      name: 'Dried Fruits',
-      slug: 'dried-fruits',
-      image: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/28/Dried_figs_%282%29.jpg/960px-Dried_figs_%282%29.jpg',
-      description: 'Raisins, Dried Figs, Apricots, Kiwi & Prunes',
-    },
-    {
-      name: 'Dates',
-      slug: 'dates',
-      image: 'https://images.unsplash.com/photo-1549488344-1f9b8d2bd1f3?auto=format&fit=crop&w=800&q=80',
-      description: 'Wet Dates & Dry Dates',
-    },
-    {
-      name: 'Seeds',
-      slug: 'seeds',
-      image: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2e/Pepita_de_calabaza.jpg/960px-Pepita_de_calabaza.jpg',
-      description: 'Chia, Cucumber, Flax, Musk Melon, Pumpkin, Quinoa, Sunflower & Fox Nuts',
-    },
-    {
-      name: 'Berries',
-      slug: 'berries',
-      image: 'https://upload.wikimedia.org/wikipedia/commons/1/15/Blueberries.jpg',
-      description: 'Blueberries, Cranberries & Black Currant',
-    },
-    {
-      name: 'Exotic Nuts',
-      slug: 'exotic-nuts',
-      image: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/0/00/Macadamia_nuts.jpg/960px-Macadamia_nuts.jpg',
-      description: 'Hazelnuts, Macadamia Nuts & Pecan Nuts',
-    },
-    {
-      name: 'Mixes',
-      slug: 'mixes',
-      image: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f5/Mixed_nuts_small_white1.jpg/960px-Mixed_nuts_small_white1.jpg',
-      description: 'Berries Mix, Nut Mix, Seeds Mix & Trail Mix',
-    },
-    {
-      name: 'Whole Spices',
-      slug: 'spices',
-      image: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/d/de/Cinnamomum_verum_spices.jpg/960px-Cinnamomum_verum_spices.jpg',
-      description: 'True Ceylon Alba Cinnamon Quills, Black Pepper & Cardamom',
-    },
-  ];
+  // Popular Picks explicitly: Almonds, Cashews, Pistachios, mixed nuts, hamper, nuts box
+  const popularPicks = useMemo(() => {
+    const desiredSlugs = [
+      'roasted-almonds',
+      'roasted-cashews',
+      'roasted-pistachios',
+      'mixed-nuts',
+      'curated-hamper',
+      'nuts-box',
+    ];
+    const picked: typeof products = [];
+    for (const slug of desiredSlugs) {
+      const match = products.find((p) => p.slug === slug);
+      if (match) picked.push(match);
+    }
+    // If any items are missing, fill with featured products
+    if (picked.length === 0) {
+      return products.filter((p) => p.isFeatured).slice(0, 6);
+    }
+    return picked;
+  }, [products]);
 
   const trustFeatures = [
     {
       icon: Leaf,
-      title: '100% Natural',
+      title: 'Fresh',
       subtitle: 'No artificial additives',
       titleColor: 'text-[#1B5132]',
     },
@@ -77,8 +45,8 @@ export const Home: React.FC = () => {
     },
     {
       icon: Truck,
-      title: 'Fast & Fresh Delivery',
-      subtitle: 'Across the island',
+      title: 'Fast Delivery',
+      subtitle: 'To your doorstep',
       titleColor: 'text-[#1B5132]',
     },
     {
@@ -91,7 +59,7 @@ export const Home: React.FC = () => {
 
   return (
     <div className="flex flex-col w-full space-y-12 lg:space-y-16 pb-12">
-      {/* 1. FULL-WIDTH HERO & TRUST BANNER (Responsive across all viewports, no scrollbar jitter) */}
+      {/* 1. FULL-WIDTH HERO & TRUST BANNER */}
       <section className="-mx-4 sm:-mx-6 lg:-mx-8 w-[calc(100%+2rem)] sm:w-[calc(100%+3rem)] lg:w-[calc(100%+4rem)] -mt-4 sm:-mt-5 lg:-mt-9 border-b border-[#EADFD0] bg-[#FAF8F4] overflow-hidden">
         {/* Top Hero Area */}
         <div className="relative isolate w-full overflow-hidden bg-[#FBF7F0]">
@@ -105,11 +73,11 @@ export const Home: React.FC = () => {
             className="absolute inset-0 w-full h-full object-cover object-[88%_center] xs:object-[82%_center] sm:object-[74%_center] lg:object-[80%_center]"
           />
           <div className="absolute inset-0 bg-[#FBF7F0]/20 pointer-events-none" />
-          {/* Directional readability gradient: clean cream backing behind left text, fully transparent over the bowl */}
+          {/* Directional readability gradient */}
           <div className="absolute inset-0 bg-gradient-to-r from-[#FBF7F0] via-[#FBF7F0]/85 via-[48%] to-transparent to-[75%] sm:via-[#FBF7F0]/40 sm:via-[40%] sm:to-transparent pointer-events-none" />
 
           <div className="relative z-10 max-w-[1440px] mx-auto flex items-center min-h-[340px] xs:min-h-[380px] sm:min-h-[440px] md:min-h-[480px] lg:min-h-[520px]">
-            {/* Hero Copy: Always Left-Aligned across all screen sizes and mobile phones */}
+            {/* Hero Copy: Left-Aligned across all screens */}
             <div className="w-full pl-4 xs:pl-6 sm:pl-8 md:pl-12 lg:pl-20 pr-3 sm:pr-6 py-7 xs:py-9 sm:py-12 lg:py-16 flex flex-col items-start text-left space-y-2.5 xs:space-y-3 sm:space-y-4 lg:space-y-5">
               {/* Eyebrow */}
               <motion.div
@@ -133,9 +101,9 @@ export const Home: React.FC = () => {
                 transition={{ duration: 0.6, delay: 0.2 }}
                 className="font-serif text-[22px] xs:text-[28px] sm:text-[36px] md:text-[44px] lg:text-[54px] font-bold text-[#0F3822] tracking-tight leading-[1.08] sm:leading-[1.1] uppercase max-w-[66%] xs:max-w-[62%] sm:max-w-[52%] md:max-w-lg lg:max-w-xl"
               >
-                Good Products. <br />
+                Better Choices <br />
                 <span className="text-[#B5741E]">
-                  Carefully Chosen.
+                  Begin Here.
                 </span>
               </motion.h1>
 
@@ -146,10 +114,10 @@ export const Home: React.FC = () => {
                 transition={{ duration: 0.6, delay: 0.32 }}
                 className="font-sans text-[11px] xs:text-xs md:text-sm lg:text-base text-[#4A4A4A] leading-relaxed max-w-[64%] xs:max-w-[60%] sm:max-w-[50%] md:max-w-md"
               >
-                Quality nuts, dried fruits, dates, seeds and more — selected with care and delivered to your doorstep.
+                Quality nuts, dried fruits, dates, seeds, spices, and more — selected with care and delivered to your doorstep.
               </motion.p>
 
-              {/* CTA Buttons: Side-by-side & left-aligned on all screen sizes */}
+              {/* CTA Buttons */}
               <motion.div
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -175,7 +143,7 @@ export const Home: React.FC = () => {
             </div>
           </div>
 
-          {/* Organic Curved Wave Divider matching reference image */}
+          {/* Curved Wave Divider */}
           <div className="absolute bottom-0 left-0 right-0 w-full overflow-hidden leading-none z-10 pointer-events-none">
             <svg
               viewBox="0 0 1440 60"
@@ -222,7 +190,7 @@ export const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* 2. CATEGORY HEADLINES ONLY STRIP */}
+      {/* 2. CATEGORY MAIN HEADLINES STRIP (4-Row 2-Column on mobile) */}
       <motion.section
         initial={{ opacity: 0, y: 16 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -236,14 +204,14 @@ export const Home: React.FC = () => {
             { title: 'DRIED FRUITS', slug: 'dried-fruits' },
             { title: 'DATES', slug: 'dates' },
             { title: 'SEEDS', slug: 'seeds' },
+            { title: 'SPICES', slug: 'spices' },
+            { title: 'GIFTS & HAMPERS', slug: 'gifting', isCustom: true },
             { title: 'BERRIES', slug: 'berries' },
-            { title: 'EXOTIC NUTS', slug: 'exotic-nuts' },
             { title: 'MIXES', slug: 'mixes' },
-            { title: 'WHOLE SPICES', slug: 'spices' },
           ].map((cat) => (
             <Link
               key={cat.slug}
-              to={`/category/${cat.slug}`}
+              to={cat.isCustom ? `/${cat.slug}` : `/category/${cat.slug}`}
               className="group block border-b-2 border-[#EADFD0] hover:border-[#B5741E] pb-2 transition-all"
             >
               <span className="font-sans text-xs sm:text-[13px] font-extrabold uppercase tracking-wider text-[#1B1B1B] group-hover:text-[#B5741E] transition-colors block text-center sm:text-left leading-tight">
@@ -254,7 +222,7 @@ export const Home: React.FC = () => {
         </div>
       </motion.section>
 
-      {/* 3. CUSTOMER FAVOURITES */}
+      {/* 3. CUSTOMER FAVOURITES - POPULAR PICKS */}
       <section className="flex flex-col space-y-5">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
@@ -271,7 +239,7 @@ export const Home: React.FC = () => {
               Popular Picks
             </h2>
             <p className="text-xs text-[#6B6B6B] mt-0.5">
-              A selection of products our customers love.
+              Almonds, Cashews, Pistachios, Mixed Nuts, Curated Hampers &amp; Artisan Boxes.
             </p>
           </div>
           <Link
@@ -283,10 +251,10 @@ export const Home: React.FC = () => {
           </Link>
         </motion.div>
 
-        {/* Grid */}
-        {favorites.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5 lg:gap-5">
-            {favorites.slice(0, 8).map((product) => (
+        {/* Grid - 6 Popular Picks */}
+        {popularPicks.length > 0 ? (
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3.5 lg:gap-5">
+            {popularPicks.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
@@ -307,45 +275,45 @@ export const Home: React.FC = () => {
       >
         <div className="space-y-1.5 max-w-2xl">
           <span className="text-[11px] font-sans uppercase font-bold tracking-wider text-[#8B5E3C]">
-            Why Ceylon Crunch
+            WHY CEYLON CRUNCH
           </span>
           <h2 className="font-serif text-2xl lg:text-3xl text-[#1F3D2B] font-semibold tracking-tight">
-            Simple Choices. Better Ingredients.
+            Good Food. Thoughtfully Chosen.
           </h2>
           <p className="text-xs sm:text-sm text-[#4A4A4A] leading-relaxed pt-1">
-            We believe good nutriments starts with good ingredients. From everyday snacking to gifting, we carefully select our products for quality, freshness and taste.
+            We believe good nutriments makes everyday moments better. From everyday snacking to gifting, we carefully select our products for quality, freshness and taste.
           </p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-6 pt-2">
           <div className="p-5 rounded-2xl bg-[#FAF8F4] border border-[#EADFD0]/80 space-y-2">
             <h3 className="font-serif text-base font-bold text-[#1F3D2B]">
-              Carefully Selected
+              Chosen With Purpose
             </h3>
             <p className="text-xs sm:text-sm text-[#4A4A4A] leading-relaxed">
-              Products chosen with attention to quality and freshness.
+              A considered range of products for everyday enjoyment and special moments.
             </p>
           </div>
           <div className="p-5 rounded-2xl bg-[#FAF8F4] border border-[#EADFD0]/80 space-y-2">
             <h3 className="font-serif text-base font-bold text-[#1F3D2B]">
-              Quality You Can Trust
+              Quality Comes First
             </h3>
             <p className="text-xs sm:text-sm text-[#4A4A4A] leading-relaxed">
-              We focus on products we are happy to put our name behind.
+              We pay attention to the products we select and how each order is prepared.
             </p>
           </div>
           <div className="p-5 rounded-2xl bg-[#FAF8F4] border border-[#EADFD0]/80 space-y-2">
             <h3 className="font-serif text-base font-bold text-[#1F3D2B]">
-              Delivered With Care
+              From Our Hands to Yours
             </h3>
             <p className="text-xs sm:text-sm text-[#4A4A4A] leading-relaxed">
-              Packed carefully and delivered across Sri Lanka.
+              Every order is packed with care and delivered to your doorstep.
             </p>
           </div>
         </div>
       </motion.section>
 
-      {/* 5. COLLECTION BANNER */}
+      {/* 5. EXPLORE CEYLON CRUNCH (OUR COLLECTION) */}
       <motion.section
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -355,13 +323,13 @@ export const Home: React.FC = () => {
       >
         <div className="space-y-2 max-w-xl text-center md:text-left">
           <span className="text-[11px] font-sans uppercase font-bold tracking-wider text-[#D9A441]">
-            Our Collection
+            EXPLORE CEYLON CRUNCH
           </span>
           <h2 className="font-serif text-2xl lg:text-3xl font-bold">
-            Something for Every Taste.
+            Goodness for Every Day.
           </h2>
           <p className="text-xs sm:text-sm text-[#FBF7F0]/85 leading-relaxed">
-            Explore our selection of nuts, dried fruits, dates, seeds and other wholesome foods.
+            Discover our range of nuts, dates, dried fruits, seeds and more.
           </p>
         </div>
         <Link
@@ -373,7 +341,7 @@ export const Home: React.FC = () => {
         </Link>
       </motion.section>
 
-      {/* 6. SHOP BY CATEGORY (6 CARDS) */}
+      {/* 6. SHOP BY CATEGORY (6 VISUAL CARDS) */}
       <section className="flex flex-col space-y-5">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
@@ -397,7 +365,7 @@ export const Home: React.FC = () => {
             {
               name: 'Nuts',
               slug: 'nuts',
-              image: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a5/Bowl_of_Cashews_and_Almonds_%2848140118636%29.jpg/960px-Bowl_of_Cashews_and_Almonds_%2848140118636%29.jpg',
+              image: '/products/nuts/cashews.jpg',
               description: 'Almonds, cashews, pistachios, walnuts and more.',
             },
             {
@@ -420,14 +388,14 @@ export const Home: React.FC = () => {
             },
             {
               name: 'Healthy Snacks',
-              slug: 'seeds',
-              image: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f5/Mixed_nuts_small_white1.jpg/960px-Mixed_nuts_small_white1.jpg',
+              slug: 'mixes',
+              image: '/products/nuts/mixed-nuts.jpg',
               description: 'Easy choices for home, work and on the go.',
             },
             {
               name: 'Gifts & Hampers',
               slug: 'gifting',
-              image: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&w=800&q=80',
+              image: '/products/gifting/curated-hamper.jpg',
               description: 'Thoughtful options for every occasion.',
               isCustomRoute: true,
             },
@@ -476,20 +444,23 @@ export const Home: React.FC = () => {
         className="bg-white border border-[#EADFD0] rounded-2xl p-6 sm:p-8 lg:p-10 shadow-2xs space-y-4"
       >
         <span className="text-[11px] font-sans uppercase font-bold tracking-wider text-[#8B5E3C]">
-          About Ceylon Crunch
+          ABOUT CEYLON CRUNCH
         </span>
         <h2 className="font-serif text-2xl lg:text-3xl text-[#1F3D2B] font-semibold">
-          Good Food, Carefully Chosen.
+          A Little Better, In Every Bite.
         </h2>
         <div className="space-y-3 text-xs sm:text-sm text-[#4A4A4A] leading-relaxed max-w-3xl">
           <p>
-            Ceylon Crunch was created with a simple idea: make quality nutriments and wholesome foods easier to enjoy.
+            At Ceylon Crunch, we believe good food begins with good choices.
           </p>
           <p>
-            We carefully select our products, pack them with care and bring them straight to your doorstep.
+            We bring together a carefully selected range of nuts, dates, dried fruits and wholesome foods, chosen for the everyday moments that matter.
           </p>
           <p>
-            Whether you're buying for yourself, your family, your workplace or someone special, we want every order to be a good one.
+            From selecting our products to packing every order, we pay attention to the details that make a difference. Our aim is simple: to bring quality products to your home, with the care they deserve.
+          </p>
+          <p>
+            Whether you're stocking up for yourself, sharing with family or choosing a thoughtful gift, we're here to make every choice a little more special.
           </p>
         </div>
         <div className="pt-2">
@@ -497,13 +468,13 @@ export const Home: React.FC = () => {
             to="/our-story"
             className="h-11 px-7 rounded-full bg-[#1B5132] hover:bg-[#143E26] text-white font-sans text-xs sm:text-sm font-semibold inline-flex items-center gap-2 shadow-sm transition-all"
           >
-            <span>Read Our Story</span>
+            <span>Our Story</span>
             <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
       </motion.section>
 
-      {/* 8. GIFTING */}
+      {/* 8. GIFTING BY CEYLON CRUNCH (FOR EVERY OCCASION) */}
       <motion.section
         initial={{ opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -514,17 +485,17 @@ export const Home: React.FC = () => {
         <div className="space-y-3 max-w-xl">
           <div className="flex items-center gap-2 text-[#8B5E3C] font-sans text-xs font-bold tracking-wider uppercase">
             <span className="material-symbols-outlined text-[18px] animate-float-slow">featured_seasonal_and_gifts</span>
-            <span>For Every Occasion</span>
+            <span>GIFTING BY CEYLON CRUNCH</span>
           </div>
           <h3 className="font-serif text-2xl lg:text-3xl text-[#1F3D2B] font-semibold">
-            Something Worth Sharing.
+            A Thoughtful Gift for Every Occasion.
           </h3>
           <p className="text-sm text-[#424843] leading-relaxed">
-            From simple gifts to carefully prepared hampers, Ceylon Crunch makes it easy to share something good.
+            From simple gifts to curated hampers, find something special for the people who matter.
           </p>
 
           <div className="space-y-1.5 pt-1">
-            <span className="text-xs font-bold text-[#1F3D2B] block">Ideal for:</span>
+            <span className="text-xs font-bold text-[#1F3D2B] block">Perfect for:</span>
             <div className="flex flex-wrap gap-2">
               {[
                 'Birthdays',
@@ -550,13 +521,12 @@ export const Home: React.FC = () => {
             to="/gifting"
             className="group min-h-[48px] px-8 rounded-full bg-[#1F3D2B] hover:bg-[#162C1F] text-white font-sans text-sm font-semibold flex items-center justify-center gap-2 shadow-sm hover:shadow-md hover:-translate-y-0.5 active:scale-98 transition-all"
           >
-            <span>Explore Gifting</span>
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            <span>Explore Our Gifts →</span>
           </Link>
         </div>
       </motion.section>
 
-      {/* 9. CONNECT */}
+      {/* 9. STAY CONNECTED */}
       <motion.section
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -565,13 +535,13 @@ export const Home: React.FC = () => {
         className="bg-white border border-[#EADFD0] rounded-2xl p-6 sm:p-8 shadow-2xs text-center space-y-3"
       >
         <span className="text-[11px] font-sans uppercase font-bold tracking-wider text-[#8B5E3C] block">
-          Stay Connected
+          STAY CONNECTED
         </span>
-        <h2 className="font-serif text-2xl lg:text-3xl text-[#1F3D2B] font-semibold">
-          Fresh Products. New Ideas. Updates.
+        <h2 className="font-serif text-2xl lg:text-3xl text-[#1F3D2B] font-semibold uppercase tracking-tight">
+          A LITTLE MORE FROM CEYLON CRUNCH.
         </h2>
         <p className="text-xs sm:text-sm text-[#4A4A4A] max-w-lg mx-auto">
-          Follow Ceylon Crunch for new products, offers, recipes, serving ideas and more.
+          Discover new arrivals, serving ideas and updates from us.
         </p>
         <div className="flex flex-col xs:flex-row items-center justify-center gap-2.5 sm:gap-3 pt-2">
           <a
@@ -580,8 +550,7 @@ export const Home: React.FC = () => {
             rel="noopener noreferrer"
             className="w-full xs:w-auto h-10 px-6 rounded-full bg-[#FAF8F4] border border-[#EADFD0] hover:border-[#1F3D2B] text-xs font-semibold text-[#1F3D2B] inline-flex items-center justify-center gap-2 transition-colors"
           >
-            <span>Follow Us on Instagram</span>
-            <ArrowRight className="w-3.5 h-3.5" />
+            <span>Follow Us on Instagram →</span>
           </a>
           <a
             href="https://wa.me/94779443867"
@@ -589,12 +558,12 @@ export const Home: React.FC = () => {
             rel="noopener noreferrer"
             className="w-full xs:w-auto h-10 px-6 rounded-full bg-[#25D366] text-white text-xs font-semibold inline-flex items-center justify-center gap-2 hover:bg-[#1EBE5D] transition-colors"
           >
-            <span>WhatsApp Channel</span>
+            <span>Join Our WhatsApp Channel</span>
           </a>
         </div>
       </motion.section>
 
-      {/* 10. FINAL CALL TO ACTION */}
+      {/* 10. DISCOVER YOUR FAVOURITES */}
       <motion.section
         initial={{ opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -606,18 +575,18 @@ export const Home: React.FC = () => {
           <Store className="w-6 h-6 text-[#1F3D2B]" />
         </div>
         <div className="space-y-1 max-w-md">
-          <h2 className="font-serif text-2xl lg:text-3xl text-[#1F3D2B] font-semibold">
-            Ready to Find Your Favourites?
+          <h2 className="font-serif text-2xl lg:text-3xl text-[#1F3D2B] font-semibold uppercase tracking-tight">
+            DISCOVER YOUR FAVOURITES.
           </h2>
           <p className="text-sm text-[#6B6B6B]">
-            Shop quality nuts, dried fruits, dates, seeds and more.
+            Explore our selection of nuts, dates, dried fruits, seeds and more.
           </p>
         </div>
         <Link
           to="/shop"
           className="min-h-[48px] px-8 rounded-full bg-[#1F3D2B] hover:bg-[#162C1F] text-white font-sans text-sm font-semibold flex items-center justify-center shadow-sm hover:shadow-md hover:-translate-y-0.5 active:scale-95 transition-all"
         >
-          Shop Now
+          Explore Our Collection →
         </Link>
       </motion.section>
     </div>

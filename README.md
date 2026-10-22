@@ -1,4 +1,4 @@
-# Ceylon Crunch — Artisan Provisions (`valgrow-labs-ceyloncrunch`)
+# Ceylon Crunch (`valgrow-labs-ceyloncrunch`)
 
 > *"From Nature To Your Doorstep — Sourced from authentic growers. Honest food for moments that matter."*
 

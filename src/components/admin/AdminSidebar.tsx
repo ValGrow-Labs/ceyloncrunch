@@ -6,17 +6,17 @@ import {
   FolderTree,
   Users,
   Boxes,
+  ShieldCheck,
   Mail,
   Sparkles,
   LayoutTemplate,
   Compass,
   PanelBottom,
+  CreditCard,
   Settings,
   LogOut,
   ChevronLeft,
   ChevronRight,
-  ExternalLink,
-  Store,
   X,
 } from 'lucide-react';
 
@@ -27,11 +27,13 @@ export type AdminTab =
   | 'categories'
   | 'customers'
   | 'inventory'
+  | 'team'
   | 'newsletter'
   | 'hero'
   | 'homepage'
   | 'navigation'
   | 'footer'
+  | 'payments'
   | 'settings';
 
 interface AdminSidebarProps {
@@ -73,11 +75,13 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
     { id: 'categories', label: 'Categories', icon: FolderTree },
     { id: 'customers', label: 'Customers', icon: Users },
     { id: 'inventory', label: 'Inventory', icon: Boxes, badge: lowStockCount, badgeColor: 'bg-rose-500' },
+    { id: 'team', label: 'Team', icon: ShieldCheck },
     { id: 'newsletter', label: 'Newsletter', icon: Mail },
     { id: 'hero', label: 'Hero Section', icon: Sparkles, section: 'Storefront Content' },
     { id: 'homepage', label: 'Home Page Sections', icon: LayoutTemplate },
     { id: 'navigation', label: 'Navigation', icon: Compass },
     { id: 'footer', label: 'Footer', icon: PanelBottom },
+    { id: 'payments', label: 'Payments', icon: CreditCard },
     { id: 'settings', label: 'Settings', icon: Settings, section: 'Configuration' },
   ];
 
@@ -105,8 +109,12 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
         {/* Brand Header */}
         <div className="h-16 flex items-center justify-between px-4 border-b border-gray-800 bg-[#0B0F19]">
           <div className="flex items-center gap-3 overflow-hidden">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#C5A059] to-[#8B5E3C] flex items-center justify-center text-white font-serif font-bold text-lg shadow-sm shrink-0">
-              CC
+            <div className="w-9 h-9 rounded-xl bg-white p-1 flex items-center justify-center shadow-sm shrink-0 overflow-hidden ring-1 ring-white/20">
+              <img
+                src="/favicon.png"
+                alt="Ceylon Crunch Logo"
+                className="w-full h-full object-contain"
+              />
             </div>
             {(!isCollapsed || isMobileOpen) && (
               <div className="flex flex-col leading-tight truncate">
@@ -187,26 +195,11 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
           })}
         </nav>
 
-        {/* Store Link & Admin User Profile */}
+        {/* Admin User Profile */}
         <div
           className="p-3 border-t border-gray-800 bg-[#0B0F19]/50 space-y-2"
           style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom, 0px))' }}
         >
-          {/* Quick Storefront Link */}
-          <a
-            href="/"
-            target="_blank"
-            rel="noopener noreferrer"
-            title={isCollapsed ? 'View Live Store' : undefined}
-            className="flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium text-gray-400 hover:text-white hover:bg-gray-800/80 transition-all"
-          >
-            <Store className="w-4 h-4 text-emerald-400 shrink-0" />
-            {(!isCollapsed || isMobileOpen) && (
-              <span className="flex-1 truncate">View Live Store</span>
-            )}
-            {(!isCollapsed || isMobileOpen) && <ExternalLink className="w-3.5 h-3.5 text-gray-500" />}
-          </a>
-
           {/* Admin User Chip */}
           <div className="flex items-center gap-3 px-3 py-2 bg-[#1A2234] rounded-xl border border-gray-800">
             <div className="w-8 h-8 rounded-full bg-[#1F3D2B] border border-[#C5A059]/40 text-[#C5A059] font-bold text-xs flex items-center justify-center shrink-0">

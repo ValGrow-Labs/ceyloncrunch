@@ -33,6 +33,7 @@ export interface NewsletterSubscriber {
 }
 
 export interface CartItem {
+  id?: string;
   productId: string;
   variantId: string;
   productName: string;
@@ -508,7 +509,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           pairsWithIds: [],
           isFeatured: p.is_featured,
         }));
-        setProducts(mappedProducts);
+        const dbSlugs = new Set(mappedProducts.map((p) => p.slug));
+        const extraInitial = INITIAL_PRODUCTS.filter((p) => !dbSlugs.has(p.slug));
+        setProducts([...extraInitial, ...mappedProducts]);
       }
     } catch (err) {
       console.warn('Error fetching products from Supabase:', err);

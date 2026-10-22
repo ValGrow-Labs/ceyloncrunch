@@ -35,6 +35,10 @@ const TAB_TITLES: Record<AdminTab, { title: string; subtitle: string }> = {
     title: 'Inventory & Stock Control',
     subtitle: 'Monitor variant stock levels, prevent depletion, and adjust counts',
   },
+  team: {
+    title: 'Team & Access Roles',
+    subtitle: 'Manage store administrators, managers, and access permissions',
+  },
   newsletter: {
     title: 'Newsletter Subscribers',
     subtitle: 'Engage mailing list patrons and export subscriber records to CSV',
@@ -55,6 +59,10 @@ const TAB_TITLES: Record<AdminTab, { title: string; subtitle: string }> = {
     title: 'Footer & Company Info',
     subtitle: 'Contact hotlines, WhatsApp numbers, social links, and legal policies',
   },
+  payments: {
+    title: 'Payment Methods',
+    subtitle: 'Enable or disable payment options and configure credentials',
+  },
   settings: {
     title: 'Store Settings & Policies',
     subtitle: 'Delivery rates, bank accounts, minimum order thresholds, and status',
@@ -70,7 +78,7 @@ export const AdminTopBar: React.FC<AdminTopBarProps> = ({
 }) => {
   const current = TAB_TITLES[activeTab] || {
     title: 'Store Administration',
-    subtitle: 'Ceylon Crunch Artisan Provisions Admin Portal',
+    subtitle: 'Ceylon Crunch Admin Portal',
   };
 
   return (

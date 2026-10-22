@@ -79,13 +79,6 @@ export const Header: React.FC = () => {
   return (
     <>
       <header className="fixed top-0 left-0 w-full z-40 pt-safe bg-[#FBF7F0]/95 backdrop-blur-xl border-b border-[#EADFD0] shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
-        {/* Top Free Island Delivery Banner */}
-        <div className="bg-[#1F3D2B] text-[#FBF7F0] px-3 sm:px-4 py-1.5 text-center">
-          <p className="font-sans text-[10px] sm:text-[11px] lg:text-xs font-medium tracking-wide line-clamp-1 sm:line-clamp-none">
-            Free island-wide delivery on orders over Rs. 5,000 · Small-Batch Freshness Guaranteed
-          </p>
-        </div>
-
         {/* Main Navigation Bar */}
         <div className="max-w-[1320px] mx-auto h-15 sm:h-16 px-3 sm:px-4 lg:px-8 flex items-center justify-between gap-2 sm:gap-4 relative">
           <div className="flex items-center gap-1 sm:gap-2 shrink-0">

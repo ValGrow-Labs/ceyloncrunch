@@ -31,7 +31,7 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
   onSeedDatabase,
   isSeeding,
 }) => {
-  const [storeName, setStoreName] = useState('Ceylon Crunch - Artisan Provisions');
+  const [storeName, setStoreName] = useState('Ceylon Crunch');
   const [announcementBanner, setAnnouncementBanner] = useState(
     'Free island-wide delivery on orders over Rs. 5,000 · Small-Batch Freshness Guaranteed'
   );
