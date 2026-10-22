@@ -269,8 +269,8 @@ export const InventoryTab: React.FC<InventoryTabProps> = ({
                     </div>
 
                     {/* Stock Quick Stepper Controls */}
-                    <div className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-gray-100/80">
-                      <div className="flex items-center gap-1.5">
+                    <div className="flex flex-wrap items-center justify-between gap-2.5 pt-1.5 border-t border-gray-100/80">
+                      <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
                         <button
                           type="button"
                           onClick={() => handleStepStock(variant, -5)}

@@ -128,7 +128,7 @@ export const AdminTopBar: React.FC<AdminTopBarProps> = ({
           className="h-8 sm:h-9 px-2.5 sm:px-3.5 rounded-xl bg-[#1F3D2B] hover:bg-[#162C1F] text-white text-xs font-semibold flex items-center gap-1 sm:gap-1.5 shadow-xs transition-all cursor-pointer"
           title="View live customer storefront in new tab"
         >
-          <span className="hidden xs:inline sm:inline">Store</span>
+          <span className="hidden sm:inline">Store</span>
           <ExternalLink className="w-3.5 h-3.5 opacity-80" />
         </a>
 

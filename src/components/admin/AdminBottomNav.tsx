@@ -50,6 +50,19 @@ export const AdminBottomNav: React.FC<AdminBottomNavProps> = ({
 
   const isMoreActive = !['dashboard', 'orders', 'products', 'inventory'].includes(activeTab);
 
+  const TAB_SHORT_LABELS: Partial<Record<AdminTab, string>> = {
+    categories: 'Categories',
+    customers: 'Customers',
+    team: 'Team',
+    newsletter: 'Newsletter',
+    hero: 'Hero',
+    homepage: 'Homepage',
+    navigation: 'Navigation',
+    footer: 'Footer',
+    payments: 'Payments',
+    settings: 'Settings',
+  };
+
   return (
     <nav
       className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-gray-200/90 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] lg:hidden transition-transform duration-200"
@@ -131,7 +144,7 @@ export const AdminBottomNav: React.FC<AdminBottomNavProps> = ({
               isMoreActive ? 'font-bold text-[#1F3D2B]' : 'font-medium'
             }`}
           >
-            {isMoreActive ? activeTab.slice(0, 7) : 'More'}
+            {isMoreActive ? (TAB_SHORT_LABELS[activeTab] || 'More') : 'More'}
           </span>
           {isMoreActive && (
             <span className="w-1 h-1 rounded-full bg-[#1F3D2B] mt-0.5" />

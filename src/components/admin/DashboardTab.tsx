@@ -94,8 +94,8 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
       {/* ROW 1: 4 Main Metric KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
         {/* Card 1: Revenue this month */}
-        <div className="bg-white rounded-3xl p-6 shadow-[0_4px_25px_rgba(0,0,0,0.03)] border border-stone-100 flex items-start gap-4 sm:gap-5">
-          <div className="w-14 h-14 rounded-2xl bg-[#FAF7F2] border border-stone-200/60 flex items-center justify-center shrink-0 text-2xl select-none shadow-2xs">
+        <div className="bg-white rounded-3xl p-4 sm:p-5 lg:p-6 shadow-[0_4px_25px_rgba(0,0,0,0.03)] border border-stone-100 flex items-start gap-3.5 sm:gap-5">
+          <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-[#FAF7F2] border border-stone-200/60 flex items-center justify-center shrink-0 text-xl sm:text-2xl select-none shadow-2xs">
             <span role="img" aria-label="Revenue">💰</span>
           </div>
           <div className="min-w-0 flex-1">
@@ -117,9 +117,9 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
         {/* Card 2: Total Orders */}
         <div
           onClick={() => onNavigateTab('orders')}
-          className="bg-white rounded-3xl p-6 shadow-[0_4px_25px_rgba(0,0,0,0.03)] border border-stone-100 flex items-start gap-4 sm:gap-5 hover:border-stone-200 transition-all cursor-pointer"
+          className="bg-white rounded-3xl p-4 sm:p-5 lg:p-6 shadow-[0_4px_25px_rgba(0,0,0,0.03)] border border-stone-100 flex items-start gap-3.5 sm:gap-5 hover:border-stone-200 transition-all cursor-pointer"
         >
-          <div className="w-14 h-14 rounded-2xl bg-[#FAF7F2] border border-stone-200/60 flex items-center justify-center shrink-0 text-2xl select-none shadow-2xs">
+          <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-[#FAF7F2] border border-stone-200/60 flex items-center justify-center shrink-0 text-xl sm:text-2xl select-none shadow-2xs">
             <span role="img" aria-label="Orders">📦</span>
           </div>
           <div className="min-w-0 flex-1">
@@ -138,9 +138,9 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
         {/* Card 3: Active Products */}
         <div
           onClick={() => onNavigateTab('products')}
-          className="bg-white rounded-3xl p-6 shadow-[0_4px_25px_rgba(0,0,0,0.03)] border border-stone-100 flex items-start gap-4 sm:gap-5 hover:border-stone-200 transition-all cursor-pointer"
+          className="bg-white rounded-3xl p-4 sm:p-5 lg:p-6 shadow-[0_4px_25px_rgba(0,0,0,0.03)] border border-stone-100 flex items-start gap-3.5 sm:gap-5 hover:border-stone-200 transition-all cursor-pointer"
         >
-          <div className="w-14 h-14 rounded-2xl bg-[#FAF7F2] border border-stone-200/60 flex items-center justify-center shrink-0 text-2xl select-none shadow-2xs">
+          <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-[#FAF7F2] border border-stone-200/60 flex items-center justify-center shrink-0 text-xl sm:text-2xl select-none shadow-2xs">
             <span role="img" aria-label="Products">🥜</span>
           </div>
           <div className="min-w-0 flex-1">
@@ -157,8 +157,8 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
         </div>
 
         {/* Card 4: Inquiries & Messages */}
-        <div className="bg-white rounded-3xl p-6 shadow-[0_4px_25px_rgba(0,0,0,0.03)] border border-stone-100 flex items-start gap-4 sm:gap-5">
-          <div className="w-14 h-14 rounded-2xl bg-[#FAF7F2] border border-stone-200/60 flex items-center justify-center shrink-0 text-stone-800 shadow-2xs">
+        <div className="bg-white rounded-3xl p-4 sm:p-5 lg:p-6 shadow-[0_4px_25px_rgba(0,0,0,0.03)] border border-stone-100 flex items-start gap-3.5 sm:gap-5">
+          <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-[#FAF7F2] border border-stone-200/60 flex items-center justify-center shrink-0 text-stone-800 shadow-2xs">
             <Mail className="w-6 h-6 stroke-[1.75]" />
           </div>
           <div className="min-w-0 flex-1">
@@ -275,7 +275,7 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
             <h3 className="font-serif font-bold text-lg text-[#1B4332]">Recent Orders</h3>
             <p className="text-xs text-stone-500">Live order fulfillment stream across Sri Lanka</p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={onOpenAddProduct}
               className="h-9 px-4 rounded-xl bg-[#1E4E35] hover:bg-[#163D28] text-white text-xs font-semibold flex items-center gap-1.5 shadow-2xs transition-all cursor-pointer"

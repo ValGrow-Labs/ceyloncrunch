@@ -406,7 +406,7 @@ export const OrdersTab: React.FC<OrdersTabProps> = ({
         {/* Order Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h1 className="font-serif text-3xl font-bold text-stone-900 tracking-tight">
+            <h1 className="font-serif text-2xl sm:text-3xl font-bold text-stone-900 tracking-tight">
               Order {orderIdDisplay}
             </h1>
             <p className="text-xs sm:text-sm text-stone-400 mt-1 font-normal">
@@ -421,7 +421,7 @@ export const OrdersTab: React.FC<OrdersTabProps> = ({
           {/* Left Column (Order Items + Customer Details) */}
           <div className="lg:col-span-2 space-y-6">
             {/* 1. Order Items Card */}
-            <div className="bg-white rounded-3xl p-6 sm:p-7 shadow-[0_4px_25px_rgba(0,0,0,0.03)] border border-stone-100">
+            <div className="bg-white rounded-3xl p-4 sm:p-6 lg:p-7 shadow-[0_4px_25px_rgba(0,0,0,0.03)] border border-stone-100">
               <h2 className="font-bold text-stone-900 text-base mb-5">Order Items</h2>
               <div className="divide-y divide-stone-100">
                 {selectedOrder.items.map((item, idx) => (
@@ -484,7 +484,7 @@ export const OrdersTab: React.FC<OrdersTabProps> = ({
             </div>
 
             {/* 2. Customer Details Card */}
-            <div className="bg-white rounded-3xl p-6 sm:p-7 shadow-[0_4px_25px_rgba(0,0,0,0.03)] border border-stone-100">
+            <div className="bg-white rounded-3xl p-4 sm:p-6 lg:p-7 shadow-[0_4px_25px_rgba(0,0,0,0.03)] border border-stone-100">
               <h2 className="font-bold text-stone-900 text-base mb-5">Customer Details</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-5 gap-x-8 text-xs">
                 <div>
@@ -557,7 +557,7 @@ export const OrdersTab: React.FC<OrdersTabProps> = ({
           {/* Right Column (Update Status + Order Timeline) */}
           <div className="space-y-6">
             {/* 1. Update Status Card */}
-            <div className="bg-white rounded-3xl p-6 sm:p-7 shadow-[0_4px_25px_rgba(0,0,0,0.03)] border border-stone-100">
+            <div className="bg-white rounded-3xl p-4 sm:p-6 lg:p-7 shadow-[0_4px_25px_rgba(0,0,0,0.03)] border border-stone-100">
               <h2 className="font-bold text-stone-900 text-base mb-4">Update Status</h2>
 
               {/* Status Radio Buttons */}
@@ -620,7 +620,7 @@ export const OrdersTab: React.FC<OrdersTabProps> = ({
             </div>
 
             {/* 2. Order Timeline Card */}
-            <div className="bg-white rounded-3xl p-6 sm:p-7 shadow-[0_4px_25px_rgba(0,0,0,0.03)] border border-stone-100">
+            <div className="bg-white rounded-3xl p-4 sm:p-6 lg:p-7 shadow-[0_4px_25px_rgba(0,0,0,0.03)] border border-stone-100">
               <h2 className="font-bold text-stone-900 text-base mb-5">Order Timeline</h2>
               <div className="relative pl-7 space-y-6">
                 {timelineSteps.map((step, idx) => {
@@ -683,7 +683,7 @@ export const OrdersTab: React.FC<OrdersTabProps> = ({
     <div className="space-y-6">
       {/* Page Title */}
       <div>
-        <h1 className="font-serif text-3xl font-bold text-stone-900 tracking-tight">
+        <h1 className="font-serif text-2xl sm:text-3xl font-bold text-stone-900 tracking-tight">
           Orders
         </h1>
         <p className="text-sm text-stone-400 mt-1 font-normal">
@@ -692,18 +692,18 @@ export const OrdersTab: React.FC<OrdersTabProps> = ({
       </div>
 
       {/* Main Elevated Card */}
-      <div className="bg-white rounded-3xl p-6 sm:p-7 shadow-[0_4px_25px_rgba(0,0,0,0.03)] border border-stone-100 space-y-6">
+      <div className="bg-white rounded-3xl p-4 sm:p-6 lg:p-7 shadow-[0_4px_25px_rgba(0,0,0,0.03)] border border-stone-100 space-y-6">
         {/* Filter Pills & Search Bar */}
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           {/* Status Filter Pills */}
-          <div className="flex items-center gap-1.5 flex-wrap">
+          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1 sm:pb-0 -mx-1 px-1 sm:mx-0 sm:px-0 sm:flex-wrap">
             {['all', 'pending', 'paid', 'shipped', 'delivered', 'cancelled'].map((tab) => {
               const isActive = activeTab === tab;
               return (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`px-4 py-1.5 rounded-full text-xs font-semibold capitalize transition-all cursor-pointer ${
+                  className={`px-3.5 sm:px-4 py-1.5 rounded-full text-xs font-semibold capitalize transition-all cursor-pointer shrink-0 ${
                     isActive
                       ? 'bg-[#1E4E35] text-white shadow-xs'
                       : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
@@ -716,7 +716,7 @@ export const OrdersTab: React.FC<OrdersTabProps> = ({
           </div>
 
           {/* Search Input & Orders Count */}
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full lg:w-auto">
             <div className="relative flex-1 sm:w-80">
               <input
                 type="text"
@@ -732,7 +732,7 @@ export const OrdersTab: React.FC<OrdersTabProps> = ({
           </div>
         </div>
 
-        {/* Table View */}
+        {/* Orders List View: Mobile Cards & Desktop Table */}
         {filteredOrders.length === 0 ? (
           <div className="py-16 text-center text-stone-400 space-y-1">
             <p className="text-sm font-semibold text-stone-700">No matching orders found</p>
@@ -741,68 +741,124 @@ export const OrdersTab: React.FC<OrdersTabProps> = ({
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead className="border-b border-stone-100 text-[11px] font-bold uppercase tracking-wider text-stone-400">
-                <tr>
-                  <th className="py-3.5 px-4 font-bold">ORDER</th>
-                  <th className="py-3.5 px-4 font-bold">CUSTOMER</th>
-                  <th className="py-3.5 px-4 font-bold">TOTAL</th>
-                  <th className="py-3.5 px-4 font-bold">PAYMENT</th>
-                  <th className="py-3.5 px-4 font-bold">STATUS</th>
-                  <th className="py-3.5 px-4 font-bold">DATE</th>
-                  <th className="py-3.5 px-4 font-bold text-center">ACTION</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-stone-100 text-xs">
-                {filteredOrders.map((order) => {
-                  const status = getUnifiedStatus(order);
-                  const orderIdDisplay = order.id.startsWith('#')
-                    ? order.id
-                    : `#${order.id}`;
+          <>
+            {/* Mobile Cards (Visible only on screens < md) */}
+            <div className="divide-y divide-stone-100 md:hidden">
+              {filteredOrders.map((order) => {
+                const status = getUnifiedStatus(order);
+                const orderIdDisplay = order.id.startsWith('#')
+                  ? order.id
+                  : `#${order.id}`;
 
-                  return (
-                    <tr
-                      key={order.id}
-                      className="hover:bg-stone-50/60 transition-colors group"
-                    >
-                      <td className="py-4 px-4 font-mono font-bold text-stone-800 whitespace-nowrap">
+                return (
+                  <div
+                    key={order.id}
+                    className="py-4 first:pt-0 last:pb-0 space-y-3"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-mono font-bold text-stone-900 text-sm">
                         {orderIdDisplay}
-                      </td>
-                      <td className="py-4 px-4">
-                        <div className="font-semibold text-stone-900 text-sm">
+                      </span>
+                      {renderStatusBadge(status)}
+                    </div>
+
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <div className="font-semibold text-stone-900 text-sm truncate">
                           {order.customer.name}
                         </div>
-                        <div className="text-[11px] text-stone-400 mt-0.5">
+                        <div className="text-[11px] text-stone-400 mt-0.5 truncate">
                           {order.customer.email || order.customer.phone}
                         </div>
-                      </td>
-                      <td className="py-4 px-4 font-bold text-stone-900 text-sm whitespace-nowrap">
-                        LKR {order.total.toLocaleString()}
-                      </td>
-                      <td className="py-4 px-4 text-stone-600 capitalize whitespace-nowrap">
-                        {formatPaymentMethod(order.paymentMethod)}
-                      </td>
-                      <td className="py-4 px-4 whitespace-nowrap">
-                        {renderStatusBadge(status)}
-                      </td>
-                      <td className="py-4 px-4 text-stone-500 whitespace-nowrap">
-                        {formatOrderDate(order.createdAt)}
-                      </td>
-                      <td className="py-4 px-4 text-center whitespace-nowrap">
+                        <div className="text-[11px] text-stone-500 mt-1">
+                          {formatOrderDate(order.createdAt)} ·{' '}
+                          <span className="capitalize text-stone-600">
+                            {formatPaymentMethod(order.paymentMethod)}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="text-right shrink-0">
+                        <div className="font-bold text-stone-900 text-sm">
+                          LKR {order.total.toLocaleString()}
+                        </div>
                         <button
                           onClick={() => setSelectedOrder(order)}
-                          className="h-8 px-4 rounded-xl bg-stone-100 hover:bg-[#1E4E35] hover:text-white text-stone-700 text-xs font-semibold transition-colors cursor-pointer"
+                          className="mt-2 h-7.5 px-3.5 rounded-xl bg-stone-100 hover:bg-[#1E4E35] hover:text-white text-stone-800 text-xs font-semibold transition-colors cursor-pointer"
                         >
                           View
                         </button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Desktop Table View (Hidden on screens < md) */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-left">
+                <thead className="border-b border-stone-100 text-[11px] font-bold uppercase tracking-wider text-stone-400">
+                  <tr>
+                    <th className="py-3.5 px-4 font-bold">ORDER</th>
+                    <th className="py-3.5 px-4 font-bold">CUSTOMER</th>
+                    <th className="py-3.5 px-4 font-bold">TOTAL</th>
+                    <th className="py-3.5 px-4 font-bold">PAYMENT</th>
+                    <th className="py-3.5 px-4 font-bold">STATUS</th>
+                    <th className="py-3.5 px-4 font-bold">DATE</th>
+                    <th className="py-3.5 px-4 font-bold text-center">ACTION</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-stone-100 text-xs">
+                  {filteredOrders.map((order) => {
+                    const status = getUnifiedStatus(order);
+                    const orderIdDisplay = order.id.startsWith('#')
+                      ? order.id
+                      : `#${order.id}`;
+
+                    return (
+                      <tr
+                        key={order.id}
+                        className="hover:bg-stone-50/60 transition-colors group"
+                      >
+                        <td className="py-4 px-4 font-mono font-bold text-stone-800 whitespace-nowrap">
+                          {orderIdDisplay}
+                        </td>
+                        <td className="py-4 px-4">
+                          <div className="font-semibold text-stone-900 text-sm">
+                            {order.customer.name}
+                          </div>
+                          <div className="text-[11px] text-stone-400 mt-0.5">
+                            {order.customer.email || order.customer.phone}
+                          </div>
+                        </td>
+                        <td className="py-4 px-4 font-bold text-stone-900 text-sm whitespace-nowrap">
+                          LKR {order.total.toLocaleString()}
+                        </td>
+                        <td className="py-4 px-4 text-stone-600 capitalize whitespace-nowrap">
+                          {formatPaymentMethod(order.paymentMethod)}
+                        </td>
+                        <td className="py-4 px-4 whitespace-nowrap">
+                          {renderStatusBadge(status)}
+                        </td>
+                        <td className="py-4 px-4 text-stone-500 whitespace-nowrap">
+                          {formatOrderDate(order.createdAt)}
+                        </td>
+                        <td className="py-4 px-4 text-center whitespace-nowrap">
+                          <button
+                            onClick={() => setSelectedOrder(order)}
+                            className="h-8 px-4 rounded-xl bg-stone-100 hover:bg-[#1E4E35] hover:text-white text-stone-700 text-xs font-semibold transition-colors cursor-pointer"
+                          >
+                            View
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </div>
     </div>

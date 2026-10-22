@@ -428,7 +428,7 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
 
         {/* Page Title & Slug */}
         <div>
-          <h1 className="font-serif text-3xl font-bold text-stone-900 tracking-tight">
+          <h1 className="font-serif text-2xl sm:text-3xl font-bold text-stone-900 tracking-tight">
             {editingProduct ? `Edit: ${name}` : 'Add New Product'}
           </h1>
           <p className="text-xs sm:text-sm text-stone-400 mt-1 font-normal">
@@ -438,7 +438,7 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* CARD 1: Basic Info */}
-          <div className="bg-white rounded-3xl p-6 sm:p-7 shadow-[0_4px_25px_rgba(0,0,0,0.03)] border border-stone-100 space-y-5">
+          <div className="bg-white rounded-3xl p-4 sm:p-6 lg:p-7 shadow-[0_4px_25px_rgba(0,0,0,0.03)] border border-stone-100 space-y-5">
             <h2 className="font-bold text-stone-900 text-base pb-3 border-b border-stone-100">
               Basic Info
             </h2>
@@ -529,7 +529,7 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
           </div>
 
           {/* CARD 2: Product Image */}
-          <div className="bg-white rounded-3xl p-6 sm:p-7 shadow-[0_4px_25px_rgba(0,0,0,0.03)] border border-stone-100 space-y-5">
+          <div className="bg-white rounded-3xl p-4 sm:p-6 lg:p-7 shadow-[0_4px_25px_rgba(0,0,0,0.03)] border border-stone-100 space-y-5">
             <h2 className="font-bold text-stone-900 text-base pb-3 border-b border-stone-100">
               Product Image
             </h2>
@@ -602,7 +602,7 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
           </div>
 
           {/* CARD 3: Variants (Weight + Price) */}
-          <div className="bg-white rounded-3xl p-6 sm:p-7 shadow-[0_4px_25px_rgba(0,0,0,0.03)] border border-stone-100 space-y-5">
+          <div className="bg-white rounded-3xl p-4 sm:p-6 lg:p-7 shadow-[0_4px_25px_rgba(0,0,0,0.03)] border border-stone-100 space-y-5">
             <div>
               <h2 className="font-bold text-stone-900 text-base">
                 Variants (Weight + Price)
@@ -614,43 +614,56 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
 
             <div className="space-y-3">
               {variants.map((v, idx) => (
-                <div key={idx} className="flex items-center gap-3">
-                  {/* Weight */}
-                  <div className="w-1/2 sm:w-64">
-                    <input
-                      type="text"
-                      value={v.weight}
-                      onChange={(e) => handleVariantChange(idx, 'weight', e.target.value)}
-                      placeholder="e.g. 250g"
-                      className="w-full h-11 px-4 bg-white rounded-xl border border-stone-200 text-stone-800 text-xs sm:text-sm focus:outline-none focus:border-[#1E4E35] transition-all"
-                    />
-                  </div>
+                <div
+                  key={idx}
+                  className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 p-3 sm:p-0 rounded-2xl sm:rounded-none bg-stone-50/70 sm:bg-transparent border border-stone-200/60 sm:border-0"
+                >
+                  <div className="grid grid-cols-2 sm:flex sm:items-center gap-2.5 sm:gap-3 flex-1">
+                    {/* Weight */}
+                    <div className="w-full sm:w-64">
+                      <label className="block sm:hidden text-[11px] font-semibold text-stone-500 mb-1">
+                        Weight
+                      </label>
+                      <input
+                        type="text"
+                        value={v.weight}
+                        onChange={(e) => handleVariantChange(idx, 'weight', e.target.value)}
+                        placeholder="e.g. 250g"
+                        className="w-full h-10 sm:h-11 px-3.5 sm:px-4 bg-white rounded-xl border border-stone-200 text-stone-800 text-xs sm:text-sm focus:outline-none focus:border-[#1E4E35] transition-all"
+                      />
+                    </div>
 
-                  {/* Price */}
-                  <div className="w-1/2 sm:w-64">
-                    <input
-                      type="number"
-                      value={v.price}
-                      onChange={(e) => handleVariantChange(idx, 'price', e.target.value)}
-                      placeholder="Price (LKR)"
-                      className="w-full h-11 px-4 bg-white rounded-xl border border-stone-200 text-stone-800 text-xs sm:text-sm placeholder:text-stone-400 focus:outline-none focus:border-[#1E4E35] transition-all"
-                    />
+                    {/* Price */}
+                    <div className="w-full sm:w-64">
+                      <label className="block sm:hidden text-[11px] font-semibold text-stone-500 mb-1">
+                        Price (LKR)
+                      </label>
+                      <input
+                        type="number"
+                        value={v.price}
+                        onChange={(e) => handleVariantChange(idx, 'price', e.target.value)}
+                        placeholder="Price (LKR)"
+                        className="w-full h-10 sm:h-11 px-3.5 sm:px-4 bg-white rounded-xl border border-stone-200 text-stone-800 text-xs sm:text-sm placeholder:text-stone-400 focus:outline-none focus:border-[#1E4E35] transition-all"
+                      />
+                    </div>
                   </div>
 
                   {/* Remove Button */}
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveVariant(idx)}
-                    className="px-4 py-2 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 font-semibold text-xs transition-colors cursor-pointer shrink-0"
-                  >
-                    Remove
-                  </button>
+                  <div className="flex justify-end pt-1 sm:pt-0">
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveVariant(idx)}
+                      className="w-full sm:w-auto h-9 sm:h-auto px-4 py-2 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 font-semibold text-xs transition-colors cursor-pointer shrink-0 text-center"
+                    >
+                      Remove
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
 
             {/* Variant Buttons */}
-            <div className="flex items-center gap-2.5 pt-2">
+            <div className="flex flex-wrap items-center gap-2.5 pt-2">
               <button
                 type="button"
                 onClick={handleAddVariant}
@@ -669,7 +682,7 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
           </div>
 
           {/* CARD 4: Badge & Visibility */}
-          <div className="bg-white rounded-3xl p-6 sm:p-7 shadow-[0_4px_25px_rgba(0,0,0,0.03)] border border-stone-100 space-y-5">
+          <div className="bg-white rounded-3xl p-4 sm:p-6 lg:p-7 shadow-[0_4px_25px_rgba(0,0,0,0.03)] border border-stone-100 space-y-5">
             <h2 className="font-bold text-stone-900 text-base pb-3 border-b border-stone-100">
               Badge & Visibility
             </h2>
@@ -753,12 +766,12 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
           </div>
 
           {/* CARD 5: Nutrition Info (per serving) */}
-          <div className="bg-white rounded-3xl p-6 sm:p-7 shadow-[0_4px_25px_rgba(0,0,0,0.03)] border border-stone-100 space-y-5">
+          <div className="bg-white rounded-3xl p-4 sm:p-6 lg:p-7 shadow-[0_4px_25px_rgba(0,0,0,0.03)] border border-stone-100 space-y-5">
             <h2 className="font-bold text-stone-900 text-base pb-3 border-b border-stone-100">
               Nutrition Info (per serving)
             </h2>
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
               <div>
                 <label className="block text-xs font-semibold text-stone-700 mb-1.5">
                   Serving Size
@@ -853,11 +866,11 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
           </div>
 
           {/* BOTTOM ACTIONS */}
-          <div className="flex items-center gap-3 pt-2">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-6 py-2.5 rounded-xl bg-[#1E4E35] hover:bg-[#163D28] text-white font-semibold text-sm transition-all shadow-xs cursor-pointer disabled:opacity-60"
+              className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-[#1E4E35] hover:bg-[#163D28] text-white font-semibold text-sm transition-all shadow-xs cursor-pointer disabled:opacity-60 text-center"
             >
               {isSubmitting ? 'Saving Changes...' : 'Save Changes'}
             </button>
@@ -867,7 +880,7 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
                 setIsFormOpen(false);
                 if (onCloseAddModal) onCloseAddModal();
               }}
-              className="px-6 py-2.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold text-sm transition-colors cursor-pointer"
+              className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold text-sm transition-colors cursor-pointer text-center"
             >
               Cancel
             </button>
@@ -997,13 +1010,13 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between pt-1 border-t border-stone-100 text-xs">
+                    <div className="flex items-center justify-between gap-2 pt-1 border-t border-stone-100 text-xs">
                       <div>
                         <span className="text-stone-400 text-[10px] block">Price from</span>
                         <span className="font-bold text-stone-900">{formatRs(lowestPrice)}</span>
                       </div>
 
-                      <div className="flex items-center gap-2">
+                      <div className="flex flex-wrap items-center justify-end gap-1.5 sm:gap-2">
                         <button
                           type="button"
                           onClick={() => handleOpenEdit(prod)}

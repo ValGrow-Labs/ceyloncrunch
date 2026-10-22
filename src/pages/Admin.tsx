@@ -209,7 +209,7 @@ export const Admin: React.FC = () => {
 
       {/* Main Content Area */}
       <div
-        className={`flex-1 flex flex-col min-h-screen transition-all duration-300 ease-in-out ${
+        className={`flex-1 flex flex-col min-h-screen min-w-0 w-full overflow-x-hidden transition-all duration-300 ease-in-out ${
           isSidebarCollapsed ? 'lg:pl-20' : 'lg:pl-64'
         }`}
       >
@@ -223,7 +223,7 @@ export const Admin: React.FC = () => {
         />
 
         {/* Tab View Canvas */}
-        <main className="flex-1 p-3.5 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto pb-24 lg:pb-8">
+        <main className="flex-1 p-3 sm:p-5 lg:p-8 max-w-7xl w-full min-w-0 mx-auto pb-24 lg:pb-8">
           {activeTab === 'dashboard' && (
             <DashboardTab
               orders={orders}
