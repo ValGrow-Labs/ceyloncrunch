@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Instagram, Facebook, Phone, Mail, MapPin, Globe } from 'lucide-react';
+import { Instagram, Facebook, Phone, Mail, MapPin } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   return (
@@ -165,25 +165,16 @@ export const Footer: React.FC = () => {
                 </div>
               </div>
 
-              {/* Location & Website */}
+              {/* Location */}
               <div className="flex items-center gap-3 p-3.5 rounded-xl bg-[#222222] border border-[#333333] hover:border-[#C9A84C]/50 transition-colors">
                 <div className="w-10 h-10 rounded-full bg-[#111111] border border-[#3A3A3A] flex items-center justify-center text-[#C9A84C] shrink-0">
                   <MapPin className="w-4 h-4" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <span className="text-[10px] uppercase font-bold tracking-wider text-[#8A8A8A] block">Location &amp; Web</span>
-                  <div className="flex items-center justify-between gap-2 flex-wrap">
-                    <span className="text-sm font-medium text-[#F5F2EB] break-words">
-                      Colombo, Sri Lanka
-                    </span>
-                    <a
-                      href="/"
-                      className="inline-flex items-center gap-1 text-xs text-[#C9A84C] hover:underline"
-                    >
-                      <Globe className="w-3 h-3" />
-                      <span>ceyloncrunch.com</span>
-                    </a>
-                  </div>
+                  <span className="text-[10px] uppercase font-bold tracking-wider text-[#8A8A8A] block">Location</span>
+                  <span className="text-sm font-medium text-[#F5F2EB] block leading-tight">
+                    Colombo, Sri Lanka
+                  </span>
                 </div>
               </div>
             </div>
