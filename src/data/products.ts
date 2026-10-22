@@ -466,8 +466,8 @@ export const INITIAL_PRODUCTS: Product[] = [
   {
     id: 'prod-dried-mango',
     slug: 'dried-mango',
-    name: 'Dried Tropical Mango Strips',
-    subtitle: 'Chewy Sun-Ripened Sweet Alphonso & Willard Strips',
+    name: 'Dried Mango',
+    subtitle: 'Sun-Ripened Golden Sweet Dried Mango Spears',
     category: 'dried-fruits',
     badge: '100% Natural',
     origin: 'Ceylon Coastal & Dry Zone Groves',
@@ -882,8 +882,8 @@ export const INITIAL_PRODUCTS: Product[] = [
   {
     id: 'prod-pumpkin-seeds',
     slug: 'pumpkin-seeds',
-    name: 'Raw AAA Pepitas',
-    subtitle: 'Dark Green Jumbo Austrian Style Pepitas',
+    name: 'Pumpkin Seeds',
+    subtitle: 'Raw Organic Whole Green Pumpkin Seeds (Pepitas)',
     category: 'seeds',
     badge: 'Zinc & Magnesium',
     origin: 'Certified Organic Plantations',
