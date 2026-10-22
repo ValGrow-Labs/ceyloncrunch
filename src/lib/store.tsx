@@ -648,37 +648,100 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     try {
       const dbProducts = await getProductsFromSupabase();
       if (dbProducts && dbProducts.length > 0) {
-        const mappedProducts: Product[] = dbProducts.map((p) => ({
-          id: p.id,
-          slug: p.slug,
-          name: p.name,
-          subtitle: p.subtitle || '',
-          category: p.category as any,
-          badge: p.badge || undefined,
-          origin: p.origin,
-          roastStyle: p.roast_style || undefined,
-          rating: Number(p.rating),
-          reviewCount: p.review_count,
-          images: p.images || [],
-          description: p.description,
-          extendedAbout: p.extended_about || [],
-          ingredients: p.ingredients,
-          storage: p.storage,
-          shelfLife: p.shelf_life,
-          allergenNotice: p.allergen_notice || '',
-          variants: (p.variants || []).map((v) => ({
-            id: v.id,
-            weight: v.weight,
-            price: Number(v.price),
-            originalPrice: v.original_price ? Number(v.original_price) : undefined,
-            stock: v.stock,
-          })),
-          pairsWithIds: [],
-          isFeatured: p.is_featured,
-        }));
+        const mappedProducts: Product[] = dbProducts.map((p) => {
+          const matchingInitial = INITIAL_PRODUCTS.find(
+            (init) => init.slug === p.slug || init.id === p.id
+          );
+
+          // Normalize variants from any database format (JSON objects or strings)
+          const rawVariants = Array.isArray(p.variants) ? p.variants : [];
+          let normalizedVariants: ProductVariant[] = rawVariants.map((v: any, idx: number) => {
+            if (typeof v === 'string') {
+              const weight = v.trim();
+              const vId = `${p.slug || p.id}-${weight.toLowerCase().replace(/\s+/g, '')}`;
+              return {
+                id: vId,
+                weight,
+                price: Number(p.price) || 0,
+                originalPrice: Math.round((Number(p.price) || 0) * 1.15),
+                stock: 25,
+              };
+            }
+            const weight = v.weight || v.size || `Pack ${idx + 1}`;
+            const vId = v.id || `${p.slug || p.id}-${String(weight).toLowerCase().replace(/\s+/g, '')}`;
+            return {
+              id: vId,
+              weight,
+              price: Number(v.price) || Number(p.price) || 0,
+              originalPrice: v.original_price
+                ? Number(v.original_price)
+                : v.originalPrice
+                ? Number(v.originalPrice)
+                : undefined,
+              stock: typeof v.stock === 'number' ? v.stock : (Number(v.stock) || 25),
+            };
+          });
+
+          // If product has empty variants in database, fall back to INITIAL_PRODUCTS
+          if (normalizedVariants.length === 0) {
+            if (matchingInitial && matchingInitial.variants.length > 0) {
+              normalizedVariants = matchingInitial.variants;
+            } else {
+              normalizedVariants = [
+                {
+                  id: `${p.slug || p.id}-250g`,
+                  weight: '250g',
+                  price: Number(p.price) || 1200,
+                  originalPrice: Math.round((Number(p.price) || 1200) * 1.15),
+                  stock: 25,
+                },
+              ];
+            }
+          }
+
+          // Normalize images from image_url or INITIAL_PRODUCTS
+          let images: string[] = [];
+          if (Array.isArray(p.images) && p.images.length > 0) {
+            images = p.images;
+          } else if (p.image_url) {
+            images = [p.image_url];
+          } else if (matchingInitial && matchingInitial.images?.length > 0) {
+            images = matchingInitial.images;
+          } else {
+            images = ['/img/product-1.jpg'];
+          }
+
+          return {
+            id: p.id,
+            slug: p.slug,
+            name: p.name,
+            subtitle: p.subtitle || matchingInitial?.subtitle || '',
+            category: (p.category || matchingInitial?.category || 'nuts') as any,
+            badge: p.badge || matchingInitial?.badge || undefined,
+            origin: p.origin || matchingInitial?.origin || 'Ceylon, Sri Lanka',
+            roastStyle: p.roast_style || matchingInitial?.roastStyle || undefined,
+            rating: Number(p.rating) || matchingInitial?.rating || 4.9,
+            reviewCount: p.review_count || matchingInitial?.reviewCount || 24,
+            images,
+            description: p.description || matchingInitial?.description || '',
+            extendedAbout: p.extended_about || matchingInitial?.extendedAbout || [],
+            ingredients: p.ingredients || matchingInitial?.ingredients || '100% pure artisan provisions',
+            storage: p.storage || matchingInitial?.storage || 'Store in a cool, dry place.',
+            shelfLife: p.shelf_life || matchingInitial?.shelfLife || '6 Months',
+            allergenNotice: p.allergen_notice || matchingInitial?.allergenNotice || '',
+            variants: normalizedVariants,
+            pairsWithIds: matchingInitial?.pairsWithIds || [],
+            isFeatured: Boolean(p.is_featured || matchingInitial?.isFeatured),
+          };
+        });
+
         const dbSlugs = new Set(mappedProducts.map((p) => p.slug));
         const extraInitial = INITIAL_PRODUCTS.filter((p) => !dbSlugs.has(p.slug));
-        setProducts([...extraInitial, ...mappedProducts]);
+        const combined = [...extraInitial, ...mappedProducts];
+        setProducts(combined);
+        try {
+          localStorage.setItem('ceylon_crunch_products_v5', JSON.stringify(combined));
+        } catch {}
       }
     } catch (err) {
       console.warn('Error fetching products from Supabase:', err);
@@ -808,13 +871,6 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     const channel = supabase
       .channel('storefront-realtime-sync')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'product_variants' },
-        () => {
-          refreshProducts();
-        }
-      )
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'products' },
@@ -982,8 +1038,12 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     });
 
     if (isSupabaseConfigured) {
-      await adminUpdateVariantStock(variantId, safeStock);
-      showToast('Stock count saved');
+      const res = await adminUpdateVariantStock(productId, variantId, safeStock);
+      if (!res.success) {
+        showToast(res.error || 'Failed to update stock in database.');
+      } else {
+        showToast('Stock count saved');
+      }
     }
   };
 
@@ -1106,11 +1166,15 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     if (isSupabaseConfigured) {
       try {
         const promises = variantUpdates.map((v) =>
-          adminUpdateVariant(v.id, {
-            price: v.price,
-            original_price: v.originalPrice ?? null,
-            stock: v.stock,
-          })
+          adminUpdateVariant(
+            v.id,
+            {
+              price: v.price,
+              original_price: v.originalPrice ?? null,
+              stock: v.stock,
+            },
+            productId
+          )
         );
         const results = await Promise.all(promises);
         const failed = results.find((r) => !r.success);

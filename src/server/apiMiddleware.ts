@@ -91,14 +91,19 @@ export function createApiMiddleware(supabaseUrl?: string, serviceRoleKey?: strin
             .filter(Boolean)
             .join(' | ') || null;
 
+          // Database table 'orders' has NOT NULL constraint on customer_email
+          const cleanEmail =
+            (payload.customer_email && String(payload.customer_email).trim()) ||
+            `customer-${String(payload.customer_phone || '').replace(/\D/g, '') || Date.now()}@ceyloncrunch.lk`;
+
           const { data, error } = await adminClient
             .from('orders')
             .insert({
-              customer_name: payload.customer_name,
-              customer_email: payload.customer_email || null,
-              customer_phone: payload.customer_phone,
-              shipping_address: formattedAddress,
-              city: formattedCity,
+              customer_name: payload.customer_name || 'Customer',
+              customer_email: cleanEmail,
+              customer_phone: payload.customer_phone || '+94 77 000 0000',
+              shipping_address: formattedAddress || 'Colombo, Sri Lanka',
+              city: formattedCity || 'Colombo',
               items: orderItems,
               subtotal: calculatedSubtotal,
               delivery: calculatedDelivery,
@@ -118,6 +123,55 @@ export function createApiMiddleware(supabaseUrl?: string, serviceRoleKey?: strin
             return;
           }
 
+          // Automatically deduct stock for ordered items
+          try {
+            const { data: allProds } = await adminClient.from('products').select('*');
+            if (allProds && Array.isArray(allProds)) {
+              for (const item of orderItems) {
+                const qty = Number(item.quantity || 1);
+                if (qty <= 0) continue;
+                const itemId = String(item.id || '');
+                const itemVar = String(item.variant || '');
+
+                const targetProd = allProds.find((p: any) =>
+                  p.id === itemId ||
+                  p.slug === itemId ||
+                  (Array.isArray(p.variants) && p.variants.some((v: any) => {
+                    const size = typeof v === 'string' ? v : v.size || v.weight || '';
+                    return v.id === itemId || size === itemVar || (itemVar && size.toLowerCase().includes(itemVar.toLowerCase()));
+                  }))
+                );
+
+                if (targetProd && Array.isArray(targetProd.variants)) {
+                  let changed = false;
+                  const newVariants = targetProd.variants.map((v: any) => {
+                    const size = typeof v === 'string' ? v : v.size || v.weight || '';
+                    const match = (typeof v === 'object' && (v.id === itemId || v.size === itemVar || v.weight === itemVar)) ||
+                                  (size && itemVar && (size.toLowerCase() === itemVar.toLowerCase() || itemId.includes(size.toLowerCase())));
+                    if (match) {
+                      changed = true;
+                      const cur = typeof v === 'object' && typeof v.stock === 'number' ? v.stock : 25;
+                      const nextStock = Math.max(0, cur - qty);
+                      return typeof v === 'string'
+                        ? { size: v, price: targetProd.price || 0, stock: nextStock }
+                        : { ...v, stock: nextStock };
+                    }
+                    return v;
+                  });
+
+                  if (changed) {
+                    await adminClient
+                      .from('products')
+                      .update({ variants: newVariants, updated_at: new Date().toISOString() })
+                      .eq('id', targetProd.id);
+                  }
+                }
+              }
+            }
+          } catch (deductErr) {
+            console.warn('[API /api/place-order] Stock deduction notice:', deductErr);
+          }
+
           const waybill = `CLN-${Math.floor(10000000 + Math.random() * 90000000)}-LK`;
           res.statusCode = 200;
           res.end(
@@ -134,7 +188,94 @@ export function createApiMiddleware(supabaseUrl?: string, serviceRoleKey?: strin
           return;
         }
 
-        // 2. UPDATE VARIANT PRICE
+        // 2. UPDATE VARIANT STOCK (Used by Admin Inventory Tab)
+        if (url === '/api/update-variant-stock') {
+          const { productId, variantId, newStock } = body;
+          if (newStock === undefined || isNaN(Number(newStock))) {
+            res.statusCode = 400;
+            res.end(JSON.stringify({ success: false, error: 'Missing or invalid newStock' }));
+            return;
+          }
+
+          const safeStock = Math.max(0, Math.round(Number(newStock)));
+
+          let prodData: any = null;
+          if (productId) {
+            const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(productId);
+            const query = isUuid
+              ? adminClient.from('products').select('*').eq('id', productId)
+              : adminClient.from('products').select('*').eq('slug', productId);
+            const { data } = await query.maybeSingle();
+            prodData = data;
+          }
+
+          if (!prodData) {
+            const { data: allProds } = await adminClient.from('products').select('*');
+            prodData = allProds?.find((p: any) => {
+              if (productId && (p.id === productId || p.slug === productId)) return true;
+              if (variantId && Array.isArray(p.variants)) {
+                return p.variants.some((v: any) => {
+                  const size = typeof v === 'string' ? v : v.size || v.weight || '';
+                  return v.id === variantId || v.size === variantId || (size && variantId.toLowerCase().includes(size.toLowerCase()));
+                });
+              }
+              return false;
+            }) || null;
+          }
+
+          if (!prodData) {
+            res.statusCode = 404;
+            res.end(JSON.stringify({ success: false, error: 'Product not found' }));
+            return;
+          }
+
+          let updatedVariants = Array.isArray(prodData.variants) ? [...prodData.variants] : [];
+          let matched = false;
+
+          updatedVariants = updatedVariants.map((v: any) => {
+            const size = typeof v === 'string' ? v : v.size || v.weight || '';
+            const isMatch =
+              (typeof v === 'object' && (v.id === variantId || v.size === variantId || v.weight === variantId)) ||
+              Boolean(size && variantId && (variantId.toLowerCase().includes(size.toLowerCase()) || size.toLowerCase().includes(variantId.toLowerCase())));
+
+            if (isMatch) {
+              matched = true;
+              return typeof v === 'string'
+                ? { size, price: prodData.price || 0, stock: safeStock }
+                : { ...v, stock: safeStock };
+            }
+            return v;
+          });
+
+          if (!matched) {
+            const weightName = variantId ? variantId.split('-').pop() || '250g' : '250g';
+            updatedVariants.push({
+              size: weightName,
+              price: prodData.price || 1200,
+              stock: safeStock,
+            });
+          }
+
+          const { error: updateErr } = await adminClient
+            .from('products')
+            .update({
+              variants: updatedVariants,
+              updated_at: new Date().toISOString(),
+            })
+            .eq('id', prodData.id);
+
+          if (updateErr) {
+            res.statusCode = 400;
+            res.end(JSON.stringify({ success: false, error: updateErr.message }));
+            return;
+          }
+
+          res.statusCode = 200;
+          res.end(JSON.stringify({ success: true, stock: safeStock, productId: prodData.id }));
+          return;
+        }
+
+        // 3. UPDATE VARIANT PRICE
         if (url === '/api/update-variant-price') {
           const { productId, variantId, newPrice } = body;
           if (!productId || newPrice === undefined) {
@@ -167,20 +308,30 @@ export function createApiMiddleware(supabaseUrl?: string, serviceRoleKey?: strin
             return;
           }
 
-          let updatedVariants = prodData.variants;
-          if (Array.isArray(updatedVariants)) {
-            updatedVariants = updatedVariants.map((v: any) => {
-              const size = typeof v === 'string' ? v : v.size || v.weight || '';
-              const isMatch =
-                (typeof v === 'object' &&
-                  (v.id === variantId || v.size === variantId || v.weight === variantId)) ||
-                Boolean(size && variantId.toLowerCase().includes(size.toLowerCase()));
-              if (isMatch) {
-                return typeof v === 'string'
-                  ? { size, price: Number(newPrice) }
-                  : { ...v, price: Number(newPrice) };
-              }
-              return v;
+          let updatedVariants = Array.isArray(prodData.variants) ? [...prodData.variants] : [];
+          let matched = false;
+
+          updatedVariants = updatedVariants.map((v: any) => {
+            const size = typeof v === 'string' ? v : v.size || v.weight || '';
+            const isMatch =
+              (typeof v === 'object' &&
+                (v.id === variantId || v.size === variantId || v.weight === variantId)) ||
+              Boolean(size && variantId.toLowerCase().includes(size.toLowerCase()));
+            if (isMatch) {
+              matched = true;
+              return typeof v === 'string'
+                ? { size, price: Number(newPrice) }
+                : { ...v, price: Number(newPrice) };
+            }
+            return v;
+          });
+
+          if (!matched) {
+            const weightName = variantId ? variantId.split('-').pop() || '250g' : '250g';
+            updatedVariants.push({
+              size: weightName,
+              price: Number(newPrice),
+              stock: 20,
             });
           }
 
@@ -198,7 +349,68 @@ export function createApiMiddleware(supabaseUrl?: string, serviceRoleKey?: strin
           return;
         }
 
-        // 3. UPDATE PRODUCT IMAGE
+        // 4. UPDATE PRODUCT DETAILS (Used by ProductsTab edit form)
+        if (url === '/api/update-product-details') {
+          const { productId, updates } = body;
+          if (!productId) {
+            res.statusCode = 400;
+            res.end(JSON.stringify({ success: false, error: 'Missing productId' }));
+            return;
+          }
+
+          const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(productId);
+          const query = isUuid
+            ? adminClient.from('products').select('*').eq('id', productId)
+            : adminClient.from('products').select('*').eq('slug', productId);
+
+          let { data: prod } = await query.maybeSingle();
+          if (!prod) {
+            const { data: allProds } = await adminClient.from('products').select('*');
+            prod = allProds?.find((p: any) => p.id === productId || p.slug === productId) || null;
+          }
+
+          if (!prod) {
+            res.statusCode = 404;
+            res.end(JSON.stringify({ success: false, error: 'Product not found' }));
+            return;
+          }
+
+          const payload: Record<string, any> = {
+            updated_at: new Date().toISOString(),
+          };
+
+          if (updates.name !== undefined) payload.name = String(updates.name).trim();
+          if (updates.subtitle !== undefined) payload.subtitle = updates.subtitle ? String(updates.subtitle).trim() : null;
+          if (updates.category !== undefined) payload.category = String(updates.category).trim();
+          if (updates.badge !== undefined) payload.badge = updates.badge ? String(updates.badge).trim() : null;
+          if (updates.description !== undefined) payload.description = String(updates.description).trim();
+          if (updates.price !== undefined && !isNaN(Number(updates.price))) payload.price = Math.round(Number(updates.price));
+          if (updates.active !== undefined) payload.active = Boolean(updates.active);
+
+          // Correctly map image to image_url (never images array)
+          if (updates.images && Array.isArray(updates.images) && updates.images.length > 0) {
+            payload.image_url = updates.images[0];
+          } else if (updates.image_url) {
+            payload.image_url = String(updates.image_url).trim();
+          }
+
+          const { error: updErr } = await adminClient
+            .from('products')
+            .update(payload)
+            .eq('id', prod.id);
+
+          if (updErr) {
+            res.statusCode = 400;
+            res.end(JSON.stringify({ success: false, error: updErr.message }));
+            return;
+          }
+
+          res.statusCode = 200;
+          res.end(JSON.stringify({ success: true }));
+          return;
+        }
+
+        // 5. UPDATE PRODUCT IMAGE
         if (url === '/api/update-product-image') {
           const { productId, imageUrl } = body;
           if (!productId || !imageUrl) {
@@ -222,10 +434,9 @@ export function createApiMiddleware(supabaseUrl?: string, serviceRoleKey?: strin
 
           res.statusCode = 200;
           res.end(JSON.stringify({ success: true }));
-          return;
         }
 
-        // 4. UPDATE ORDER STATUS
+        // 6. UPDATE ORDER STATUS
         if (url === '/api/update-order-status') {
           const { orderId, status } = body;
           if (!orderId || !status) {
