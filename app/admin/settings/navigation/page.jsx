@@ -1,13 +1,15 @@
-import React from 'react';
+import { getSetting } from '@/lib/settings'
+import NavigationClient from './NavigationClient'
+import PageHeader from '@/components/admin/PageHeader'
 
-/**
- * Ceylon Crunch Module: app/admin/settings/navigation/page.jsx
- * Framework: Next.js 16 & React 19 | Backend: Supabase (PostgreSQL, Auth, Storage) | Gateway: PayHere
- */
-export default function Page(props) {
+export const metadata = { title: 'Navigation — Settings' }
+
+export default async function NavigationPage() {
+  const navLinks = await getSetting('nav_links') || []
   return (
-    <div className="ceylon-crunch-module" data-module="app/admin/settings/navigation/page.jsx">
-      {props?.children || null}
+    <div>
+      <PageHeader title="Navigation" subtitle="Add, remove, and reorder navbar links" />
+      <NavigationClient initial={navLinks} />
     </div>
-  );
+  )
 }

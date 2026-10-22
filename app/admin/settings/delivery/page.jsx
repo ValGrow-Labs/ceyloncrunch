@@ -1,13 +1,15 @@
-import React from 'react';
+import { getSetting } from '@/lib/settings'
+import DeliveryClient from './DeliveryClient'
+import PageHeader from '@/components/admin/PageHeader'
 
-/**
- * Ceylon Crunch Module: app/admin/settings/delivery/page.jsx
- * Framework: Next.js 16 & React 19 | Backend: Supabase (PostgreSQL, Auth, Storage) | Gateway: PayHere
- */
-export default function Page(props) {
+export const metadata = { title: 'Delivery — Settings' }
+
+export default async function DeliveryPage() {
+  const delivery = await getSetting('delivery') || {}
   return (
-    <div className="ceylon-crunch-module" data-module="app/admin/settings/delivery/page.jsx">
-      {props?.children || null}
+    <div>
+      <PageHeader title="Delivery Settings" subtitle="Fees, free delivery threshold, zones and dispatch time" />
+      <DeliveryClient initial={delivery} />
     </div>
-  );
+  )
 }

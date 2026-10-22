@@ -1,13 +1,15 @@
-import React from 'react';
+import { getSetting } from '@/lib/settings'
+import PaymentsClient from './PaymentsClient'
+import PageHeader from '@/components/admin/PageHeader'
 
-/**
- * Ceylon Crunch Module: app/admin/settings/payments/page.jsx
- * Framework: Next.js 16 & React 19 | Backend: Supabase (PostgreSQL, Auth, Storage) | Gateway: PayHere
- */
-export default function Page(props) {
+export const metadata = { title: 'Payments — Settings' }
+
+export default async function PaymentsPage() {
+  const payments = await getSetting('payments') || {}
   return (
-    <div className="ceylon-crunch-module" data-module="app/admin/settings/payments/page.jsx">
-      {props?.children || null}
+    <div>
+      <PageHeader title="Payment Methods" subtitle="Enable or disable payment options and configure credentials" />
+      <PaymentsClient initial={payments} />
     </div>
-  );
+  )
 }

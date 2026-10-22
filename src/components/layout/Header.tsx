@@ -87,7 +87,6 @@ export const Header: React.FC = () => {
             </p>
           </div>
         )}
-
         {/* Main Navigation Bar */}
         <div className="max-w-[1320px] mx-auto h-15 sm:h-16 px-3 sm:px-4 lg:px-8 flex items-center justify-between gap-2 sm:gap-4 relative">
           <div className="flex items-center gap-1 sm:gap-2 shrink-0">

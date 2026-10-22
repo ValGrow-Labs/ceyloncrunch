@@ -1,13 +1,8 @@
-import React from 'react';
-
-/**
- * Ceylon Crunch Module: app/admin/settings/footer/page.jsx
- * Framework: Next.js 16 & React 19 | Backend: Supabase (PostgreSQL, Auth, Storage) | Gateway: PayHere
- */
-export default function Page(props) {
-  return (
-    <div className="ceylon-crunch-module" data-module="app/admin/settings/footer/page.jsx">
-      {props?.children || null}
-    </div>
-  );
+import { getSetting } from '@/lib/settings'
+import FooterClient from './FooterClient'
+import PageHeader from '@/components/admin/PageHeader'
+export const metadata = { title: 'Footer — Settings' }
+export default async function FooterPage() {
+  const footer = await getSetting('footer') || {}
+  return <div><PageHeader title="Footer" subtitle="Contact info, social links, and copyright" /><FooterClient initial={footer} /></div>
 }

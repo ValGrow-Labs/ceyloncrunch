@@ -1,13 +1,8 @@
-import React from 'react';
-
-/**
- * Ceylon Crunch Module: components/admin/AdminDate.jsx
- * Framework: Next.js 16 & React 19 | Backend: Supabase (PostgreSQL, Auth, Storage) | Gateway: PayHere
- */
-export default function Admindate(props) {
+'use client'
+export default function AdminDate() {
   return (
-    <div className="ceylon-crunch-module" data-module="components/admin/AdminDate.jsx">
-      {props?.children || null}
-    </div>
-  );
+    <span style={{ fontSize: 13, color: '#9ca3af' }}>
+      {new Date().toLocaleDateString('en-LK', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}
+    </span>
+  )
 }

@@ -36,20 +36,19 @@ import { NotFound } from './pages/NotFound';
 import { Database, AlertTriangle } from 'lucide-react';
 import { isSupabaseConfigured } from './lib/supabase';
 
-
-function AppContent() {
+function AppShell() {
   const location = useLocation();
-  const isAdminRoute = location.pathname.startsWith('/admin');
+  const isAdminPage = location.pathname === '/admin' || location.pathname.startsWith('/admin/');
 
-  if (isAdminRoute) {
+  if (isAdminPage) {
     return (
-      <>
+      <div className="min-h-screen bg-[#F9FAFB] text-[#111827] antialiased w-full selection:bg-[#EADFD0] selection:text-[#1F3D2B]">
         <Routes>
           <Route path="/admin" element={<Admin />} />
           <Route path="/admin/*" element={<Admin />} />
         </Routes>
         <Toast />
-      </>
+      </div>
     );
   }
 
@@ -144,7 +143,7 @@ export default function App() {
     <StoreProvider>
       <BrowserRouter>
         <ScrollToTop />
-        <AppContent />
+        <AppShell />
       </BrowserRouter>
     </StoreProvider>
   );

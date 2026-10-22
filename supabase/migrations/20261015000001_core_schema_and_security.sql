@@ -190,7 +190,7 @@ on conflict (id) do update set
 -- ------------------------------------------------------------------------------
 create table if not exists public.site_settings (
   id text primary key default 'default',
-  store_name text not null default 'Ceylon Crunch - Artisan Provisions',
+  store_name text not null default 'Ceylon Crunch',
   announcement_banner text default 'Free island-wide delivery on orders over Rs. 5,000 · Small-Batch Freshness Guaranteed',
   free_delivery_threshold integer not null default 5000 check (free_delivery_threshold >= 0),
   standard_delivery_fee integer not null default 450 check (standard_delivery_fee >= 0),

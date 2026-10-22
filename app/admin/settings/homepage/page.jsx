@@ -1,13 +1,16 @@
-import React from 'react';
-
-/**
- * Ceylon Crunch Module: app/admin/settings/homepage/page.jsx
- * Framework: Next.js 16 & React 19 | Backend: Supabase (PostgreSQL, Auth, Storage) | Gateway: PayHere
- */
-export default function Page(props) {
+import { getSetting } from '@/lib/settings'
+import HomepageClient from './HomepageClient'
+import PageHeader from '@/components/admin/PageHeader'
+export const metadata = { title: 'Homepage — Settings' }
+export default async function HomepagePage() {
+  const [features, bestsellers, categories, aboutStrip, newsletter] = await Promise.all([
+    getSetting('features'), getSetting('bestsellers_section'), getSetting('categories_section'),
+    getSetting('about_strip'), getSetting('newsletter_section'),
+  ])
   return (
-    <div className="ceylon-crunch-module" data-module="app/admin/settings/homepage/page.jsx">
-      {props?.children || null}
+    <div>
+      <PageHeader title="Homepage Sections" subtitle="Edit every section on the home page" />
+      <HomepageClient initial={{ features: features || [], bestsellers: bestsellers || {}, categories: categories || {}, about_strip: aboutStrip || {}, newsletter_section: newsletter || {} }} />
     </div>
-  );
+  )
 }

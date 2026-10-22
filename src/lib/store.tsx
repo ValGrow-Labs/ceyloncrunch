@@ -18,9 +18,23 @@ import {
   saveInquiryToSupabase,
   saveReviewToSupabase,
   fetchPublicSiteSettings,
+  adminCreateProduct,
+  adminUpdateProductDetails,
+  adminDeleteProduct,
+  adminFetchNewsletter,
+  adminToggleNewsletterSubscriber,
+  adminDeleteNewsletterSubscriber,
 } from './supabase';
 
+export interface NewsletterSubscriber {
+  id: string;
+  email: string;
+  active: boolean;
+  createdAt: string;
+}
+
 export interface CartItem {
+  id?: string;
   productId: string;
   variantId: string;
   productName: string;
@@ -186,6 +200,48 @@ interface StoreContextType {
   loginCustomer: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   signupCustomer: (email: string, password: string, name?: string, phone?: string) => Promise<{ success: boolean; error?: string }>;
   logoutCustomer: () => Promise<void>;
+
+  createProduct: (payload: {
+    name: string;
+    subtitle?: string;
+    category: any;
+    badge?: string;
+    origin?: string;
+    roastStyle?: string;
+    images: string[];
+    description: string;
+    ingredients?: string;
+    storage?: string;
+    shelfLife?: string;
+    allergenNotice?: string;
+    isFeatured?: boolean;
+    price: number;
+    originalPrice?: number;
+    stock: number;
+    weight?: string;
+  }) => Promise<{ success: boolean; error?: string }>;
+  updateProductDetails: (
+    productId: string,
+    updates: {
+      name?: string;
+      subtitle?: string;
+      category?: any;
+      badge?: string;
+      origin?: string;
+      roastStyle?: string;
+      description?: string;
+      ingredients?: string;
+      isFeatured?: boolean;
+      images?: string[];
+    }
+  ) => Promise<{ success: boolean; error?: string }>;
+  deleteProduct: (productId: string) => Promise<{ success: boolean; error?: string }>;
+
+  // Newsletter Subscribers
+  subscribers: NewsletterSubscriber[];
+  refreshSubscribers: () => Promise<void>;
+  toggleSubscriber: (id: string, active: boolean) => Promise<void>;
+  deleteSubscriber: (id: string) => Promise<void>;
 
   // Admin Session
   isAdmin: boolean;
@@ -592,64 +648,37 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     try {
       const dbProducts = await getProductsFromSupabase();
       if (dbProducts && dbProducts.length > 0) {
-        setProducts((prev) => {
-          const merged = prev.map((catProd) => {
-            const dbMatch = dbProducts.find(
-              (p: any) => p.id === catProd.id || p.slug === catProd.slug
-            );
-            if (!dbMatch) return catProd;
-
-            // Merge variants & price
-            let updatedVariants = catProd.variants;
-            if (Array.isArray(dbMatch.variants) && dbMatch.variants.length > 0) {
-              updatedVariants = catProd.variants.map((v, idx) => {
-                const matchV = dbMatch.variants.find((mv: any) => {
-                  if (typeof mv === 'string') return mv.toLowerCase() === v.weight.toLowerCase();
-                  return (
-                    (mv.id && mv.id === v.id) ||
-                    (mv.weight && mv.weight.toLowerCase() === v.weight.toLowerCase()) ||
-                    (mv.size && mv.size.toLowerCase() === v.weight.toLowerCase())
-                  );
-                });
-                if (matchV) {
-                  if (typeof matchV === 'object') {
-                    return {
-                      ...v,
-                      price: matchV.price !== undefined ? Number(matchV.price) : v.price,
-                      originalPrice: matchV.original_price !== undefined ? Number(matchV.original_price) : v.originalPrice,
-                      stock: matchV.stock !== undefined ? Number(matchV.stock) : v.stock,
-                    };
-                  }
-                } else if (idx === 0 && dbMatch.price !== undefined) {
-                  return { ...v, price: Number(dbMatch.price) };
-                }
-                return v;
-              });
-            } else if (dbMatch.price !== undefined) {
-              const basePrice = Number(dbMatch.price);
-              if (!isNaN(basePrice) && basePrice > 0) {
-                updatedVariants = catProd.variants.map((v, i) =>
-                  i === 0 ? { ...v, price: basePrice } : v
-                );
-              }
-            }
-
-            const images = dbMatch.image_url
-              ? [dbMatch.image_url, ...catProd.images.slice(1)]
-              : (dbMatch.images && dbMatch.images.length > 0 ? dbMatch.images : catProd.images);
-
-            return {
-              ...catProd,
-              images,
-              variants: updatedVariants,
-            };
-          });
-
-          try {
-            localStorage.setItem('ceylon_crunch_products_v5', JSON.stringify(merged));
-          } catch {}
-          return merged;
-        });
+        const mappedProducts: Product[] = dbProducts.map((p) => ({
+          id: p.id,
+          slug: p.slug,
+          name: p.name,
+          subtitle: p.subtitle || '',
+          category: p.category as any,
+          badge: p.badge || undefined,
+          origin: p.origin,
+          roastStyle: p.roast_style || undefined,
+          rating: Number(p.rating),
+          reviewCount: p.review_count,
+          images: p.images || [],
+          description: p.description,
+          extendedAbout: p.extended_about || [],
+          ingredients: p.ingredients,
+          storage: p.storage,
+          shelfLife: p.shelf_life,
+          allergenNotice: p.allergen_notice || '',
+          variants: (p.variants || []).map((v) => ({
+            id: v.id,
+            weight: v.weight,
+            price: Number(v.price),
+            originalPrice: v.original_price ? Number(v.original_price) : undefined,
+            stock: v.stock,
+          })),
+          pairsWithIds: [],
+          isFeatured: p.is_featured,
+        }));
+        const dbSlugs = new Set(mappedProducts.map((p) => p.slug));
+        const extraInitial = INITIAL_PRODUCTS.filter((p) => !dbSlugs.has(p.slug));
+        setProducts([...extraInitial, ...mappedProducts]);
       }
     } catch (err) {
       console.warn('Error fetching products from Supabase:', err);
@@ -1518,6 +1547,202 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   };
 
+  // Newsletter state & handlers
+  const [subscribers, setSubscribers] = useState<NewsletterSubscriber[]>([
+    { id: 'sub-1', email: 'kavinda.perera@gmail.com', active: true, createdAt: '2026-03-12' },
+    { id: 'sub-2', email: 'nadeesha.fernando@yahoo.com', active: true, createdAt: '2026-03-18' },
+    { id: 'sub-3', email: 'rashmika.silva@outlook.com', active: true, createdAt: '2026-03-24' },
+    { id: 'sub-4', email: 'dilshan.jayasinghe@ceyloncrunch.lk', active: false, createdAt: '2026-04-02' },
+    { id: 'sub-5', email: 'anuki.de.mel@gmail.com', active: true, createdAt: '2026-04-10' },
+  ]);
+
+  const refreshSubscribers = async () => {
+    if (!isSupabaseConfigured) return;
+    const dbSubs = await adminFetchNewsletter();
+    if (dbSubs && dbSubs.length > 0) {
+      setSubscribers(
+        dbSubs.map((s) => ({
+          id: s.id,
+          email: s.email,
+          active: s.active,
+          createdAt: s.created_at ? new Date(s.created_at).toLocaleDateString() : 'Recent',
+        }))
+      );
+    }
+  };
+
+  const toggleSubscriber = async (id: string, active: boolean) => {
+    setSubscribers((prev) =>
+      prev.map((s) => (s.id === id ? { ...s, active: !active } : s))
+    );
+    if (isSupabaseConfigured) {
+      await adminToggleNewsletterSubscriber(id, !active);
+    }
+    showToast(!active ? 'Subscriber reactivated' : 'Subscriber unsubscribed');
+  };
+
+  const deleteSubscriber = async (id: string) => {
+    setSubscribers((prev) => prev.filter((s) => s.id !== id));
+    if (isSupabaseConfigured) {
+      await adminDeleteNewsletterSubscriber(id);
+    }
+    showToast('Subscriber removed');
+  };
+
+  const createProduct = async (payload: {
+    name: string;
+    subtitle?: string;
+    category: any;
+    badge?: string;
+    origin?: string;
+    roastStyle?: string;
+    images: string[];
+    description: string;
+    ingredients?: string;
+    storage?: string;
+    shelfLife?: string;
+    allergenNotice?: string;
+    isFeatured?: boolean;
+    price: number;
+    originalPrice?: number;
+    stock: number;
+    weight?: string;
+  }): Promise<{ success: boolean; error?: string }> => {
+    if (isSupabaseConfigured) {
+      const res = await adminCreateProduct({
+        name: payload.name,
+        subtitle: payload.subtitle,
+        category: payload.category,
+        badge: payload.badge,
+        origin: payload.origin,
+        roast_style: payload.roastStyle,
+        images: payload.images,
+        description: payload.description,
+        ingredients: payload.ingredients,
+        storage: payload.storage,
+        shelf_life: payload.shelfLife,
+        allergen_notice: payload.allergenNotice,
+        is_featured: payload.isFeatured,
+        price: payload.price,
+        original_price: payload.originalPrice,
+        stock: payload.stock,
+        weight: payload.weight || '250g',
+      });
+
+      if (!res.success) {
+        return { success: false, error: res.error };
+      }
+
+      await refreshProducts();
+      return { success: true };
+    }
+
+    // Local state fallback
+    const newId = `prod-${Date.now()}`;
+    const newProduct: Product = {
+      id: newId,
+      slug: payload.name.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + Math.floor(100 + Math.random() * 900),
+      name: payload.name,
+      subtitle: payload.subtitle || '',
+      category: payload.category,
+      badge: payload.badge,
+      origin: payload.origin || 'Ceylon, Sri Lanka',
+      roastStyle: payload.roastStyle || 'Artisan Roasted',
+      rating: 5.0,
+      reviewCount: 0,
+      images: payload.images.length > 0 ? payload.images : ['https://images.unsplash.com/photo-1549488344-1f9b8d2bd1f3?auto=format&fit=crop&w=800&q=80'],
+      description: payload.description,
+      extendedAbout: [],
+      ingredients: payload.ingredients || '',
+      storage: payload.storage || 'Store in a cool dry place',
+      shelfLife: payload.shelfLife || '6 months',
+      allergenNotice: payload.allergenNotice || '',
+      isFeatured: payload.isFeatured || false,
+      pairsWithIds: [],
+      variants: [
+        {
+          id: `var-${Date.now()}`,
+          weight: payload.weight || '250g',
+          price: Math.round(payload.price),
+          originalPrice: payload.originalPrice ? Math.round(payload.originalPrice) : undefined,
+          stock: Math.max(0, Math.round(payload.stock)),
+        },
+      ],
+    };
+
+    setProducts((prev) => [newProduct, ...prev]);
+    return { success: true };
+  };
+
+  const updateProductDetails = async (
+    productId: string,
+    updates: {
+      name?: string;
+      subtitle?: string;
+      category?: any;
+      badge?: string;
+      origin?: string;
+      roastStyle?: string;
+      description?: string;
+      ingredients?: string;
+      isFeatured?: boolean;
+      images?: string[];
+    }
+  ): Promise<{ success: boolean; error?: string }> => {
+    // Optimistic local state update
+    setProducts((prev) =>
+      prev.map((p) => {
+        if (p.id !== productId) return p;
+        return {
+          ...p,
+          name: updates.name !== undefined ? updates.name : p.name,
+          subtitle: updates.subtitle !== undefined ? updates.subtitle : p.subtitle,
+          category: updates.category !== undefined ? updates.category : p.category,
+          badge: updates.badge !== undefined ? updates.badge : p.badge,
+          origin: updates.origin !== undefined ? updates.origin : p.origin,
+          roastStyle: updates.roastStyle !== undefined ? updates.roastStyle : p.roastStyle,
+          description: updates.description !== undefined ? updates.description : p.description,
+          ingredients: updates.ingredients !== undefined ? updates.ingredients : p.ingredients,
+          isFeatured: updates.isFeatured !== undefined ? updates.isFeatured : p.isFeatured,
+          images: updates.images !== undefined ? updates.images : p.images,
+        };
+      })
+    );
+
+    if (isSupabaseConfigured) {
+      const res = await adminUpdateProductDetails(productId, {
+        name: updates.name,
+        subtitle: updates.subtitle,
+        category: updates.category,
+        badge: updates.badge,
+        origin: updates.origin,
+        roast_style: updates.roastStyle,
+        description: updates.description,
+        ingredients: updates.ingredients,
+        is_featured: updates.isFeatured,
+        images: updates.images,
+      });
+      if (!res.success) {
+        await refreshProducts();
+        return { success: false, error: res.error };
+      }
+    }
+
+    return { success: true };
+  };
+
+  const deleteProduct = async (productId: string): Promise<{ success: boolean; error?: string }> => {
+    setProducts((prev) => prev.filter((p) => p.id !== productId));
+    if (isSupabaseConfigured) {
+      const res = await adminDeleteProduct(productId);
+      if (!res.success) {
+        await refreshProducts();
+        return { success: false, error: res.error };
+      }
+    }
+    return { success: true };
+  };
+
   // Admin login via Supabase Auth & public.profiles / public.admins table verification
   const loginAdmin = async (
     email?: string,
@@ -1862,6 +2087,13 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         loginCustomer,
         signupCustomer,
         logoutCustomer,
+        createProduct,
+        updateProductDetails,
+        deleteProduct,
+        subscribers,
+        refreshSubscribers,
+        toggleSubscriber,
+        deleteSubscriber,
         isAdmin,
         isAdminLoading,
         adminEmail,

@@ -1,13 +1,15 @@
-import React from 'react';
+import { getSetting } from '@/lib/settings'
+import BrandingClient from './BrandingClient'
+import PageHeader from '@/components/admin/PageHeader'
 
-/**
- * Ceylon Crunch Module: app/admin/settings/branding/page.jsx
- * Framework: Next.js 16 & React 19 | Backend: Supabase (PostgreSQL, Auth, Storage) | Gateway: PayHere
- */
-export default function Page(props) {
+export const metadata = { title: 'Branding — Settings' }
+
+export default async function BrandingPage() {
+  const branding = await getSetting('branding') || {}
   return (
-    <div className="ceylon-crunch-module" data-module="app/admin/settings/branding/page.jsx">
-      {props?.children || null}
+    <div>
+      <PageHeader title="Branding" subtitle="Logo, site name, tagline and identity" />
+      <BrandingClient initial={branding} />
     </div>
-  );
+  )
 }

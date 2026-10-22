@@ -1,13 +1,15 @@
-import React from 'react';
+import { getSetting } from '@/lib/settings'
+import HeroClient from './HeroClient'
+import PageHeader from '@/components/admin/PageHeader'
 
-/**
- * Ceylon Crunch Module: app/admin/settings/hero/page.jsx
- * Framework: Next.js 16 & React 19 | Backend: Supabase (PostgreSQL, Auth, Storage) | Gateway: PayHere
- */
-export default function Page(props) {
+export const metadata = { title: 'Hero Section — Settings' }
+
+export default async function HeroPage() {
+  const hero = await getSetting('hero') || {}
   return (
-    <div className="ceylon-crunch-module" data-module="app/admin/settings/hero/page.jsx">
-      {props?.children || null}
+    <div>
+      <PageHeader title="Hero Section" subtitle="Homepage hero — headline, subtext, CTAs, background" />
+      <HeroClient initial={hero} />
     </div>
-  );
+  )
 }
