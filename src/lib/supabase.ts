@@ -1121,8 +1121,26 @@ export async function adminCreateProduct(payload: {
   original_price?: number | null;
   stock: number;
   weight?: string;
-}): Promise<{ success: boolean; product?: DbProduct; error?: string }> {
-  if (!supabase) return { success: false, error: 'Database is not connected.' };
+}): Promise<{ success: boolean; product?: any; error?: string }> {
+  // 1. Try server API route first (runs with service role key)
+  try {
+    const res = await fetch('/api/create-product', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (res.ok) {
+      const json = await res.json();
+      if (json.success) return json;
+    }
+  } catch (apiErr) {
+    console.warn('API create-product notice:', apiErr);
+  }
+
+  // 2. Direct client fallback
+  const client = adminSupabase || supabase;
+  if (!client) return { success: false, error: 'Database is not connected.' };
+
   try {
     const slug = payload.name
       .toLowerCase()
@@ -1130,7 +1148,22 @@ export async function adminCreateProduct(payload: {
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-+|-+$/g, '') + '-' + Math.floor(100 + Math.random() * 900);
 
-    const { data: insertedProduct, error: prodErr } = await supabase
+    const primaryPrice = Math.round(payload.price);
+    const primaryStock = Math.max(0, Math.round(payload.stock));
+    const primaryWeight = payload.weight || '250g';
+
+    const formattedVariants = [
+      {
+        size: primaryWeight,
+        price: primaryPrice,
+        original_price: payload.original_price ? Math.round(payload.original_price) : null,
+        stock: primaryStock,
+      },
+    ];
+
+    const imageUrl = payload.images?.length > 0 ? payload.images[0] : '/img/product-1.jpg';
+
+    const { data: insertedProduct, error: prodErr } = await client
       .from('products')
       .insert([
         {
@@ -1143,14 +1176,16 @@ export async function adminCreateProduct(payload: {
           roast_style: payload.roast_style?.trim() || 'Artisan Roasted',
           rating: 5.0,
           review_count: 0,
-          images: payload.images.length > 0 ? payload.images : ['https://images.unsplash.com/photo-1549488344-1f9b8d2bd1f3?auto=format&fit=crop&w=800&q=80'],
+          image_url: imageUrl,
           description: payload.description.trim(),
-          extended_about: [],
           ingredients: payload.ingredients?.trim() || '100% pure artisan harvested',
           storage: payload.storage?.trim() || 'Store in a cool, dry place away from direct sunlight.',
           shelf_life: payload.shelf_life?.trim() || '6 months from seal date',
           allergen_notice: payload.allergen_notice?.trim() || null,
           is_featured: payload.is_featured || false,
+          price: primaryPrice,
+          variants: formattedVariants,
+          active: true,
         },
       ])
       .select('*')
@@ -1160,32 +1195,9 @@ export async function adminCreateProduct(payload: {
       return { success: false, error: prodErr?.message || 'Failed to insert product.' };
     }
 
-    // Insert default variant
-    const variantWeight = payload.weight || '250g';
-    const { data: insertedVariant, error: varErr } = await supabase
-      .from('product_variants')
-      .insert([
-        {
-          product_id: insertedProduct.id,
-          weight: variantWeight,
-          price: Math.round(payload.price),
-          original_price: payload.original_price ? Math.round(payload.original_price) : null,
-          stock: Math.max(0, Math.round(payload.stock)),
-        },
-      ])
-      .select('*')
-      .single();
-
-    if (varErr) {
-      console.warn('Variant insertion notice:', varErr.message);
-    }
-
     return {
       success: true,
-      product: {
-        ...insertedProduct,
-        variants: insertedVariant ? [insertedVariant] : [],
-      },
+      product: insertedProduct,
     };
   } catch (err: any) {
     return { success: false, error: err?.message || 'Product creation failed.' };
@@ -1262,16 +1274,50 @@ export async function adminUpdateProductDetails(
  * Admin: Delete a product from Supabase
  */
 export async function adminDeleteProduct(
-  productId: string
+  productId: string,
+  slug?: string
 ): Promise<{ success: boolean; error?: string }> {
-  if (!supabase) return { success: false, error: 'Database is not connected.' };
+  // 1. Try server API route first (runs with service role key)
   try {
-    // Delete product variants first if foreign key cascade is not enabled
-    await supabase.from('product_variants').delete().eq('product_id', productId);
-    const { error } = await supabase.from('products').delete().eq('id', productId);
-    if (error) {
-      return { success: false, error: error.message };
+    const res = await fetch('/api/delete-product', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ productId, slug }),
+    });
+    if (res.ok) {
+      const json = await res.json();
+      if (json.success) return { success: true };
+      if (json.error) return { success: false, error: json.error };
     }
+  } catch (apiErr) {
+    console.warn('API delete-product notice:', apiErr);
+  }
+
+  // 2. Direct client fallback
+  const client = adminSupabase || supabase;
+  if (!client) return { success: false, error: 'Database is not connected.' };
+
+  try {
+    const isUuid = Boolean(productId && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(productId));
+
+    if (isUuid) {
+      const { error } = await client.from('products').delete().eq('id', productId);
+      if (error) {
+        return { success: false, error: error.message };
+      }
+    } else {
+      const targetSlug = slug || (productId ? String(productId).replace(/^prod-/, '') : null);
+      if (targetSlug) {
+        const { error } = await client
+          .from('products')
+          .delete()
+          .or(`slug.eq.${targetSlug},slug.eq.${productId}`);
+        if (error) {
+          return { success: false, error: error.message };
+        }
+      }
+    }
+
     return { success: true };
   } catch (err: any) {
     return { success: false, error: err?.message || 'Failed to delete product.' };

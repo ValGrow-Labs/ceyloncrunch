@@ -235,7 +235,7 @@ interface StoreContextType {
       images?: string[];
     }
   ) => Promise<{ success: boolean; error?: string }>;
-  deleteProduct: (productId: string) => Promise<{ success: boolean; error?: string }>;
+  deleteProduct: (productId: string, slug?: string) => Promise<{ success: boolean; error?: string }>;
 
   // Newsletter Subscribers
   subscribers: NewsletterSubscriber[];
@@ -356,16 +356,22 @@ export function normalizePhone(raw: string): string {
 export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Products state (loads from localStorage cache if present, then hydrated from Supabase)
   const [products, setProducts] = useState<Product[]>(() => {
+    let deletedSet = new Set<string>();
+    try {
+      const stored = localStorage.getItem('ceylon_crunch_deleted_products');
+      if (stored) deletedSet = new Set(JSON.parse(stored));
+    } catch {}
+
     try {
       const saved = localStorage.getItem('ceylon_crunch_products_v5');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed;
+          return parsed.filter((p: Product) => !deletedSet.has(p.id) && !deletedSet.has(p.slug));
         }
       }
     } catch {}
-    return INITIAL_PRODUCTS;
+    return INITIAL_PRODUCTS.filter((p) => !deletedSet.has(p.id) && !deletedSet.has(p.slug));
   });
   const [isLoadingProducts, setIsLoadingProducts] = useState<boolean>(true);
 
@@ -735,9 +741,20 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           };
         });
 
-        const dbSlugs = new Set(mappedProducts.map((p) => p.slug));
-        const extraInitial = INITIAL_PRODUCTS.filter((p) => !dbSlugs.has(p.slug));
-        const combined = [...extraInitial, ...mappedProducts];
+        let deletedSet = new Set<string>();
+        try {
+          const stored = localStorage.getItem('ceylon_crunch_deleted_products');
+          if (stored) deletedSet = new Set(JSON.parse(stored));
+        } catch {}
+
+        const filteredMapped = mappedProducts.filter(
+          (p) => !deletedSet.has(p.id) && !deletedSet.has(p.slug)
+        );
+        const dbSlugs = new Set(filteredMapped.map((p) => p.slug));
+        const extraInitial = INITIAL_PRODUCTS.filter(
+          (p) => !dbSlugs.has(p.slug) && !deletedSet.has(p.id) && !deletedSet.has(p.slug)
+        );
+        const combined = [...extraInitial, ...filteredMapped];
         setProducts(combined);
         try {
           localStorage.setItem('ceylon_crunch_products_v5', JSON.stringify(combined));
@@ -1697,6 +1714,17 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         return { success: false, error: res.error };
       }
 
+      // Unmark from deleted products if previously deleted
+      try {
+        const stored = localStorage.getItem('ceylon_crunch_deleted_products');
+        if (stored) {
+          const list: string[] = JSON.parse(stored);
+          const cleanName = payload.name.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-');
+          const filtered = list.filter((item) => !item.includes(cleanName));
+          localStorage.setItem('ceylon_crunch_deleted_products', JSON.stringify(filtered));
+        }
+      } catch {}
+
       await refreshProducts();
       return { success: true };
     }
@@ -1795,11 +1823,40 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return { success: true };
   };
 
-  const deleteProduct = async (productId: string): Promise<{ success: boolean; error?: string }> => {
-    setProducts((prev) => prev.filter((p) => p.id !== productId));
+  const deleteProduct = async (productId: string, slug?: string): Promise<{ success: boolean; error?: string }> => {
+    const prod = products.find((p) => p.id === productId || p.slug === productId);
+    const prodSlug = slug || prod?.slug;
+
+    // 1. Remember in localStorage so refreshProducts() and page reload never bring it back
+    try {
+      const stored = localStorage.getItem('ceylon_crunch_deleted_products');
+      const deletedList: string[] = stored ? JSON.parse(stored) : [];
+      if (productId && !deletedList.includes(productId)) deletedList.push(productId);
+      if (prodSlug && !deletedList.includes(prodSlug)) deletedList.push(prodSlug);
+      localStorage.setItem('ceylon_crunch_deleted_products', JSON.stringify(deletedList));
+    } catch {}
+
+    // 2. Remove optimistically from state & cached localStorage
+    const updatedProducts = products.filter(
+      (p) => p.id !== productId && (!prodSlug || p.slug !== prodSlug)
+    );
+    setProducts(updatedProducts);
+    try {
+      localStorage.setItem('ceylon_crunch_products_v5', JSON.stringify(updatedProducts));
+    } catch {}
+
+    // 3. Delete from Supabase database (via API or direct client)
     if (isSupabaseConfigured) {
-      const res = await adminDeleteProduct(productId);
+      const res = await adminDeleteProduct(productId, prodSlug);
       if (!res.success) {
+        // Rollback on genuine error
+        try {
+          const stored = localStorage.getItem('ceylon_crunch_deleted_products');
+          if (stored) {
+            const list: string[] = JSON.parse(stored).filter((x: string) => x !== productId && x !== prodSlug);
+            localStorage.setItem('ceylon_crunch_deleted_products', JSON.stringify(list));
+          }
+        } catch {}
         await refreshProducts();
         return { success: false, error: res.error };
       }

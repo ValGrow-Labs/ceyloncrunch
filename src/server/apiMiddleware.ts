@@ -810,6 +810,132 @@ export function createApiMiddleware(supabaseUrl?: string, serviceRoleKey?: strin
           return;
         }
 
+        // 9. DELETE PRODUCT
+        if (url === '/api/delete-product') {
+          const { productId, slug } = body;
+          if (!productId && !slug) {
+            res.statusCode = 400;
+            res.end(JSON.stringify({ success: false, error: 'Missing productId or slug' }));
+            return;
+          }
+
+          const isUuid = Boolean(productId && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(productId));
+
+          if (isUuid) {
+            const { error: delErr } = await adminClient
+              .from('products')
+              .delete()
+              .eq('id', productId);
+
+            if (delErr) {
+              res.statusCode = 400;
+              res.end(JSON.stringify({ success: false, error: delErr.message }));
+              return;
+            }
+          } else {
+            const targetSlug = slug || (productId ? String(productId).replace(/^prod-/, '') : null);
+            if (targetSlug) {
+              const { error: delErr } = await adminClient
+                .from('products')
+                .delete()
+                .or(`slug.eq.${targetSlug},slug.eq.${productId}`);
+
+              if (delErr) {
+                res.statusCode = 400;
+                res.end(JSON.stringify({ success: false, error: delErr.message }));
+                return;
+              }
+            }
+          }
+
+          res.statusCode = 200;
+          res.end(JSON.stringify({ success: true }));
+          return;
+        }
+
+        // 10. CREATE PRODUCT
+        if (url === '/api/create-product') {
+          const payload = body;
+          if (!payload.name || !payload.category) {
+            res.statusCode = 400;
+            res.end(JSON.stringify({ success: false, error: 'Missing required product fields (name, category)' }));
+            return;
+          }
+
+          const slug =
+            payload.slug ||
+            (payload.name
+              .toLowerCase()
+              .trim()
+              .replace(/[^a-z0-9]+/g, '-')
+              .replace(/^-+|-+$/g, '') +
+              '-' +
+              Math.floor(100 + Math.random() * 900));
+
+          const primaryPrice = Math.round(Number(payload.price) || 1200);
+          const primaryStock = Math.max(0, Math.round(Number(payload.stock) || 50));
+          const primaryWeight = payload.weight || '250g';
+
+          const formattedVariants = (Array.isArray(payload.variants) && payload.variants.length > 0)
+            ? payload.variants.map((v: any, idx: number) => ({
+                size: v.size || v.weight || `Pack ${idx + 1}`,
+                price: Number(v.price) || primaryPrice,
+                original_price: v.original_price ? Number(v.original_price) : null,
+                stock: typeof v.stock === 'number' ? v.stock : primaryStock,
+              }))
+            : [
+                {
+                  size: primaryWeight,
+                  price: primaryPrice,
+                  original_price: payload.original_price ? Math.round(Number(payload.original_price)) : null,
+                  stock: primaryStock,
+                },
+              ];
+
+          const imageUrl =
+            (payload.images && Array.isArray(payload.images) && payload.images.length > 0)
+              ? payload.images[0]
+              : payload.image_url || '/img/product-1.jpg';
+
+          const newProductRow: Record<string, any> = {
+            slug,
+            name: payload.name.trim(),
+            subtitle: payload.subtitle?.trim() || null,
+            category: payload.category,
+            badge: payload.badge?.trim() || null,
+            origin: payload.origin?.trim() || 'Ceylon, Sri Lanka',
+            roast_style: payload.roast_style?.trim() || 'Artisan Roasted',
+            rating: Number(payload.rating) || 5.0,
+            review_count: Number(payload.review_count) || 0,
+            image_url: imageUrl,
+            description: payload.description?.trim() || `${payload.name} artisan provisions.`,
+            ingredients: payload.ingredients?.trim() || '100% pure artisan harvested',
+            storage: payload.storage?.trim() || 'Store in a cool, dry place away from direct sunlight.',
+            shelf_life: payload.shelf_life?.trim() || '6 months from seal date',
+            allergen_notice: payload.allergen_notice?.trim() || null,
+            is_featured: Boolean(payload.is_featured),
+            price: primaryPrice,
+            variants: formattedVariants,
+            active: payload.active !== undefined ? Boolean(payload.active) : true,
+          };
+
+          const { data, error } = await adminClient
+            .from('products')
+            .insert(newProductRow)
+            .select('*')
+            .single();
+
+          if (error) {
+            res.statusCode = 400;
+            res.end(JSON.stringify({ success: false, error: error.message }));
+            return;
+          }
+
+          res.statusCode = 200;
+          res.end(JSON.stringify({ success: true, product: data }));
+          return;
+        }
+
         // Unknown endpoint
         res.statusCode = 404;
         res.end(JSON.stringify({ success: false, error: 'API route not found' }));

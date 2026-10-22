@@ -53,7 +53,7 @@ interface ProductsTabProps {
     originalPrice?: number,
     stock?: number
   ) => Promise<void>;
-  onDeleteProduct: (productId: string) => Promise<{ success: boolean; error?: string }>;
+  onDeleteProduct: (productId: string, slug?: string) => Promise<{ success: boolean; error?: string }>;
   onUploadImage: (productId: string, file: File) => Promise<void>;
   showToast: (msg: string) => void;
   isAddModalOpen?: boolean;
@@ -398,7 +398,7 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
   const handleConfirmDelete = async () => {
     if (!isDeletingId) return;
     const prod = products.find((p) => p.id === isDeletingId);
-    const res = await onDeleteProduct(isDeletingId);
+    const res = await onDeleteProduct(isDeletingId, prod?.slug);
     setIsDeletingId(null);
     if (res.success) {
       showToast(`Deleted ${prod?.name || 'product'} from catalog.`);
