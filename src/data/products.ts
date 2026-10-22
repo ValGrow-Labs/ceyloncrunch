@@ -53,15 +53,9 @@ export interface Product {
 
 export const CATEGORIES = [
   { slug: 'all', name: 'All Provisions', shortName: 'All' },
+  { slug: 'nuts', name: 'Nuts', shortName: 'Nuts' },
   { slug: 'dried-fruits', name: 'Dried Fruits', shortName: 'Dried Fruits' },
   { slug: 'seeds', name: 'Seeds & Grains', shortName: 'Seeds' },
-  { slug: 'nuts', name: 'Nuts', shortName: 'Nuts' },
-  { slug: 'dates', name: 'Dates', shortName: 'Dates' },
-  { slug: 'berries', name: 'Berries', shortName: 'Berries' },
-  { slug: 'exotic-nuts', name: 'Exotic Nuts', shortName: 'Exotic Nuts' },
-  { slug: 'mixes', name: 'Mixes', shortName: 'Mixes' },
-  { slug: 'spices', name: 'Whole Spices', shortName: 'Whole Spices' },
-  { slug: 'gifts-hampers', name: 'Curated Hampers', shortName: 'Hampers' },
 ] as const;
 
 export const CATALOG_DIRECTORY = [

@@ -27,64 +27,22 @@ const DEFAULT_CATEGORIES: CategoryItem[] = [
     id: 'cat-1',
     name: 'Nuts',
     slug: 'nuts',
-    description: 'Walnuts, Almonds, Cashew & Pistachio sourced from artisan groves',
-    image: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a5/Bowl_of_Cashews_and_Almonds_%2848140118636%29.jpg/960px-Bowl_of_Cashews_and_Almonds_%2848140118636%29.jpg',
+    description: 'Artisan slow-roasted California almonds, Puttalam cashews, and salted pistachios',
+    image: '/products/nuts/cashews.jpg',
   },
   {
     id: 'cat-2',
     name: 'Dried Fruits',
     slug: 'dried-fruits',
-    description: 'Sun-dried figs, golden raisins, Turkish apricots, and prunes',
-    image: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/28/Dried_figs_%282%29.jpg/960px-Dried_figs_%282%29.jpg',
+    description: 'Sun-dried figs, golden raisins, Turkish apricots, tropical mango slices, and prunes',
+    image: '/products/dried-fruits/dried-mango.jpeg',
   },
   {
     id: 'cat-3',
-    name: 'Dates',
-    slug: 'dates',
-    description: 'Premium Medjool wet dates, Arabian dry dates, and organic date clusters',
-    image: 'https://images.unsplash.com/photo-1549488344-1f9b8d2bd1f3?auto=format&fit=crop&w=800&q=80',
-  },
-  {
-    id: 'cat-4',
     name: 'Seeds & Grains',
     slug: 'seeds',
-    description: 'Organic chia seeds, roasted pumpkin seeds, sunflower seeds, and quinoa',
-    image: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2e/Pepita_de_calabaza.jpg/960px-Pepita_de_calabaza.jpg',
-  },
-  {
-    id: 'cat-5',
-    name: 'Berries',
-    slug: 'berries',
-    description: 'Freeze-dried blueberries, wild cranberries, and black currant',
-    image: 'https://upload.wikimedia.org/wikipedia/commons/1/15/Blueberries.jpg',
-  },
-  {
-    id: 'cat-6',
-    name: 'Exotic Nuts',
-    slug: 'exotic-nuts',
-    description: 'Buttery macadamia nuts, Turkish hazelnuts, and roasted pecans',
-    image: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/0/00/Macadamia_nuts.jpg/960px-Macadamia_nuts.jpg',
-  },
-  {
-    id: 'cat-7',
-    name: 'Mixes',
-    slug: 'mixes',
-    description: 'Handcrafted antioxidant trail mixes, energy crunch mixes, and party blends',
-    image: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f5/Mixed_nuts_small_white1.jpg/960px-Mixed_nuts_small_white1.jpg',
-  },
-  {
-    id: 'cat-8',
-    name: 'Whole Spices',
-    slug: 'spices',
-    description: 'True Ceylon Alba cinnamon quills, green cardamom pods, and cloves',
-    image: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/d/de/Cinnamomum_verum_spices.jpg/960px-Cinnamomum_verum_spices.jpg',
-  },
-  {
-    id: 'cat-9',
-    name: 'Curated Hampers',
-    slug: 'gifts-hampers',
-    description: 'Luxury brass-banded hampers and festival gift boxes with personalized cards',
-    image: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&w=800&q=80',
+    description: 'Raw organic pumpkin seeds, chia seeds, golden flax, quinoa, and sunflower seeds',
+    image: '/products/seeds/pumpkin-seeds.jpeg',
   },
 ];
 
@@ -102,7 +60,21 @@ export const CategoriesTab: React.FC<CategoriesTabProps> = ({
   const [categories, setCategories] = useState<CategoryItem[]>(() => {
     try {
       const saved = localStorage.getItem('ceylon_crunch_categories');
-      if (saved) return JSON.parse(saved);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const validSlugs = new Set(['nuts', 'dried-fruits', 'seeds']);
+          const filtered = parsed.filter((c: CategoryItem) => validSlugs.has(c.slug));
+          if (filtered.length > 0) {
+            return filtered.map((c: CategoryItem) => {
+              if (c.slug === 'nuts' && (!c.image || c.image.includes('wikimedia'))) c.image = '/products/nuts/cashews.jpg';
+              if (c.slug === 'dried-fruits' && (!c.image || c.image.includes('wikimedia'))) c.image = '/products/dried-fruits/dried-mango.jpeg';
+              if (c.slug === 'seeds' && (!c.image || c.image.includes('wikimedia'))) c.image = '/products/seeds/pumpkin-seeds.jpeg';
+              return c;
+            });
+          }
+        }
+      }
     } catch {}
     return DEFAULT_CATEGORIES;
   });
