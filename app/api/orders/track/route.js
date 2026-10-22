@@ -1,14 +1,17 @@
-import { NextResponse } from 'next/server';
-import { getSupabaseAdmin } from '@/lib/supabase-server';
+import { NextResponse } from 'next/server'
+import { createClient } from '@/lib/supabase-server'
 
-// API Route Handler: app/api/orders/track/route.js
 export async function GET(request) {
-  const supabase = getSupabaseAdmin();
-  return NextResponse.json({ status: 'ok', route: 'app/api/orders/track/route.js' });
-}
+  const { searchParams } = new URL(request.url)
+  const id = searchParams.get('id')
+  const email = searchParams.get('email')
 
-export async function POST(request) {
-  const body = await request.json().catch(() => ({}));
-  const supabase = getSupabaseAdmin();
-  return NextResponse.json({ success: true, route: 'app/api/orders/track/route.js', data: body });
+  if (!id || !email) return NextResponse.json({ error: 'Order ID and email required' }, { status: 400 })
+
+  const supabase = await createClient()
+  const { data, error } = await supabase.from('orders').select('id, status, total, created_at, payment_method, city, customer_name')
+    .eq('id', id).eq('customer_email', email).single()
+
+  if (error || !data) return NextResponse.json({ error: 'Order not found' }, { status: 404 })
+  return NextResponse.json(data)
 }

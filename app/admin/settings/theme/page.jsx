@@ -1,13 +1,15 @@
-import React from 'react';
+import { getSetting } from '@/lib/settings'
+import ThemeClient from './ThemeClient'
+import PageHeader from '@/components/admin/PageHeader'
 
-/**
- * Ceylon Crunch Module: app/admin/settings/theme/page.jsx
- * Framework: Next.js 16 & React 19 | Backend: Supabase (PostgreSQL, Auth, Storage) | Gateway: PayHere
- */
-export default function Page(props) {
+export const metadata = { title: 'Theme — Settings' }
+
+export default async function ThemePage() {
+  const theme = await getSetting('theme') || {}
   return (
-    <div className="ceylon-crunch-module" data-module="app/admin/settings/theme/page.jsx">
-      {props?.children || null}
+    <div>
+      <PageHeader title="Theme & Colors" subtitle="All brand colors — changes apply live to the store" />
+      <ThemeClient initial={theme} />
     </div>
-  );
+  )
 }

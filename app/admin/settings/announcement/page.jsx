@@ -1,13 +1,8 @@
-import React from 'react';
-
-/**
- * Ceylon Crunch Module: app/admin/settings/announcement/page.jsx
- * Framework: Next.js 16 & React 19 | Backend: Supabase (PostgreSQL, Auth, Storage) | Gateway: PayHere
- */
-export default function Page(props) {
-  return (
-    <div className="ceylon-crunch-module" data-module="app/admin/settings/announcement/page.jsx">
-      {props?.children || null}
-    </div>
-  );
+import { getSetting } from '@/lib/settings'
+import AnnouncementClient from './AnnouncementClient'
+import PageHeader from '@/components/admin/PageHeader'
+export const metadata = { title: 'Announcement Bar — Settings' }
+export default async function AnnouncementPage() {
+  const bar = await getSetting('announcement_bar') || {}
+  return <div><PageHeader title="Announcement Bar" subtitle="Optional top banner shown on every page" /><AnnouncementClient initial={bar} /></div>
 }

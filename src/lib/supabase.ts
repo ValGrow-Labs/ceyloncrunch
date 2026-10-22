@@ -689,3 +689,245 @@ export async function uploadPaymentSlip(
   }
 }
 
+/**
+ * Admin: Create a new product with default variant in Supabase
+ */
+export async function adminCreateProduct(payload: {
+  name: string;
+  subtitle?: string;
+  category: string;
+  badge?: string;
+  origin?: string;
+  roast_style?: string;
+  images: string[];
+  description: string;
+  ingredients?: string;
+  storage?: string;
+  shelf_life?: string;
+  allergen_notice?: string;
+  is_featured?: boolean;
+  price: number;
+  original_price?: number | null;
+  stock: number;
+  weight?: string;
+}): Promise<{ success: boolean; product?: DbProduct; error?: string }> {
+  if (!supabase) return { success: false, error: 'Database is not connected.' };
+  try {
+    const slug = payload.name
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '') + '-' + Math.floor(100 + Math.random() * 900);
+
+    const { data: insertedProduct, error: prodErr } = await supabase
+      .from('products')
+      .insert([
+        {
+          slug,
+          name: payload.name.trim(),
+          subtitle: payload.subtitle?.trim() || null,
+          category: payload.category,
+          badge: payload.badge?.trim() || null,
+          origin: payload.origin?.trim() || 'Ceylon, Sri Lanka',
+          roast_style: payload.roast_style?.trim() || 'Artisan Roasted',
+          rating: 5.0,
+          review_count: 0,
+          images: payload.images.length > 0 ? payload.images : ['https://images.unsplash.com/photo-1549488344-1f9b8d2bd1f3?auto=format&fit=crop&w=800&q=80'],
+          description: payload.description.trim(),
+          extended_about: [],
+          ingredients: payload.ingredients?.trim() || '100% pure artisan harvested',
+          storage: payload.storage?.trim() || 'Store in a cool, dry place away from direct sunlight.',
+          shelf_life: payload.shelf_life?.trim() || '6 months from seal date',
+          allergen_notice: payload.allergen_notice?.trim() || null,
+          is_featured: payload.is_featured || false,
+        },
+      ])
+      .select('*')
+      .single();
+
+    if (prodErr || !insertedProduct) {
+      return { success: false, error: prodErr?.message || 'Failed to insert product.' };
+    }
+
+    // Insert default variant
+    const variantWeight = payload.weight || '250g';
+    const { data: insertedVariant, error: varErr } = await supabase
+      .from('product_variants')
+      .insert([
+        {
+          product_id: insertedProduct.id,
+          weight: variantWeight,
+          price: Math.round(payload.price),
+          original_price: payload.original_price ? Math.round(payload.original_price) : null,
+          stock: Math.max(0, Math.round(payload.stock)),
+        },
+      ])
+      .select('*')
+      .single();
+
+    if (varErr) {
+      console.warn('Variant insertion notice:', varErr.message);
+    }
+
+    return {
+      success: true,
+      product: {
+        ...insertedProduct,
+        variants: insertedVariant ? [insertedVariant] : [],
+      },
+    };
+  } catch (err: any) {
+    return { success: false, error: err?.message || 'Product creation failed.' };
+  }
+}
+
+/**
+ * Admin: Update product details in Supabase
+ */
+export async function adminUpdateProductDetails(
+  productId: string,
+  updates: {
+    name?: string;
+    subtitle?: string;
+    category?: string;
+    badge?: string;
+    origin?: string;
+    roast_style?: string;
+    description?: string;
+    ingredients?: string;
+    is_featured?: boolean;
+    images?: string[];
+  }
+): Promise<{ success: boolean; error?: string }> {
+  if (!supabase) return { success: false, error: 'Database is not connected.' };
+  try {
+    const payload: Record<string, any> = {
+      updated_at: new Date().toISOString(),
+    };
+    if (updates.name !== undefined) payload.name = updates.name.trim();
+    if (updates.subtitle !== undefined) payload.subtitle = updates.subtitle.trim() || null;
+    if (updates.category !== undefined) payload.category = updates.category;
+    if (updates.badge !== undefined) payload.badge = updates.badge.trim() || null;
+    if (updates.origin !== undefined) payload.origin = updates.origin.trim();
+    if (updates.roast_style !== undefined) payload.roast_style = updates.roast_style.trim() || null;
+    if (updates.description !== undefined) payload.description = updates.description.trim();
+    if (updates.ingredients !== undefined) payload.ingredients = updates.ingredients.trim();
+    if (updates.is_featured !== undefined) payload.is_featured = updates.is_featured;
+    if (updates.images !== undefined) payload.images = updates.images;
+
+    const { error } = await supabase
+      .from('products')
+      .update(payload)
+      .eq('id', productId);
+
+    if (error) {
+      return { success: false, error: error.message };
+    }
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err?.message || 'Failed to update product details.' };
+  }
+}
+
+/**
+ * Admin: Delete a product from Supabase
+ */
+export async function adminDeleteProduct(
+  productId: string
+): Promise<{ success: boolean; error?: string }> {
+  if (!supabase) return { success: false, error: 'Database is not connected.' };
+  try {
+    // Delete product variants first if foreign key cascade is not enabled
+    await supabase.from('product_variants').delete().eq('product_id', productId);
+    const { error } = await supabase.from('products').delete().eq('id', productId);
+    if (error) {
+      return { success: false, error: error.message };
+    }
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err?.message || 'Failed to delete product.' };
+  }
+}
+
+/**
+ * Admin: Fetch newsletter subscribers
+ */
+export async function adminFetchNewsletter(): Promise<Array<{ id: string; email: string; active: boolean; created_at: string }> | null> {
+  if (!supabase) return null;
+  try {
+    const { data, error } = await supabase
+      .from('newsletter')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.warn('Newsletter fetch notice:', error.message);
+      return null;
+    }
+    return data || [];
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Admin: Toggle subscriber status
+ */
+export async function adminToggleNewsletterSubscriber(
+  id: string,
+  active: boolean
+): Promise<boolean> {
+  if (!supabase) return false;
+  try {
+    const { error } = await supabase
+      .from('newsletter')
+      .update({ active })
+      .eq('id', id);
+    return !error;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Admin: Delete newsletter subscriber
+ */
+export async function adminDeleteNewsletterSubscriber(id: string): Promise<boolean> {
+  if (!supabase) return false;
+  try {
+    const { error } = await supabase.from('newsletter').delete().eq('id', id);
+    return !error;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Admin: Upload banner/hero image to Supabase Storage
+ */
+export async function adminUploadBannerImage(
+  file: File
+): Promise<{ success: boolean; url?: string; error?: string }> {
+  if (!supabase) return { success: false, error: 'Database is not connected.' };
+  try {
+    const fileExt = file.name.split('.').pop() || 'jpg';
+    const filePath = `banners/banner_${Date.now()}.${fileExt}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('product-images')
+      .upload(filePath, file, { upsert: true });
+
+    if (uploadError) {
+      return { success: false, error: uploadError.message };
+    }
+
+    const { data: publicData } = supabase.storage
+      .from('product-images')
+      .getPublicUrl(filePath);
+
+    return { success: true, url: publicData?.publicUrl };
+  } catch (err: any) {
+    return { success: false, error: err?.message || 'Banner upload failed.' };
+  }
+}
+

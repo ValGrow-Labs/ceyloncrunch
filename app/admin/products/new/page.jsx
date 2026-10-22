@@ -1,13 +1,13 @@
-import React from 'react';
+import PageHeader from '@/components/admin/PageHeader'
+import ProductForm from '@/components/admin/ProductForm'
 
-/**
- * Ceylon Crunch Module: app/admin/products/new/page.jsx
- * Framework: Next.js 16 & React 19 | Backend: Supabase (PostgreSQL, Auth, Storage) | Gateway: PayHere
- */
-export default function Page(props) {
+export const metadata = { title: 'Add Product — Admin' }
+
+export default function NewProductPage() {
   return (
-    <div className="ceylon-crunch-module" data-module="app/admin/products/new/page.jsx">
-      {props?.children || null}
+    <div>
+      <PageHeader title="Add Product" subtitle="Create a new product listing" />
+      <ProductForm />
     </div>
-  );
+  )
 }
