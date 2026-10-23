@@ -123,22 +123,17 @@ export const Admin: React.FC = () => {
   };
 
   // Image uploader handler
-  const handleUploadProductImage = async (
-    productIdOrFile: string | File,
-    maybeFile?: File
-  ): Promise<{ success: boolean; url?: string; error?: string }> => {
-    showToast('Uploading photo to cloud storage...');
-    const res = await adminUploadProductImage(productIdOrFile as any, maybeFile);
+  const handleUploadProductImage = async (productId?: string, file?: File) => {
+    if (!file) return { success: false, error: 'No file provided' };
+    showToast('Uploading photo to Supabase Storage...');
+    const res = await adminUploadProductImage(productId, file);
     if (res.success && res.url) {
-      showToast('Image uploaded successfully!');
-      if (typeof productIdOrFile === 'string' && productIdOrFile) {
-        await refreshProducts();
-      }
-      return res;
+      showToast('Image uploaded and synced!');
+      if (productId) await refreshProducts();
     } else {
       showToast(res.error || 'Failed to upload photo.');
-      return res;
     }
+    return res;
   };
 
   // Variant price & stock updater

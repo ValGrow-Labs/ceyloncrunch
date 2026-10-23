@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { Product, ProductVariant } from '../../data/products';
 import { formatRs } from '../../data/products';
+import { fileToBase64 } from '../../lib/supabase';
 
 const CATALOG_IMAGE_PRESETS = [
   { name: 'Cashews', path: '/products/nuts/cashews.jpg' },
@@ -358,26 +359,20 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
         setImageUrl(res.url);
         showToast('Image uploaded and synced to cloud storage!');
       } else {
-        // Fallback: Read as base64 data URL
-        const reader = new FileReader();
-        reader.onload = () => {
-          if (typeof reader.result === 'string') {
-            setImageUrl(reader.result);
-            showToast('Image preview loaded for product');
-          }
-        };
-        reader.readAsDataURL(file);
+        // Fallback: Read as compressed base64 data URL
+        const base64 = await fileToBase64(file);
+        setImageUrl(base64);
+        showToast('Image preview loaded for product');
       }
     } catch (err: any) {
       console.warn('Upload fallback to data URL:', err);
-      const reader = new FileReader();
-      reader.onload = () => {
-        if (typeof reader.result === 'string') {
-          setImageUrl(reader.result);
-          showToast('Image loaded for product');
-        }
-      };
-      reader.readAsDataURL(file);
+      try {
+        const base64 = await fileToBase64(file);
+        setImageUrl(base64);
+        showToast('Image loaded for product');
+      } catch {
+        showToast('Failed to load image');
+      }
     } finally {
       setIsUploadingPhoto(false);
     }

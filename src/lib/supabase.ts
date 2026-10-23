@@ -545,103 +545,122 @@ export async function adminUpdateVariant(
 }
 
 /**
- * Admin: Upload product image to Supabase Storage and update database image URL
+ * Helper to compress image and convert to Base64 data URL
  */
-function fileToBase64(file: File): Promise<string> {
+export async function fileToBase64(file: File, maxDimension = 1200, quality = 0.85): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = (err) => reject(err);
+    reader.onerror = reject;
+    reader.onload = () => {
+      const img = new Image();
+      img.onerror = () => resolve(reader.result as string);
+      img.onload = () => {
+        try {
+          let { width, height } = img;
+          if (width > maxDimension || height > maxDimension) {
+            if (width > height) {
+              height = Math.round((height * maxDimension) / width);
+              width = maxDimension;
+            } else {
+              width = Math.round((width * maxDimension) / height);
+              height = maxDimension;
+            }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          if (!ctx) return resolve(reader.result as string);
+          ctx.drawImage(img, 0, 0, width, height);
+          const mimeType = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
+          const compressed = canvas.toDataURL(mimeType, quality);
+          resolve(compressed);
+        } catch {
+          resolve(reader.result as string);
+        }
+      };
+      img.src = reader.result as string;
+    };
     reader.readAsDataURL(file);
   });
 }
 
+/**
+ * Admin: Upload product image to Supabase Storage and update database image URL
+ */
 export async function adminUploadProductImage(
-  productIdOrFile: string | File,
-  fileArg?: File
+  productId?: string,
+  file?: File
 ): Promise<{ success: boolean; url?: string; error?: string }> {
-  let targetFile: File | undefined;
-  let targetProductId: string | undefined;
+  if (!file) return { success: false, error: 'No file provided' };
 
-  if (productIdOrFile instanceof File) {
-    targetFile = productIdOrFile;
-    targetProductId = undefined;
-  } else {
-    targetProductId = productIdOrFile;
-    targetFile = fileArg;
-  }
-
-  if (!targetFile) return { success: false, error: 'No image file provided' };
-
-  // 1. Try server API route first (runs with service role key, handles storage and local fallback)
   try {
-    const base64Data = await fileToBase64(targetFile);
-    const res = await fetch('/api/upload-image', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        fileName: targetFile.name,
-        fileType: targetFile.type,
-        base64Data,
-        productId: targetProductId,
-      }),
-    });
-    if (res.ok) {
-      const json = await res.json();
-      if (json.success && json.url) {
-        return { success: true, url: json.url };
+    const base64 = await fileToBase64(file);
+
+    // 1. Try server API route first (runs with service role key, immune to browser RLS)
+    try {
+      const res = await fetch('/api/upload-image', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          imageBase64: base64,
+          filename: file.name,
+          productId: productId || undefined,
+        }),
+      });
+
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success && json.url) {
+          return { success: true, url: json.url };
+        }
       }
+    } catch (apiErr) {
+      console.warn('API upload-image notice:', apiErr);
     }
-  } catch (apiErr) {
-    console.warn('API upload-image error, attempting direct client upload:', apiErr);
-  }
 
-  // 2. Direct client fallback with Supabase storage
-  const client = adminSupabase || supabase;
-  if (!client) return { success: false, error: 'Database is not connected.' };
+    // 2. Direct client upload to Supabase storage fallback
+    const client = adminSupabase || supabase;
+    if (client) {
+      try {
+        const fileExt = file.name.split('.').pop() || 'jpg';
+        const safeName = (file.name.replace(/\.[^/.]+$/, '').replace(/[^a-z0-9]/gi, '-') || 'product').slice(0, 25);
+        const filePath = `products/${productId || 'new'}_${safeName}_${Date.now()}.${fileExt}`;
 
-  try {
-    const fileExt = (targetFile.name.split('.').pop() || 'jpg').toLowerCase();
-    const cleanId = (targetProductId || 'prod').replace(/[^a-z0-9_-]/gi, '_');
-    const filePath = `products/${cleanId}_${Date.now()}.${fileExt}`;
+        const { error: uploadError } = await client.storage
+          .from('product-images')
+          .upload(filePath, file, { upsert: true });
 
-    let publicUrl: string | null = null;
-    const { error: uploadError } = await client.storage
-      .from('product-images')
-      .upload(filePath, targetFile, { upsert: true });
+        if (!uploadError) {
+          const { data: publicData } = client.storage
+            .from('product-images')
+            .getPublicUrl(filePath);
 
-    if (!uploadError) {
-      const { data: publicData } = client.storage
-        .from('product-images')
-        .getPublicUrl(filePath);
-      publicUrl = publicData?.publicUrl || null;
-    } else {
-      const { error: fallbackError } = await client.storage
-        .from('ceyloncrunch')
-        .upload(filePath, targetFile, { upsert: true });
-      if (!fallbackError) {
-        const { data: publicData } = client.storage
-          .from('ceyloncrunch')
-          .getPublicUrl(filePath);
-        publicUrl = publicData?.publicUrl || null;
+          if (publicData?.publicUrl) {
+            const publicUrl = publicData.publicUrl;
+            if (productId) {
+              await client
+                .from('products')
+                .update({ image_url: publicUrl, updated_at: new Date().toISOString() })
+                .or(`id.eq.${productId},slug.eq.${productId}`);
+            }
+            return { success: true, url: publicUrl };
+          }
+        }
+      } catch (clientErr) {
+        console.warn('Client storage upload notice:', clientErr);
       }
     }
 
-    if (!publicUrl) {
-      return { success: false, error: 'Failed to upload image to storage.' };
-    }
-
-    if (targetProductId) {
+    // 3. Fallback: Base64 data URL (works anywhere, zero broken images)
+    if (productId && client) {
       await client
         .from('products')
-        .update({
-          image_url: publicUrl,
-          updated_at: new Date().toISOString(),
-        })
-        .or(`id.eq.${targetProductId},slug.eq.${targetProductId}`);
+        .update({ image_url: base64, updated_at: new Date().toISOString() })
+        .or(`id.eq.${productId},slug.eq.${productId}`);
     }
 
-    return { success: true, url: publicUrl };
+    return { success: true, url: base64 };
   } catch (err: any) {
     return { success: false, error: err?.message || 'Image upload failed.' };
   }

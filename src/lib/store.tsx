@@ -719,14 +719,21 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
           // Normalize images from image_url or INITIAL_PRODUCTS
           let images: string[] = [];
-          if (Array.isArray(p.images) && p.images.length > 0) {
+          if (Array.isArray(p.images) && p.images.length > 0 && !p.images[0].startsWith('blob:')) {
             images = p.images;
-          } else if (p.image_url) {
+          } else if (p.image_url && !p.image_url.startsWith('blob:')) {
             images = [p.image_url];
           } else if (matchingInitial && matchingInitial.images?.length > 0) {
             images = matchingInitial.images;
           } else {
-            images = ['/img/product-1.jpg'];
+            const cat = String(p.category || '').toLowerCase();
+            if (cat.includes('fruit') || cat.includes('date')) {
+              images = ['/products/dried-fruits/dried-mango.jpeg'];
+            } else if (cat.includes('seed')) {
+              images = ['/products/seeds/pumpkin-seeds.jpeg'];
+            } else {
+              images = ['/products/nuts/cashews.jpg'];
+            }
           }
 
           return {

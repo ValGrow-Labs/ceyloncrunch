@@ -444,71 +444,63 @@ export function createApiMiddleware(supabaseUrl?: string, serviceRoleKey?: strin
           return;
         }
 
-        // 5B. UPLOAD PRODUCT IMAGE (Supabase Storage with automatic fallback)
+        // 5b. UPLOAD PRODUCT IMAGE (Uploads to Supabase Storage 'product-images' bucket with Service Role)
         if (url === '/api/upload-image') {
-          const { fileName, fileType, base64Data, productId } = body;
-          if (!base64Data) {
+          const { imageBase64, filename, productId } = body;
+          if (!imageBase64) {
             res.statusCode = 400;
-            res.end(JSON.stringify({ success: false, error: 'Missing image data' }));
+            res.end(JSON.stringify({ success: false, error: 'Missing imageBase64' }));
             return;
           }
 
           try {
-            const base64Clean = String(base64Data).replace(/^data:[^;]+;base64,/, '');
-            const buffer = Buffer.from(base64Clean, 'base64');
-            const ext = (fileName?.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '');
-            const safeName = (fileName ? fileName.replace(/\.[^/.]+$/, '').replace(/[^a-z0-9_-]/gi, '_') : 'prod')
+            // Strip data:image/...;base64, header if present
+            const matches = String(imageBase64).match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+            const contentType = matches ? matches[1] : 'image/jpeg';
+            const base64Data = matches ? matches[2] : imageBase64;
+            const buffer = Buffer.from(base64Data, 'base64');
+
+            const ext = contentType.split('/')[1] || 'jpg';
+            const safeExt = ext.replace(/[^a-z0-9]/gi, '').toLowerCase() || 'jpg';
+            const safeName = (filename || 'product')
+              .replace(/[^a-z0-9]/gi, '-')
               .toLowerCase()
-              .substring(0, 30);
-            const storagePath = `products/${safeName}_${Date.now()}.${ext || 'jpg'}`;
-            const mimeType = fileType || (ext === 'png' ? 'image/png' : ext === 'webp' ? 'image/webp' : 'image/jpeg');
+              .replace(/-+/g, '-')
+              .slice(0, 30);
+            const storagePath = `products/${safeName}_${Date.now()}.${safeExt}`;
 
-            let publicUrl: string | null = null;
-
-            // 1. Try 'product-images' bucket
-            const { error: uploadError } = await adminClient.storage
+            // Try 'product-images' bucket first, fallback to 'ceyloncrunch'
+            let uploadRes = await adminClient.storage
               .from('product-images')
               .upload(storagePath, buffer, {
-                contentType: mimeType,
+                contentType,
                 upsert: true,
               });
 
-            if (!uploadError) {
-              const { data: publicData } = adminClient.storage
-                .from('product-images')
-                .getPublicUrl(storagePath);
-              publicUrl = publicData?.publicUrl || null;
-            } else {
-              // 2. Try 'ceyloncrunch' bucket
-              const { error: fallbackError } = await adminClient.storage
-                .from('ceyloncrunch')
+            let bucketName = 'product-images';
+            if (uploadRes.error) {
+              bucketName = 'ceyloncrunch';
+              uploadRes = await adminClient.storage
+                .from(bucketName)
                 .upload(storagePath, buffer, {
-                  contentType: mimeType,
+                  contentType,
                   upsert: true,
                 });
-              if (!fallbackError) {
-                const { data: publicData } = adminClient.storage
-                  .from('ceyloncrunch')
-                  .getPublicUrl(storagePath);
-                publicUrl = publicData?.publicUrl || null;
-              }
             }
 
-            // 3. Local fallback if remote storage was unreachable
-            if (!publicUrl) {
-              const fs = await import('fs');
-              const path = await import('path');
-              const uploadsDir = path.resolve(process.cwd(), 'public', 'uploads');
-              if (!fs.existsSync(uploadsDir)) {
-                fs.mkdirSync(uploadsDir, { recursive: true });
-              }
-              const localFileName = `${safeName}_${Date.now()}.${ext || 'jpg'}`;
-              const localFilePath = path.join(uploadsDir, localFileName);
-              fs.writeFileSync(localFilePath, buffer);
-              publicUrl = `/uploads/${localFileName}`;
+            if (uploadRes.error) {
+              res.statusCode = 500;
+              res.end(JSON.stringify({ success: false, error: uploadRes.error.message }));
+              return;
             }
 
-            // 4. Update product in database if productId was provided
+            const { data: publicData } = adminClient.storage
+              .from(bucketName)
+              .getPublicUrl(storagePath);
+
+            const publicUrl = publicData?.publicUrl;
+
+            // If productId was provided, sync to products table
             if (productId && publicUrl) {
               const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(productId);
               if (isUuid) {
@@ -520,17 +512,16 @@ export function createApiMiddleware(supabaseUrl?: string, serviceRoleKey?: strin
                 await adminClient
                   .from('products')
                   .update({ image_url: publicUrl, updated_at: new Date().toISOString() })
-                  .or(`id.eq.${productId},slug.eq.${productId}`);
+                  .eq('slug', productId);
               }
             }
 
             res.statusCode = 200;
-            res.end(JSON.stringify({ success: true, url: publicUrl }));
+            res.end(JSON.stringify({ success: true, url: publicUrl, path: storagePath }));
             return;
-          } catch (uploadCatchErr: any) {
-            console.error('Upload image error:', uploadCatchErr);
+          } catch (uploadErr: any) {
             res.statusCode = 500;
-            res.end(JSON.stringify({ success: false, error: uploadCatchErr?.message || 'Failed to process image' }));
+            res.end(JSON.stringify({ success: false, error: uploadErr?.message || 'Failed to process image' }));
             return;
           }
         }
