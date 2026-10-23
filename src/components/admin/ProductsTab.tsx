@@ -17,6 +17,7 @@ interface ProductsTabProps {
     subtitle?: string;
     category: any;
     badge?: string;
+    badgeType?: string;
     origin?: string;
     roastStyle?: string;
     images: string[];
@@ -30,6 +31,11 @@ interface ProductsTabProps {
     originalPrice?: number;
     stock: number;
     weight?: string;
+    rating?: number;
+    reviews?: number;
+    nutritionInfo?: any;
+    active?: boolean;
+    variants?: any[];
   }) => Promise<{ success: boolean; error?: string }>;
   onUpdateProductDetails: (
     productId: string,
@@ -38,12 +44,18 @@ interface ProductsTabProps {
       subtitle?: string;
       category?: any;
       badge?: string;
+      badgeType?: string;
       origin?: string;
       roastStyle?: string;
       description?: string;
       ingredients?: string;
       isFeatured?: boolean;
       images?: string[];
+      price?: number;
+      rating?: number;
+      reviews?: number;
+      nutritionInfo?: any;
+      active?: boolean;
     }
   ) => Promise<{ success: boolean; error?: string }>;
   onUpdateVariant: (
@@ -120,7 +132,7 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
   // 1. Basic Info Fields
   const [name, setName] = useState('Roasted Cashews');
   const [slug, setSlug] = useState('roasted-cashews');
-  const [category, setCategory] = useState<string>('Roasted Nuts');
+  const [category, setCategory] = useState<string>('Nuts');
   const [price, setPrice] = useState('1200');
   const [description, setDescription] = useState(
     'Golden-roasted to perfection, our cashews are slow-roasted in small batches over measured heat.'
@@ -165,16 +177,9 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
   // Categories list
   const categories = [
     { slug: 'all', name: 'All Categories' },
-    { slug: 'Roasted Nuts', name: 'Roasted Nuts' },
-    { slug: 'Raw Nuts', name: 'Raw Nuts' },
-    { slug: 'Dried Fruits', name: 'Dried Fruits' },
-    { slug: 'Dates', name: 'Dates' },
-    { slug: 'Seeds & Grains', name: 'Seeds & Grains' },
-    { slug: 'Berries', name: 'Berries' },
-    { slug: 'Exotic Nuts', name: 'Exotic Nuts' },
-    { slug: 'Mixes', name: 'Mixes' },
-    { slug: 'Whole Spices', name: 'Whole Spices' },
-    { slug: 'Curated Hampers', name: 'Curated Hampers' },
+    { slug: 'nuts', name: 'Nuts' },
+    { slug: 'dried-fruits', name: 'Dried Fruits' },
+    { slug: 'seeds', name: 'Seeds & Grains' },
   ];
 
   // Filter products
@@ -186,10 +191,14 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
         p.subtitle?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         p.category.toLowerCase().includes(searchQuery.toLowerCase());
 
+      const catLower = p.category.toLowerCase();
       const matchCat =
         categoryFilter === 'all' ||
-        p.category.toLowerCase() === categoryFilter.toLowerCase() ||
-        p.category.replace('-', ' ').toLowerCase() === categoryFilter.toLowerCase();
+        catLower === categoryFilter.toLowerCase() ||
+        catLower.replace('-', ' ') === categoryFilter.toLowerCase() ||
+        (categoryFilter === 'nuts' && catLower.includes('nut')) ||
+        (categoryFilter === 'dried-fruits' && (catLower.includes('fruit') || catLower.includes('date'))) ||
+        (categoryFilter === 'seeds' && (catLower.includes('seed') || catLower.includes('grain')));
       return matchSearch && matchCat;
     });
   }, [products, searchQuery, categoryFilter]);
@@ -198,7 +207,7 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
     setEditingProduct(null);
     setName('');
     setSlug('');
-    setCategory('Roasted Nuts');
+    setCategory('Nuts');
     setPrice('1200');
     setDescription('');
     setImageUrl('/img/product-1.jpg');
@@ -229,7 +238,10 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
     setEditingProduct(prod);
     setName(prod.name);
     setSlug(prod.slug || prod.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''));
-    setCategory(prod.category.replace('-', ' ') || 'Roasted Nuts');
+    if (prod.category.includes('nut')) setCategory('Nuts');
+    else if (prod.category.includes('fruit') || prod.category.includes('date')) setCategory('Dried Fruits');
+    else if (prod.category.includes('seed')) setCategory('Seeds & Grains');
+    else setCategory('Nuts');
     
     const primaryVariant = prod.variants[0];
     setPrice(primaryVariant ? String(primaryVariant.price) : '1200');
@@ -338,12 +350,47 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
     const numPrice = Number(price) || 1200;
     setIsSubmitting(true);
 
+    const badgeColorLower = badgeColor.toLowerCase();
+    let badgeType = 'green';
+    if (badgeColorLower.includes('gold') || badgeColorLower.includes('amber')) {
+      badgeType = 'gold';
+    } else if (badgeColorLower.includes('red')) {
+      badgeType = 'red';
+    }
+
+    const numRating = Number(rating) || 4.8;
+    const numReviews = Number(reviewCount) || 142;
+
+    // Filter valid variants entered in form
+    const validVariants = variants
+      .filter((v) => v.weight && v.weight.trim() !== '')
+      .map((v) => ({
+        size: v.weight.trim(),
+        price: Number(v.price) || numPrice,
+        stock: 50,
+      }));
+
+    // Normalize category: map dropdown to standard category slug
+    const normalizedCategory = (() => {
+      const catLower = category.toLowerCase().trim();
+      if (catLower.includes('nut')) return 'nuts';
+      if (catLower.includes('fruit') || catLower.includes('mango') || catLower.includes('date') || catLower.includes('berr')) return 'dried-fruits';
+      if (catLower.includes('seed') || catLower.includes('grain')) return 'seeds';
+      return catLower.replace(/\s+/g, '-');
+    })();
+
     if (editingProduct) {
       const res = await onUpdateProductDetails(editingProduct.id, {
         name,
-        category: category.toLowerCase().replace(/\s+/g, '-'),
+        category: normalizedCategory,
         badge: badgeText,
+        badgeType,
+        rating: numRating,
+        reviews: numReviews,
+        nutritionInfo: nutrition,
         description,
+        price: numPrice,
+        active: isActive,
         images: imageUrl ? [imageUrl] : editingProduct.images,
       });
 
@@ -375,13 +422,19 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
     } else {
       const res = await onCreateProduct({
         name,
-        category: category.toLowerCase().replace(/\s+/g, '-'),
+        category: normalizedCategory,
         badge: badgeText,
+        badgeType,
         images: imageUrl ? [imageUrl] : [],
         description: description || `${name} artisan provisions.`,
         price: numPrice,
         stock: 50,
         weight: variants[0]?.weight || '250g',
+        rating: numRating,
+        reviews: numReviews,
+        nutritionInfo: nutrition,
+        active: isActive,
+        variants: validVariants.length > 0 ? validVariants : undefined,
       });
 
       setIsSubmitting(false);
@@ -484,16 +537,9 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
                   onChange={(e) => setCategory(e.target.value)}
                   className="w-full h-11 px-4 bg-white rounded-xl border border-stone-200 text-stone-800 text-xs sm:text-sm focus:outline-none focus:border-[#1E4E35] cursor-pointer"
                 >
-                  <option value="Roasted Nuts">Roasted Nuts</option>
-                  <option value="Raw Nuts">Raw Nuts</option>
+                  <option value="Nuts">Nuts</option>
                   <option value="Dried Fruits">Dried Fruits</option>
-                  <option value="Dates">Dates</option>
                   <option value="Seeds & Grains">Seeds & Grains</option>
-                  <option value="Berries">Berries</option>
-                  <option value="Exotic Nuts">Exotic Nuts</option>
-                  <option value="Mixes">Mixes</option>
-                  <option value="Whole Spices">Whole Spices</option>
-                  <option value="Curated Hampers">Curated Hampers</option>
                 </select>
               </div>
 

@@ -1108,6 +1108,8 @@ export async function adminCreateProduct(payload: {
   subtitle?: string;
   category: string;
   badge?: string;
+  badgeType?: string;
+  badge_type?: string;
   origin?: string;
   roast_style?: string;
   images: string[];
@@ -1121,6 +1123,13 @@ export async function adminCreateProduct(payload: {
   original_price?: number | null;
   stock: number;
   weight?: string;
+  rating?: number;
+  reviews?: number;
+  review_count?: number;
+  nutritionInfo?: any;
+  nutrition_info?: any;
+  active?: boolean;
+  variants?: any[];
 }): Promise<{ success: boolean; product?: any; error?: string }> {
   // 1. Try server API route first (runs with service role key)
   try {
@@ -1129,9 +1138,12 @@ export async function adminCreateProduct(payload: {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
-    if (res.ok) {
-      const json = await res.json();
-      if (json.success) return json;
+    const json = await res.json().catch(() => null);
+    if (res.ok && json?.success) {
+      return json;
+    }
+    if (json?.error) {
+      return { success: false, error: json.error };
     }
   } catch (apiErr) {
     console.warn('API create-product notice:', apiErr);
@@ -1152,14 +1164,21 @@ export async function adminCreateProduct(payload: {
     const primaryStock = Math.max(0, Math.round(payload.stock));
     const primaryWeight = payload.weight || '250g';
 
-    const formattedVariants = [
-      {
-        size: primaryWeight,
-        price: primaryPrice,
-        original_price: payload.original_price ? Math.round(payload.original_price) : null,
-        stock: primaryStock,
-      },
-    ];
+    const formattedVariants = (Array.isArray(payload.variants) && payload.variants.length > 0)
+      ? payload.variants.map((v: any, idx: number) => ({
+          size: v.size || v.weight || `Pack ${idx + 1}`,
+          price: Number(v.price) || primaryPrice,
+          original_price: v.original_price ? Number(v.original_price) : null,
+          stock: typeof v.stock === 'number' ? v.stock : primaryStock,
+        }))
+      : [
+          {
+            size: primaryWeight,
+            price: primaryPrice,
+            original_price: payload.original_price ? Math.round(payload.original_price) : null,
+            stock: primaryStock,
+          },
+        ];
 
     const imageUrl = payload.images?.length > 0 ? payload.images[0] : '/img/product-1.jpg';
 
@@ -1169,23 +1188,17 @@ export async function adminCreateProduct(payload: {
         {
           slug,
           name: payload.name.trim(),
-          subtitle: payload.subtitle?.trim() || null,
-          category: payload.category,
-          badge: payload.badge?.trim() || null,
-          origin: payload.origin?.trim() || 'Ceylon, Sri Lanka',
-          roast_style: payload.roast_style?.trim() || 'Artisan Roasted',
-          rating: 5.0,
-          review_count: 0,
-          image_url: imageUrl,
-          description: payload.description.trim(),
-          ingredients: payload.ingredients?.trim() || '100% pure artisan harvested',
-          storage: payload.storage?.trim() || 'Store in a cool, dry place away from direct sunlight.',
-          shelf_life: payload.shelf_life?.trim() || '6 months from seal date',
-          allergen_notice: payload.allergen_notice?.trim() || null,
-          is_featured: payload.is_featured || false,
+          category: payload.category.trim().toLowerCase(),
           price: primaryPrice,
           variants: formattedVariants,
-          active: true,
+          badge: payload.badge ? String(payload.badge).trim() : null,
+          badge_type: payload.badge_type || payload.badgeType || null,
+          rating: Number(payload.rating) || 5.0,
+          reviews: Number(payload.reviews ?? payload.review_count ?? 0),
+          image_url: imageUrl,
+          description: payload.description ? String(payload.description).trim() : `${payload.name} artisan provisions.`,
+          nutrition_info: payload.nutrition_info || payload.nutritionInfo || null,
+          active: payload.active !== undefined ? Boolean(payload.active) : true,
         },
       ])
       .select('*')
@@ -1214,12 +1227,20 @@ export async function adminUpdateProductDetails(
     subtitle?: string;
     category?: string;
     badge?: string;
+    badgeType?: string;
+    badge_type?: string;
     origin?: string;
     roast_style?: string;
     description?: string;
     ingredients?: string;
     is_featured?: boolean;
     images?: string[];
+    price?: number;
+    rating?: number;
+    reviews?: number;
+    nutritionInfo?: any;
+    nutrition_info?: any;
+    active?: boolean;
   }
 ): Promise<{ success: boolean; error?: string }> {
   // 1. Try our backend API route (runs on Node server with service role key, bypassing RLS)
@@ -1242,14 +1263,19 @@ export async function adminUpdateProductDetails(
       updated_at: new Date().toISOString(),
     };
     if (updates.name !== undefined) payload.name = updates.name.trim();
-    if (updates.subtitle !== undefined) payload.subtitle = updates.subtitle.trim() || null;
-    if (updates.category !== undefined) payload.category = updates.category;
+    if (updates.category !== undefined) payload.category = updates.category.trim().toLowerCase();
     if (updates.badge !== undefined) payload.badge = updates.badge.trim() || null;
-    if (updates.origin !== undefined) payload.origin = updates.origin.trim();
-    if (updates.roast_style !== undefined) payload.roast_style = updates.roast_style.trim() || null;
+    if (updates.badge_type !== undefined || updates.badgeType !== undefined) {
+      payload.badge_type = updates.badge_type || updates.badgeType || null;
+    }
     if (updates.description !== undefined) payload.description = updates.description.trim();
-    if (updates.ingredients !== undefined) payload.ingredients = updates.ingredients.trim();
-    if (updates.is_featured !== undefined) payload.is_featured = updates.is_featured;
+    if (updates.price !== undefined && !isNaN(Number(updates.price))) payload.price = Math.round(Number(updates.price));
+    if (updates.rating !== undefined && !isNaN(Number(updates.rating))) payload.rating = Number(updates.rating);
+    if (updates.reviews !== undefined && !isNaN(Number(updates.reviews))) payload.reviews = Number(updates.reviews);
+    if (updates.nutrition_info !== undefined || updates.nutritionInfo !== undefined) {
+      payload.nutrition_info = updates.nutrition_info || updates.nutritionInfo || null;
+    }
+    if (updates.active !== undefined) payload.active = Boolean(updates.active);
 
     // Database schema uses image_url (string), NOT images array!
     if (updates.images && Array.isArray(updates.images) && updates.images.length > 0) {

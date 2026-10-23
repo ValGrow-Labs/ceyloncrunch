@@ -206,6 +206,7 @@ interface StoreContextType {
     subtitle?: string;
     category: any;
     badge?: string;
+    badgeType?: string;
     origin?: string;
     roastStyle?: string;
     images: string[];
@@ -219,6 +220,11 @@ interface StoreContextType {
     originalPrice?: number;
     stock: number;
     weight?: string;
+    rating?: number;
+    reviews?: number;
+    nutritionInfo?: any;
+    active?: boolean;
+    variants?: any[];
   }) => Promise<{ success: boolean; error?: string }>;
   updateProductDetails: (
     productId: string,
@@ -227,12 +233,18 @@ interface StoreContextType {
       subtitle?: string;
       category?: any;
       badge?: string;
+      badgeType?: string;
       origin?: string;
       roastStyle?: string;
       description?: string;
       ingredients?: string;
       isFeatured?: boolean;
       images?: string[];
+      price?: number;
+      rating?: number;
+      reviews?: number;
+      nutritionInfo?: any;
+      active?: boolean;
     }
   ) => Promise<{ success: boolean; error?: string }>;
   deleteProduct: (productId: string, slug?: string) => Promise<{ success: boolean; error?: string }>;
@@ -1675,6 +1687,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     subtitle?: string;
     category: any;
     badge?: string;
+    badgeType?: string;
     origin?: string;
     roastStyle?: string;
     images: string[];
@@ -1688,26 +1701,29 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     originalPrice?: number;
     stock: number;
     weight?: string;
+    rating?: number;
+    reviews?: number;
+    nutritionInfo?: any;
+    active?: boolean;
+    variants?: any[];
   }): Promise<{ success: boolean; error?: string }> => {
     if (isSupabaseConfigured) {
       const res = await adminCreateProduct({
         name: payload.name,
-        subtitle: payload.subtitle,
         category: payload.category,
         badge: payload.badge,
-        origin: payload.origin,
-        roast_style: payload.roastStyle,
+        badgeType: payload.badgeType,
         images: payload.images,
         description: payload.description,
-        ingredients: payload.ingredients,
-        storage: payload.storage,
-        shelf_life: payload.shelfLife,
-        allergen_notice: payload.allergenNotice,
-        is_featured: payload.isFeatured,
         price: payload.price,
         original_price: payload.originalPrice,
         stock: payload.stock,
         weight: payload.weight || '250g',
+        rating: payload.rating,
+        reviews: payload.reviews,
+        nutritionInfo: payload.nutritionInfo,
+        active: payload.active,
+        variants: payload.variants,
       });
 
       if (!res.success) {

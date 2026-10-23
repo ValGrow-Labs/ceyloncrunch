@@ -380,9 +380,16 @@ export function createApiMiddleware(supabaseUrl?: string, serviceRoleKey?: strin
           };
 
           if (updates.name !== undefined) payload.name = String(updates.name).trim();
-          if (updates.subtitle !== undefined) payload.subtitle = updates.subtitle ? String(updates.subtitle).trim() : null;
           if (updates.category !== undefined) payload.category = String(updates.category).trim();
           if (updates.badge !== undefined) payload.badge = updates.badge ? String(updates.badge).trim() : null;
+          if (updates.badge_type !== undefined || updates.badgeType !== undefined) {
+            payload.badge_type = updates.badge_type || updates.badgeType || null;
+          }
+          if (updates.rating !== undefined && !isNaN(Number(updates.rating))) payload.rating = Number(updates.rating);
+          if (updates.reviews !== undefined && !isNaN(Number(updates.reviews))) payload.reviews = Number(updates.reviews);
+          if (updates.nutrition_info !== undefined || updates.nutritionInfo !== undefined) {
+            payload.nutrition_info = updates.nutrition_info || updates.nutritionInfo || null;
+          }
           if (updates.description !== undefined) payload.description = String(updates.description).trim();
           if (updates.price !== undefined && !isNaN(Number(updates.price))) payload.price = Math.round(Number(updates.price));
           if (updates.active !== undefined) payload.active = Boolean(updates.active);
@@ -897,25 +904,20 @@ export function createApiMiddleware(supabaseUrl?: string, serviceRoleKey?: strin
               ? payload.images[0]
               : payload.image_url || '/img/product-1.jpg';
 
+          // Strictly use only existing columns in public.products table
           const newProductRow: Record<string, any> = {
             slug,
-            name: payload.name.trim(),
-            subtitle: payload.subtitle?.trim() || null,
-            category: payload.category,
-            badge: payload.badge?.trim() || null,
-            origin: payload.origin?.trim() || 'Ceylon, Sri Lanka',
-            roast_style: payload.roast_style?.trim() || 'Artisan Roasted',
-            rating: Number(payload.rating) || 5.0,
-            review_count: Number(payload.review_count) || 0,
-            image_url: imageUrl,
-            description: payload.description?.trim() || `${payload.name} artisan provisions.`,
-            ingredients: payload.ingredients?.trim() || '100% pure artisan harvested',
-            storage: payload.storage?.trim() || 'Store in a cool, dry place away from direct sunlight.',
-            shelf_life: payload.shelf_life?.trim() || '6 months from seal date',
-            allergen_notice: payload.allergen_notice?.trim() || null,
-            is_featured: Boolean(payload.is_featured),
+            name: String(payload.name).trim(),
+            category: String(payload.category).trim(),
             price: primaryPrice,
             variants: formattedVariants,
+            badge: payload.badge ? String(payload.badge).trim() : null,
+            badge_type: payload.badge_type || payload.badgeType || null,
+            rating: Number(payload.rating) || 5.0,
+            reviews: Number(payload.reviews ?? payload.review_count ?? 0),
+            image_url: imageUrl,
+            description: payload.description ? String(payload.description).trim() : `${payload.name} artisan provisions.`,
+            nutrition_info: payload.nutrition_info || payload.nutritionInfo || null,
             active: payload.active !== undefined ? Boolean(payload.active) : true,
           };
 
