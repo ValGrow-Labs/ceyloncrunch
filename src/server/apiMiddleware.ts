@@ -441,6 +441,98 @@ export function createApiMiddleware(supabaseUrl?: string, serviceRoleKey?: strin
 
           res.statusCode = 200;
           res.end(JSON.stringify({ success: true }));
+          return;
+        }
+
+        // 5B. UPLOAD PRODUCT IMAGE (Supabase Storage with automatic fallback)
+        if (url === '/api/upload-image') {
+          const { fileName, fileType, base64Data, productId } = body;
+          if (!base64Data) {
+            res.statusCode = 400;
+            res.end(JSON.stringify({ success: false, error: 'Missing image data' }));
+            return;
+          }
+
+          try {
+            const base64Clean = String(base64Data).replace(/^data:[^;]+;base64,/, '');
+            const buffer = Buffer.from(base64Clean, 'base64');
+            const ext = (fileName?.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '');
+            const safeName = (fileName ? fileName.replace(/\.[^/.]+$/, '').replace(/[^a-z0-9_-]/gi, '_') : 'prod')
+              .toLowerCase()
+              .substring(0, 30);
+            const storagePath = `products/${safeName}_${Date.now()}.${ext || 'jpg'}`;
+            const mimeType = fileType || (ext === 'png' ? 'image/png' : ext === 'webp' ? 'image/webp' : 'image/jpeg');
+
+            let publicUrl: string | null = null;
+
+            // 1. Try 'product-images' bucket
+            const { error: uploadError } = await adminClient.storage
+              .from('product-images')
+              .upload(storagePath, buffer, {
+                contentType: mimeType,
+                upsert: true,
+              });
+
+            if (!uploadError) {
+              const { data: publicData } = adminClient.storage
+                .from('product-images')
+                .getPublicUrl(storagePath);
+              publicUrl = publicData?.publicUrl || null;
+            } else {
+              // 2. Try 'ceyloncrunch' bucket
+              const { error: fallbackError } = await adminClient.storage
+                .from('ceyloncrunch')
+                .upload(storagePath, buffer, {
+                  contentType: mimeType,
+                  upsert: true,
+                });
+              if (!fallbackError) {
+                const { data: publicData } = adminClient.storage
+                  .from('ceyloncrunch')
+                  .getPublicUrl(storagePath);
+                publicUrl = publicData?.publicUrl || null;
+              }
+            }
+
+            // 3. Local fallback if remote storage was unreachable
+            if (!publicUrl) {
+              const fs = await import('fs');
+              const path = await import('path');
+              const uploadsDir = path.resolve(process.cwd(), 'public', 'uploads');
+              if (!fs.existsSync(uploadsDir)) {
+                fs.mkdirSync(uploadsDir, { recursive: true });
+              }
+              const localFileName = `${safeName}_${Date.now()}.${ext || 'jpg'}`;
+              const localFilePath = path.join(uploadsDir, localFileName);
+              fs.writeFileSync(localFilePath, buffer);
+              publicUrl = `/uploads/${localFileName}`;
+            }
+
+            // 4. Update product in database if productId was provided
+            if (productId && publicUrl) {
+              const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(productId);
+              if (isUuid) {
+                await adminClient
+                  .from('products')
+                  .update({ image_url: publicUrl, updated_at: new Date().toISOString() })
+                  .eq('id', productId);
+              } else {
+                await adminClient
+                  .from('products')
+                  .update({ image_url: publicUrl, updated_at: new Date().toISOString() })
+                  .or(`id.eq.${productId},slug.eq.${productId}`);
+              }
+            }
+
+            res.statusCode = 200;
+            res.end(JSON.stringify({ success: true, url: publicUrl }));
+            return;
+          } catch (uploadCatchErr: any) {
+            console.error('Upload image error:', uploadCatchErr);
+            res.statusCode = 500;
+            res.end(JSON.stringify({ success: false, error: uploadCatchErr?.message || 'Failed to process image' }));
+            return;
+          }
         }
 
         // 6. UPDATE ORDER STATUS

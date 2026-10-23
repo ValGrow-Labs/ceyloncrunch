@@ -123,14 +123,21 @@ export const Admin: React.FC = () => {
   };
 
   // Image uploader handler
-  const handleUploadProductImage = async (productId: string, file: File) => {
-    showToast('Uploading photo to Supabase Storage...');
-    const res = await adminUploadProductImage(productId, file);
+  const handleUploadProductImage = async (
+    productIdOrFile: string | File,
+    maybeFile?: File
+  ): Promise<{ success: boolean; url?: string; error?: string }> => {
+    showToast('Uploading photo to cloud storage...');
+    const res = await adminUploadProductImage(productIdOrFile as any, maybeFile);
     if (res.success && res.url) {
-      showToast('Image uploaded and updated in Supabase catalog!');
-      await refreshProducts();
+      showToast('Image uploaded successfully!');
+      if (typeof productIdOrFile === 'string' && productIdOrFile) {
+        await refreshProducts();
+      }
+      return res;
     } else {
       showToast(res.error || 'Failed to upload photo.');
+      return res;
     }
   };
 

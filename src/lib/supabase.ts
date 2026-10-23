@@ -547,57 +547,99 @@ export async function adminUpdateVariant(
 /**
  * Admin: Upload product image to Supabase Storage and update database image URL
  */
+function fileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = (err) => reject(err);
+    reader.readAsDataURL(file);
+  });
+}
+
 export async function adminUploadProductImage(
-  productId: string,
-  file: File
+  productIdOrFile: string | File,
+  fileArg?: File
 ): Promise<{ success: boolean; url?: string; error?: string }> {
-  if (!supabase) return { success: false, error: 'Database is not connected.' };
+  let targetFile: File | undefined;
+  let targetProductId: string | undefined;
+
+  if (productIdOrFile instanceof File) {
+    targetFile = productIdOrFile;
+    targetProductId = undefined;
+  } else {
+    targetProductId = productIdOrFile;
+    targetFile = fileArg;
+  }
+
+  if (!targetFile) return { success: false, error: 'No image file provided' };
+
+  // 1. Try server API route first (runs with service role key, handles storage and local fallback)
   try {
-    const fileExt = file.name.split('.').pop() || 'jpg';
-    const filePath = `products/${productId}_${Date.now()}.${fileExt}`;
+    const base64Data = await fileToBase64(targetFile);
+    const res = await fetch('/api/upload-image', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        fileName: targetFile.name,
+        fileType: targetFile.type,
+        base64Data,
+        productId: targetProductId,
+      }),
+    });
+    if (res.ok) {
+      const json = await res.json();
+      if (json.success && json.url) {
+        return { success: true, url: json.url };
+      }
+    }
+  } catch (apiErr) {
+    console.warn('API upload-image error, attempting direct client upload:', apiErr);
+  }
 
-    const { error: uploadError } = await supabase.storage
+  // 2. Direct client fallback with Supabase storage
+  const client = adminSupabase || supabase;
+  if (!client) return { success: false, error: 'Database is not connected.' };
+
+  try {
+    const fileExt = (targetFile.name.split('.').pop() || 'jpg').toLowerCase();
+    const cleanId = (targetProductId || 'prod').replace(/[^a-z0-9_-]/gi, '_');
+    const filePath = `products/${cleanId}_${Date.now()}.${fileExt}`;
+
+    let publicUrl: string | null = null;
+    const { error: uploadError } = await client.storage
       .from('product-images')
-      .upload(filePath, file, { upsert: true });
+      .upload(filePath, targetFile, { upsert: true });
 
-    if (uploadError) {
-      return { success: false, error: uploadError.message };
+    if (!uploadError) {
+      const { data: publicData } = client.storage
+        .from('product-images')
+        .getPublicUrl(filePath);
+      publicUrl = publicData?.publicUrl || null;
+    } else {
+      const { error: fallbackError } = await client.storage
+        .from('ceyloncrunch')
+        .upload(filePath, targetFile, { upsert: true });
+      if (!fallbackError) {
+        const { data: publicData } = client.storage
+          .from('ceyloncrunch')
+          .getPublicUrl(filePath);
+        publicUrl = publicData?.publicUrl || null;
+      }
     }
 
-    const { data: publicData } = supabase.storage
-      .from('product-images')
-      .getPublicUrl(filePath);
-
-    const publicUrl = publicData?.publicUrl;
     if (!publicUrl) {
-      return { success: false, error: 'Failed to retrieve public image URL.' };
+      return { success: false, error: 'Failed to upload image to storage.' };
     }
 
-    // Update in product_images table and products.images array
-    await supabase.from('product_images').insert([
-      {
-        product_id: productId,
-        url: publicUrl,
-        is_primary: true,
-        display_order: 0,
-      },
-    ]);
-
-    // Update primary image in products table
-    const { data: currentProd } = await supabase
-      .from('products')
-      .select('images')
-      .eq('id', productId)
-      .single();
-
-    const otherImages = currentProd?.images ? currentProd.images.slice(1) : [];
-    await supabase
-      .from('products')
-      .update({
-        images: [publicUrl, ...otherImages],
-        updated_at: new Date().toISOString(),
-      })
-      .eq('id', productId);
+    if (targetProductId) {
+      await client
+        .from('products')
+        .update({
+          image_url: publicUrl,
+          updated_at: new Date().toISOString(),
+        })
+        .or(`id.eq.${targetProductId},slug.eq.${targetProductId}`);
+    }
 
     return { success: true, url: publicUrl };
   } catch (err: any) {

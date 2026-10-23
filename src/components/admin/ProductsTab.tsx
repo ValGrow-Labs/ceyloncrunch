@@ -6,9 +6,23 @@ import {
   Upload,
   X,
   Sparkles,
+  Image as ImageIcon,
+  CheckCircle2,
+  RefreshCw,
 } from 'lucide-react';
 import { Product, ProductVariant } from '../../data/products';
 import { formatRs } from '../../data/products';
+
+const CATALOG_IMAGE_PRESETS = [
+  { name: 'Cashews', path: '/products/nuts/cashews.jpg' },
+  { name: 'Almonds', path: '/products/nuts/almonds.jpg' },
+  { name: 'Pistachios', path: '/products/nuts/pistachios.jpg' },
+  { name: 'Dried Mango', path: '/products/dried-fruits/dried-mango.jpeg' },
+  { name: 'Pumpkin Seeds', path: '/products/seeds/pumpkin-seeds.jpeg' },
+  { name: 'Apricots', path: '/products/dried-fruits/dried-apricots.jpeg' },
+  { name: 'Black Raisins', path: '/products/dried-fruits/black-raisins.jpeg' },
+  { name: 'Chia Seeds', path: '/products/seeds/chia-seeds.jpeg' },
+];
 
 interface ProductsTabProps {
   products: Product[];
@@ -66,7 +80,10 @@ interface ProductsTabProps {
     stock?: number
   ) => Promise<void>;
   onDeleteProduct: (productId: string, slug?: string) => Promise<{ success: boolean; error?: string }>;
-  onUploadImage: (productId: string, file: File) => Promise<void>;
+  onUploadImage: (
+    productIdOrFile: string | File,
+    file?: File
+  ) => Promise<{ success: boolean; url?: string; error?: string } | void>;
   showToast: (msg: string) => void;
   isAddModalOpen?: boolean;
   onCloseAddModal?: () => void;
@@ -139,7 +156,9 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
   );
 
   // 2. Product Image
-  const [imageUrl, setImageUrl] = useState('/img/product-1.jpg');
+  const [imageUrl, setImageUrl] = useState('/products/nuts/cashews.jpg');
+  const [isDragging, setIsDragging] = useState(false);
+  const [uploadedFileName, setUploadedFileName] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // 3. Variants State
@@ -210,7 +229,8 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
     setCategory('Nuts');
     setPrice('1200');
     setDescription('');
-    setImageUrl('/img/product-1.jpg');
+    setImageUrl('/products/nuts/cashews.jpg');
+    setUploadedFileName('');
     setVariants([
       { weight: '100g', price: '' },
       { weight: '250g', price: '' },
@@ -249,7 +269,8 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
       prod.description ||
         'Golden-roasted to perfection, our cashews are slow-roasted in small batches over measured heat.'
     );
-    setImageUrl(prod.images[0] || '/img/product-1.jpg');
+    setImageUrl(prod.images[0] || '/products/nuts/cashews.jpg');
+    setUploadedFileName('');
 
     if (prod.variants && prod.variants.length > 0) {
       setVariants(
@@ -314,29 +335,80 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
     setVariants(next);
   };
 
-  const handleFilePicked = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+  const handleProcessFile = async (file: File) => {
     if (!file) return;
 
-    setIsUploadingPhoto(true);
-    showToast('Uploading photo...');
+    if (!file.type.startsWith('image/')) {
+      showToast('Please select a valid image file (PNG, JPG, JPEG, WEBP).');
+      return;
+    }
 
-    if (editingProduct) {
-      try {
-        await onUploadImage(editingProduct.id, file);
-        setImageUrl(URL.createObjectURL(file));
-        showToast('Photo uploaded and synced!');
-      } catch {
-        setImageUrl(URL.createObjectURL(file));
-        showToast('Image preview loaded');
-      } finally {
-        setIsUploadingPhoto(false);
+    if (file.size > 10 * 1024 * 1024) {
+      showToast('Image size exceeds 10MB limit. Please choose a smaller file.');
+      return;
+    }
+
+    setIsUploadingPhoto(true);
+    setUploadedFileName(file.name);
+    showToast('Uploading image to cloud storage...');
+
+    try {
+      const res = await onUploadImage(editingProduct ? editingProduct.id : file, editingProduct ? file : undefined);
+      if (res && typeof res === 'object' && res.url) {
+        setImageUrl(res.url);
+        showToast('Image uploaded and synced to cloud storage!');
+      } else {
+        // Fallback: Read as base64 data URL
+        const reader = new FileReader();
+        reader.onload = () => {
+          if (typeof reader.result === 'string') {
+            setImageUrl(reader.result);
+            showToast('Image preview loaded for product');
+          }
+        };
+        reader.readAsDataURL(file);
       }
-    } else {
-      const previewUrl = URL.createObjectURL(file);
-      setImageUrl(previewUrl);
+    } catch (err: any) {
+      console.warn('Upload fallback to data URL:', err);
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (typeof reader.result === 'string') {
+          setImageUrl(reader.result);
+          showToast('Image loaded for product');
+        }
+      };
+      reader.readAsDataURL(file);
+    } finally {
       setIsUploadingPhoto(false);
-      showToast('Image selected for product');
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    const files = e.dataTransfer.files;
+    if (files && files.length > 0) {
+      handleProcessFile(files[0]);
+    }
+  };
+
+  const handleFilePicked = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      handleProcessFile(file);
     }
   };
 
@@ -574,76 +646,186 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
             </div>
           </div>
 
-          {/* CARD 2: Product Image */}
+          {/* CARD 2: Product Image & Media (Drag & Drop + Presets) */}
           <div className="bg-white rounded-3xl p-4 sm:p-6 lg:p-7 shadow-[0_4px_25px_rgba(0,0,0,0.03)] border border-stone-100 space-y-5">
-            <h2 className="font-bold text-stone-900 text-base pb-3 border-b border-stone-100">
-              Product Image
-            </h2>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-stone-100 gap-1">
+              <div>
+                <h2 className="font-bold text-stone-900 text-base">
+                  Product Image & Media
+                </h2>
+                <p className="text-xs text-stone-400 mt-0.5">
+                  Drag and drop product photos or choose from Ceylon Crunch artisan catalog presets.
+                </p>
+              </div>
+              {imageUrl && (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold self-start sm:self-auto">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  Image Attached
+                </span>
+              )}
+            </div>
 
-            <div>
-              <label className="block text-xs font-semibold text-stone-700 mb-2">
-                Product Image
-              </label>
+            {/* Hidden native file input */}
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFilePicked}
+              accept="image/png,image/jpeg,image/webp,image/gif"
+              className="hidden"
+            />
 
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                {/* Thumbnail with red delete circle badge */}
-                <div className="relative group shrink-0">
-                  <div className="w-16 h-16 rounded-xl overflow-hidden border border-stone-200 bg-stone-100 flex items-center justify-center">
-                    {imageUrl ? (
+            {/* DRAG AND DROP ZONE */}
+            <div
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+              onClick={() => {
+                if (!isUploadingPhoto) fileInputRef.current?.click();
+              }}
+              className={`relative border-2 border-dashed rounded-2xl transition-all duration-200 cursor-pointer overflow-hidden ${
+                isDragging
+                  ? 'border-[#1E4E35] bg-[#1E4E35]/10 scale-[1.01] shadow-md ring-2 ring-[#1E4E35]/20'
+                  : 'border-stone-200 hover:border-[#1E4E35]/60 bg-stone-50/60 hover:bg-stone-50'
+              }`}
+            >
+              {isUploadingPhoto ? (
+                <div className="p-8 sm:p-10 text-center flex flex-col items-center justify-center">
+                  <RefreshCw className="w-9 h-9 text-[#1E4E35] animate-spin mb-3" />
+                  <p className="text-sm font-bold text-stone-800">
+                    Uploading {uploadedFileName ? `"${uploadedFileName}"` : 'photo'}...
+                  </p>
+                  <p className="text-xs text-stone-400 mt-1">
+                    Optimizing and saving permanent cloud image URL
+                  </p>
+                </div>
+              ) : imageUrl ? (
+                <div className="p-4 sm:p-6 flex flex-col sm:flex-row items-center gap-5">
+                  {/* Image Preview Box */}
+                  <div className="relative group shrink-0">
+                    <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-2xl overflow-hidden border border-stone-200 bg-white shadow-sm flex items-center justify-center">
                       <img
                         src={imageUrl}
                         alt="Product preview"
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-300"
                         onError={(e) => {
-                          (e.target as HTMLElement).style.display = 'none';
+                          const target = e.currentTarget;
+                          if (!target.dataset.fallbackApplied) {
+                            target.dataset.fallbackApplied = 'true';
+                            target.src = '/products/nuts/cashews.jpg';
+                          }
                         }}
                       />
-                    ) : (
-                      <span className="text-xs text-stone-400 font-semibold">No Image</span>
-                    )}
+                    </div>
                   </div>
-                  {imageUrl && (
-                    <button
-                      type="button"
-                      onClick={() => setImageUrl('')}
-                      className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-red-600 hover:bg-red-700 text-white flex items-center justify-center shadow-xs transition-colors cursor-pointer"
-                      title="Remove image"
-                    >
-                      <X className="w-3 h-3 stroke-[3]" />
-                    </button>
-                  )}
+
+                  {/* Info and Actions */}
+                  <div className="flex-1 text-center sm:text-left space-y-2.5 min-w-0 w-full">
+                    <div>
+                      <div className="flex items-center justify-center sm:justify-start gap-1.5 text-xs font-bold text-[#1E4E35]">
+                        <ImageIcon className="w-4 h-4" />
+                        <span>Ready for Catalog</span>
+                      </div>
+                      <p className="text-xs text-stone-600 font-medium truncate mt-1 max-w-md" title={imageUrl}>
+                        {uploadedFileName || imageUrl}
+                      </p>
+                    </div>
+
+                    <p className="text-[11px] text-stone-400">
+                      Drag a new photo here to replace, or click below.
+                    </p>
+
+                    <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 pt-1" onClick={(e) => e.stopPropagation()}>
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-stone-200 bg-white hover:bg-stone-50 text-stone-700 text-xs font-semibold shadow-xs transition-colors cursor-pointer"
+                      >
+                        <Upload className="w-3.5 h-3.5 text-[#1E4E35]" />
+                        <span>Upload New Image</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setImageUrl('');
+                          setUploadedFileName('');
+                        }}
+                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 text-xs font-semibold transition-colors cursor-pointer"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                        <span>Clear Image</span>
+                      </button>
+                    </div>
+                  </div>
                 </div>
+              ) : (
+                <div className="p-8 sm:p-10 text-center flex flex-col items-center justify-center">
+                  <div className="w-14 h-14 rounded-2xl bg-[#1E4E35]/10 text-[#1E4E35] flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
+                    <Upload className="w-7 h-7" />
+                  </div>
+                  <p className="text-sm font-bold text-stone-800">
+                    Drag and drop your product photo here
+                  </p>
+                  <p className="text-xs text-stone-500 mt-1">
+                    or <span className="text-[#1E4E35] font-semibold underline underline-offset-2">browse files</span> from your computer
+                  </p>
+                  <p className="text-[10px] text-stone-400 mt-2 font-mono">
+                    PNG, JPG, JPEG, WEBP up to 10MB
+                  </p>
+                </div>
+              )}
+            </div>
 
-                {/* Image Path input & upload button */}
-                <div className="flex-1 w-full space-y-2">
-                  <input
-                    type="text"
-                    value={imageUrl}
-                    onChange={(e) => setImageUrl(e.target.value)}
-                    placeholder="/img/product-1.jpg"
-                    className="w-full h-11 px-4 bg-white rounded-xl border border-stone-200 text-stone-800 text-xs sm:text-sm placeholder:text-stone-400 focus:outline-none focus:border-[#1E4E35] transition-all"
-                  />
-
-                  <div>
-                    <input
-                      type="file"
-                      ref={fileInputRef}
-                      onChange={handleFilePicked}
-                      accept="image/*"
-                      className="hidden"
+            {/* Quick Catalog Presets */}
+            <div className="pt-2">
+              <label className="block text-xs font-semibold text-stone-700 mb-2">
+                Quick Presets from Store Provisions:
+              </label>
+              <div className="flex flex-wrap gap-2">
+                {CATALOG_IMAGE_PRESETS.map((preset) => (
+                  <button
+                    key={preset.name}
+                    type="button"
+                    onClick={() => {
+                      setImageUrl(preset.path);
+                      setUploadedFileName(preset.name);
+                      showToast(`Selected "${preset.name}" preset`);
+                    }}
+                    className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-medium border transition-all cursor-pointer ${
+                      imageUrl === preset.path
+                        ? 'border-[#1E4E35] bg-[#1E4E35]/10 text-[#1E4E35] font-semibold'
+                        : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50 hover:border-stone-300'
+                    }`}
+                  >
+                    <img
+                      src={preset.path}
+                      alt={preset.name}
+                      className="w-4 h-4 rounded-full object-cover shrink-0"
                     />
-                    <button
-                      type="button"
-                      onClick={() => fileInputRef.current?.click()}
-                      disabled={isUploadingPhoto}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-stone-200 bg-stone-50 hover:bg-stone-100 text-stone-700 text-xs font-semibold transition-colors cursor-pointer"
-                    >
-                      <Upload className="w-3.5 h-3.5" />
-                      <span>{isUploadingPhoto ? 'Uploading...' : '↑ Upload Image'}</span>
-                    </button>
-                  </div>
-                </div>
+                    <span>{preset.name}</span>
+                  </button>
+                ))}
               </div>
+            </div>
+
+            {/* Direct Image URL Path */}
+            <div className="pt-1">
+              <label className="block text-xs font-semibold text-stone-700 mb-1.5">
+                Direct Image URL or Path
+              </label>
+              <input
+                type="text"
+                value={imageUrl}
+                onChange={(e) => {
+                  setImageUrl(e.target.value);
+                  setUploadedFileName('');
+                }}
+                placeholder="/products/nuts/cashews.jpg or https://..."
+                className="w-full h-11 px-4 bg-white rounded-xl border border-stone-200 text-stone-800 text-xs sm:text-sm placeholder:text-stone-400 focus:outline-none focus:border-[#1E4E35] transition-all"
+              />
+              <p className="text-[11px] text-stone-400 mt-1">
+                You can drag & drop a file above, pick a preset, or paste a public image URL directly.
+              </p>
             </div>
           </div>
 
@@ -1033,8 +1215,21 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
                   <div key={prod.id} className="p-4 hover:bg-stone-50/60 transition-colors space-y-3">
                     <div className="flex items-start gap-3">
                       <img
-                        src={prod.images[0]}
+                        src={prod.images?.[0] || (prod.category.includes('nut') ? '/products/nuts/cashews.jpg' : prod.category.includes('fruit') ? '/products/dried-fruits/dried-mango.jpeg' : '/products/seeds/pumpkin-seeds.jpeg')}
                         alt={prod.name}
+                        onError={(e) => {
+                          const target = e.currentTarget;
+                          if (!target.dataset.fallbackApplied) {
+                            target.dataset.fallbackApplied = 'true';
+                            if (prod.category.includes('nut')) {
+                              target.src = '/products/nuts/cashews.jpg';
+                            } else if (prod.category.includes('fruit') || prod.category.includes('date')) {
+                              target.src = '/products/dried-fruits/dried-mango.jpeg';
+                            } else {
+                              target.src = '/products/seeds/pumpkin-seeds.jpeg';
+                            }
+                          }
+                        }}
                         className="w-14 h-14 rounded-xl object-cover bg-stone-100 border border-stone-200 shrink-0"
                       />
                       <div className="flex-1 min-w-0">
@@ -1133,8 +1328,21 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
                         <td className="py-3 px-4">
                           <div className="flex items-center gap-3">
                             <img
-                              src={prod.images[0]}
+                              src={prod.images?.[0] || (prod.category.includes('nut') ? '/products/nuts/cashews.jpg' : prod.category.includes('fruit') ? '/products/dried-fruits/dried-mango.jpeg' : '/products/seeds/pumpkin-seeds.jpeg')}
                               alt={prod.name}
+                              onError={(e) => {
+                                const target = e.currentTarget;
+                                if (!target.dataset.fallbackApplied) {
+                                  target.dataset.fallbackApplied = 'true';
+                                  if (prod.category.includes('nut')) {
+                                    target.src = '/products/nuts/cashews.jpg';
+                                  } else if (prod.category.includes('fruit') || prod.category.includes('date')) {
+                                    target.src = '/products/dried-fruits/dried-mango.jpeg';
+                                  } else {
+                                    target.src = '/products/seeds/pumpkin-seeds.jpeg';
+                                  }
+                                }
+                              }}
                               className="w-12 h-12 rounded-xl object-cover bg-stone-100 border border-stone-200 shrink-0"
                             />
                             <div className="min-w-0">
