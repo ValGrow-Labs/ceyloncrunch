@@ -21,7 +21,7 @@ interface NavLinkItem {
 
 const DEFAULT_NAV: NavLinkItem[] = [
   { id: 'nav-1', label: 'Home', href: '/' },
-  { id: 'nav-2', label: 'Shop All Provisions', href: '/shop' },
+  { id: 'nav-2', label: 'Shop All Products', href: '/shop' },
   { id: 'nav-3', label: 'Our Story', href: '/our-story' },
   { id: 'nav-4', label: 'Ethical Sourcing', href: '/sourcing' },
   { id: 'nav-5', label: 'Quality Promise', href: '/quality-promise' },

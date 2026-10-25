@@ -198,7 +198,7 @@ export const Home: React.FC = () => {
         transition={{ duration: 0.4 }}
         className="bg-white border border-[#EADFD0] rounded-2xl p-4 sm:p-5 shadow-2xs"
       >
-        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 sm:gap-4 text-left">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 text-left">
           {[
             { title: 'NUTS', slug: 'nuts' },
             { title: 'DRIED FRUITS', slug: 'dried-fruits' },
@@ -206,8 +206,6 @@ export const Home: React.FC = () => {
             { title: 'SEEDS', slug: 'seeds' },
             { title: 'SPICES', slug: 'spices' },
             { title: 'GIFTS & HAMPERS', slug: 'gifting', isCustom: true },
-            { title: 'BERRIES', slug: 'berries' },
-            { title: 'MIXES', slug: 'mixes' },
           ].map((cat) => (
             <Link
               key={cat.slug}
@@ -381,16 +379,16 @@ export const Home: React.FC = () => {
               description: 'Raw chia, flax, pumpkin, hemp hearts and superfoods.',
             },
             {
-              name: 'Tropical Provisions',
-              slug: 'dried-fruits',
-              image: '/products/dried-fruits/dried-mango.jpeg',
-              description: 'Ceylon pineapples, mangoes, bananas, and strawberries.',
+              name: 'Dates',
+              slug: 'dates',
+              image: '/products/dates/dates.jpg',
+              description: 'Plump Medjool and Arabian dates rich in natural energy.',
             },
             {
-              name: 'Healthy Snacks',
-              slug: 'mixes',
-              image: '/products/nuts/mixed-nuts.jpg',
-              description: 'Easy choices for home, work and on the go.',
+              name: 'Spices',
+              slug: 'spices',
+              image: '/products/spices/cinnamon-spices.jpg',
+              description: 'Authentic Ceylon cinnamon quills, green cardamom and cloves.',
             },
             {
               name: 'Gifts & Hampers',

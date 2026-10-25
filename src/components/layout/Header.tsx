@@ -147,17 +147,14 @@ export const Header: React.FC = () => {
                     className="absolute left-4 right-4 top-full z-50 pt-2 max-w-[1240px] mx-auto pointer-events-auto"
                   >
                     <div className="rounded-2xl border border-[#EADFD0] bg-white p-5 sm:p-6 shadow-2xl">
-                      {/* Category Headlines Only - Balanced 8-Column Grid */}
-                      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 lg:gap-4 items-end">
+                      {/* Category Headlines Only - Balanced Grid */}
+                      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 lg:gap-4 items-end">
                         {[
-                          { title: 'ALL PROVISIONS', slug: 'all', href: '/shop' },
+                          { title: 'ALL PRODUCTS', slug: 'all', href: '/shop' },
                           { title: 'NUTS', slug: 'nuts', href: '/category/nuts' },
                           { title: 'DRIED FRUITS', slug: 'dried-fruits', href: '/category/dried-fruits' },
                           { title: 'DATES', slug: 'dates', href: '/category/dates' },
                           { title: 'SEEDS', slug: 'seeds', href: '/category/seeds' },
-                          { title: 'BERRIES', slug: 'berries', href: '/category/berries' },
-                          { title: 'EXOTIC NUTS', slug: 'exotic-nuts', href: '/category/exotic-nuts' },
-                          { title: 'MIXES', slug: 'mixes', href: '/category/mixes' },
                           { title: 'WHOLE SPICES', slug: 'spices', href: '/category/spices' },
                         ].map((cat) => (
                           <Link
@@ -379,9 +376,6 @@ export const Header: React.FC = () => {
             <div className="flex flex-col py-4 space-y-6 flex-1">
               {/* Shop Categories */}
               <div>
-                <span className="text-[11px] font-sans font-bold uppercase tracking-wider text-[#8B5E3C] block mb-2.5">
-                  Harvest Categories
-                </span>
                 <ul className="space-y-2 font-serif text-base text-[#1F3D2B]">
                   <li>
                     <Link
@@ -389,7 +383,7 @@ export const Header: React.FC = () => {
                       onClick={() => setIsMenuOpen(false)}
                       className="flex items-center justify-between py-1 hover:text-[#8B5E3C] transition-colors"
                     >
-                      <span>All Provisions</span>
+                      <span>All Products</span>
                       <ArrowRight className="w-3.5 h-3.5 text-[#8B5E3C]" />
                     </Link>
                   </li>
@@ -433,36 +427,8 @@ export const Header: React.FC = () => {
                       <ArrowRight className="w-3.5 h-3.5 text-[#8B5E3C]" />
                     </Link>
                   </li>
-                  <li>
-                    <Link
-                      to="/category/berries"
-                      onClick={() => setIsMenuOpen(false)}
-                      className="flex items-center justify-between py-1 hover:text-[#8B5E3C] transition-colors"
-                    >
-                      <span>Berries</span>
-                      <ArrowRight className="w-3.5 h-3.5 text-[#8B5E3C]" />
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/category/exotic-nuts"
-                      onClick={() => setIsMenuOpen(false)}
-                      className="flex items-center justify-between py-1 hover:text-[#8B5E3C] transition-colors"
-                    >
-                      <span>Exotic Nuts</span>
-                      <ArrowRight className="w-3.5 h-3.5 text-[#8B5E3C]" />
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/category/mixes"
-                      onClick={() => setIsMenuOpen(false)}
-                      className="flex items-center justify-between py-1 hover:text-[#8B5E3C] transition-colors"
-                    >
-                      <span>Mixes</span>
-                      <ArrowRight className="w-3.5 h-3.5 text-[#8B5E3C]" />
-                    </Link>
-                  </li>
+
+
                   <li>
                     <Link
                       to="/category/spices"

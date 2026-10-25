@@ -741,7 +741,12 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             slug: p.slug,
             name: p.name,
             subtitle: p.subtitle || matchingInitial?.subtitle || '',
-            category: (p.category || matchingInitial?.category || 'nuts') as any,
+            category: (() => {
+              const raw = String(p.category || matchingInitial?.category || 'nuts').toLowerCase();
+              if (raw === 'mixes') return 'nuts';
+              if (raw === 'berries') return 'dried-fruits';
+              return raw;
+            })() as any,
             badge: p.badge || matchingInitial?.badge || undefined,
             origin: p.origin || matchingInitial?.origin || 'Ceylon, Sri Lanka',
             roastStyle: p.roast_style || matchingInitial?.roastStyle || undefined,

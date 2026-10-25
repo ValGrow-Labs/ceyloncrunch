@@ -39,10 +39,24 @@ const DEFAULT_CATEGORIES: CategoryItem[] = [
   },
   {
     id: 'cat-3',
+    name: 'Dates',
+    slug: 'dates',
+    description: 'Plump Medjool and Arabian dates rich in natural energy and minerals',
+    image: '/products/dates/dates.jpg',
+  },
+  {
+    id: 'cat-4',
     name: 'Seeds & Grains',
     slug: 'seeds',
     description: 'Raw organic pumpkin seeds, chia seeds, golden flax, quinoa, and sunflower seeds',
     image: '/products/seeds/pumpkin-seeds.jpeg',
+  },
+  {
+    id: 'cat-5',
+    name: 'Whole Spices',
+    slug: 'spices',
+    description: 'True Ceylon Alba cinnamon quills, green cardamom pods, and whole black peppercorns',
+    image: '/products/spices/cinnamon-spices.jpg',
   },
 ];
 
@@ -63,15 +77,23 @@ export const CategoriesTab: React.FC<CategoriesTabProps> = ({
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          const validSlugs = new Set(['nuts', 'dried-fruits', 'seeds']);
-          const filtered = parsed.filter((c: CategoryItem) => validSlugs.has(c.slug));
+          const validSlugs = new Set(['nuts', 'dried-fruits', 'dates', 'seeds', 'spices', 'gifts-hampers']);
+          const filtered = parsed.filter(
+            (c: CategoryItem) => validSlugs.has(c.slug) && c.slug !== 'berries' && c.slug !== 'mixes'
+          );
           if (filtered.length > 0) {
-            return filtered.map((c: CategoryItem) => {
+            const mapped = filtered.map((c: CategoryItem) => {
               if (c.slug === 'nuts' && (!c.image || c.image.includes('wikimedia'))) c.image = '/products/nuts/cashews.jpg';
               if (c.slug === 'dried-fruits' && (!c.image || c.image.includes('wikimedia'))) c.image = '/products/dried-fruits/dried-mango.jpeg';
+              if (c.slug === 'dates' && (!c.image || c.image.includes('unsplash') || c.image.includes('wikimedia'))) c.image = '/products/dates/dates.jpg';
               if (c.slug === 'seeds' && (!c.image || c.image.includes('wikimedia'))) c.image = '/products/seeds/pumpkin-seeds.jpeg';
+              if (c.slug === 'spices' && (!c.image || c.image.includes('wikimedia'))) c.image = '/products/spices/cinnamon-spices.jpg';
               return c;
             });
+            try {
+              localStorage.setItem('ceylon_crunch_categories', JSON.stringify(mapped));
+            } catch {}
+            return mapped;
           }
         }
       }
@@ -90,9 +112,10 @@ export const CategoriesTab: React.FC<CategoriesTabProps> = ({
   const [image, setImage] = useState('');
 
   const saveToStorage = (updated: CategoryItem[]) => {
-    setCategories(updated);
+    const cleaned = updated.filter((c) => c.slug !== 'berries' && c.slug !== 'mixes');
+    setCategories(cleaned);
     try {
-      localStorage.setItem('ceylon_crunch_categories', JSON.stringify(updated));
+      localStorage.setItem('ceylon_crunch_categories', JSON.stringify(cleaned));
     } catch {}
   };
 
@@ -127,7 +150,10 @@ export const CategoriesTab: React.FC<CategoriesTabProps> = ({
         .toLowerCase()
         .trim()
         .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-+|-+$/g, '');
+    if (finalSlug === 'berries' || finalSlug === 'mixes') {
+      showToast('The categories "berries" and "mixes" are discontinued.');
+      return;
+    }
 
     if (editingCategory) {
       const updated = categories.map((c) =>

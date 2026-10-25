@@ -83,20 +83,7 @@ export const CategoryPage: React.FC = () => {
             { id: 'makhana', label: 'Fox Nuts' },
           ],
         };
-      case 'berries':
-        return {
-          title: 'Berries',
-          tagline: 'Antioxidant-Rich Sun-Dried Berries.',
-          kicker: 'Orchard Harvest',
-          description:
-            'Plump Blueberries, ruby Cranberries, and tangy Black Currant gently dried to preserve their vibrant tart-sweet flavour.',
-          subFilters: [
-            { id: 'all', label: 'All Berries' },
-            { id: 'blueberries', label: 'Blueberries' },
-            { id: 'cranberries', label: 'Cranberries' },
-            { id: 'currant', label: 'Black Currant' },
-          ],
-        };
+
       case 'exotic-nuts':
         return {
           title: 'Exotic Nuts',
@@ -111,21 +98,7 @@ export const CategoryPage: React.FC = () => {
             { id: 'pecan', label: 'Pecan Nuts' },
           ],
         };
-      case 'mixes':
-        return {
-          title: 'Mixes',
-          tagline: 'Artisanal Blends for Sustained Daily Energy.',
-          kicker: 'Handcrafted Blends',
-          description:
-            'Balanced combinations of Berries Mix, Nut Mix, Seeds Mix, and Trail Mix crafted for wholesome everyday snacking.',
-          subFilters: [
-            { id: 'all', label: 'All Mixes' },
-            { id: 'berries-mix', label: 'Berries Mix' },
-            { id: 'nut-mix', label: 'Nut Mix' },
-            { id: 'seeds-mix', label: 'Seeds Mix' },
-            { id: 'trail-mix', label: 'Trail Mix' },
-          ],
-        };
+
       case 'spices':
         return {
           title: 'Whole Spices',
@@ -190,13 +163,6 @@ export const CategoryPage: React.FC = () => {
         if (query === 'sunflower') return name.includes('sunflower');
         if (query === 'flax') return name.includes('flax');
         if (query === 'makhana') return name.includes('fox nut') || name.includes('makhana');
-        if (query === 'blueberries') return name.includes('blueberr');
-        if (query === 'cranberries') return name.includes('cranberr');
-        if (query === 'currant') return name.includes('currant');
-        if (query === 'berries-mix') return name.includes('berries mix');
-        if (query === 'nut-mix') return name.includes('nut mix');
-        if (query === 'seeds-mix') return name.includes('seeds mix');
-        if (query === 'trail-mix') return name.includes('trail mix');
         return true;
       })
       .sort((a, b) => {

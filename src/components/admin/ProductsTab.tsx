@@ -199,7 +199,9 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
     { slug: 'all', name: 'All Categories' },
     { slug: 'nuts', name: 'Nuts' },
     { slug: 'dried-fruits', name: 'Dried Fruits' },
+    { slug: 'dates', name: 'Dates' },
     { slug: 'seeds', name: 'Seeds & Grains' },
+    { slug: 'spices', name: 'Whole Spices' },
   ];
 
   // Filter products
@@ -606,7 +608,9 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
                 >
                   <option value="Nuts">Nuts</option>
                   <option value="Dried Fruits">Dried Fruits</option>
+                  <option value="Dates">Dates</option>
                   <option value="Seeds & Grains">Seeds & Grains</option>
+                  <option value="Whole Spices">Whole Spices</option>
                 </select>
               </div>
 
