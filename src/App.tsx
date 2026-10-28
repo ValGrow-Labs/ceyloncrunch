@@ -31,6 +31,7 @@ import { TermsConditions } from './pages/TermsConditions';
 import { ReturnsRefunds } from './pages/ReturnsRefunds';
 import { Admin } from './pages/Admin';
 import { Profile } from './pages/Profile';
+import { Landing } from './pages/Landing';
 import { NotFound } from './pages/NotFound';
 
 import { Database, AlertTriangle } from 'lucide-react';
@@ -61,6 +62,8 @@ function AppShell() {
       <main className="flex-1 w-full max-w-[1320px] mx-auto pt-20 sm:pt-24 lg:pt-28 px-4 sm:px-6 lg:px-8 pb-16 lg:pb-12">
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/landing" element={<Landing />} />
+          <Route path="/welcome" element={<Landing />} />
           <Route path="/shop" element={<Shop />} />
           <Route path="/category/:slug" element={<CategoryPage />} />
           <Route path="/product/:slug" element={<ProductDetail />} />
