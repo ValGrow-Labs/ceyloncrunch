@@ -459,6 +459,11 @@ export const Header: React.FC = () => {
                 </span>
                 <ul className="space-y-2 text-sm text-[#424843]">
                   <li>
+                    <Link to="/landingpage" onClick={() => setIsMenuOpen(false)} className="hover:text-[#1F3D2B] block py-1 font-semibold text-[#B5741E]">
+                      Brand Showcase (Landing Page)
+                    </Link>
+                  </li>
+                  <li>
                     <Link to="/our-story" onClick={() => setIsMenuOpen(false)} className="hover:text-[#1F3D2B] block py-1">
                       Our Story & Heritage
                     </Link>

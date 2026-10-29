@@ -153,7 +153,7 @@ export const Landing: React.FC = () => {
               >
                 <div className="flex items-center gap-2 text-xs font-semibold text-[#1F3D2B]">
                   <ShieldCheck className="w-4 h-4 text-[#B5741E] shrink-0" />
-                  <span>100% Pure &amp; Natural</span>
+                  <span>Zero Preservatives</span>
                 </div>
                 <div className="flex items-center gap-2 text-xs font-semibold text-[#1F3D2B]">
                   <Flame className="w-4 h-4 text-[#B5741E] shrink-0" />
@@ -414,7 +414,7 @@ export const Landing: React.FC = () => {
         {/* Category Filter Chips */}
         <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
           {[
-            { id: 'all', label: 'All Provisions' },
+            { id: 'all', label: 'All Products' },
             { id: 'nuts', label: 'Artisan Nuts' },
             { id: 'dried-fruits', label: 'Sun-Dried Fruits' },
             { id: 'dates', label: 'Royal Dates' },

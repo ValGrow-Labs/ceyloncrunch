@@ -63,6 +63,8 @@ function AppShell() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/landing" element={<Landing />} />
+          <Route path="/landingpage" element={<Landing />} />
+          <Route path="/landing-page" element={<Landing />} />
           <Route path="/welcome" element={<Landing />} />
           <Route path="/shop" element={<Shop />} />
           <Route path="/category/:slug" element={<CategoryPage />} />
