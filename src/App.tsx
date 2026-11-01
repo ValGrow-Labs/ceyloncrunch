@@ -31,6 +31,7 @@ import { TermsConditions } from './pages/TermsConditions';
 import { ReturnsRefunds } from './pages/ReturnsRefunds';
 import { Admin } from './pages/Admin';
 import { Profile } from './pages/Profile';
+import { LinkBio } from './pages/LinkBio';
 import { NotFound } from './pages/NotFound';
 
 import { Database, AlertTriangle } from 'lucide-react';
@@ -39,6 +40,26 @@ import { isSupabaseConfigured } from './lib/supabase';
 function AppShell() {
   const location = useLocation();
   const isAdminPage = location.pathname === '/admin' || location.pathname.startsWith('/admin/');
+
+  const isLinkBioPage =
+    location.pathname === '/links' ||
+    location.pathname === '/bio' ||
+    location.pathname === '/linktree' ||
+    location.pathname === '/link-in-bio';
+
+  if (isLinkBioPage) {
+    return (
+      <div className="min-h-screen bg-[#FBF7F0] text-[#2B2B2B] antialiased w-full selection:bg-[#EADFD0] selection:text-[#1F3D2B]">
+        <Routes>
+          <Route path="/links" element={<LinkBio />} />
+          <Route path="/bio" element={<LinkBio />} />
+          <Route path="/linktree" element={<LinkBio />} />
+          <Route path="/link-in-bio" element={<LinkBio />} />
+        </Routes>
+        <Toast />
+      </div>
+    );
+  }
 
   if (isAdminPage) {
     return (
