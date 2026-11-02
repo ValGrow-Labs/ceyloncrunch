@@ -1,8 +1,12 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
-// Retrieve credentials from Vite environment variables
-const rawUrl = import.meta.env.VITE_SUPABASE_URL as string | undefined;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
+// Production default Supabase fallback credentials
+const DEFAULT_SUPABASE_URL = 'https://qffmgeuolylznbvkhegn.supabase.co';
+const DEFAULT_SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFmZm1nZXVvbHlsem5idmtoZWduIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4OTM3NjIsImV4cCI6MjEwNzQ2OTc2Mn0.uUM5WypotpetJaLLPQyqmBT1laZeEeCDTyXExMSgYLs';
+
+// Retrieve credentials from Vite environment variables (falls back to production defaults)
+const rawUrl = (import.meta.env.VITE_SUPABASE_URL as string | undefined) || DEFAULT_SUPABASE_URL;
+const supabaseAnonKey = (import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined) || DEFAULT_SUPABASE_ANON_KEY;
 
 // Normalize URL: Strip accidental '/rest/v1' or trailing slashes from dashboard copy-paste
 export const supabaseUrl = rawUrl
