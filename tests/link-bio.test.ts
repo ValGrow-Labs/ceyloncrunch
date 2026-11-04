@@ -51,11 +51,11 @@ test('LinkBio - Config Validation', async (t) => {
       'TikTok link must be present'
     );
 
-    // 6. YouTube
+    // 6. YouTube (removed per design requirements)
     assert.ok(
-      linkBioConfig.buttons.some(b => b.url.includes('youtube.com')) &&
-      linkBioConfig.socialLinks.some(s => s.url.includes('youtube.com')),
-      'YouTube link must be present'
+      !linkBioConfig.buttons.some(b => b.url.includes('youtube.com')) &&
+      !linkBioConfig.socialLinks.some(s => s.url.includes('youtube.com')),
+      'YouTube links should be removed'
     );
 
     // 7. Contact Us
@@ -119,5 +119,6 @@ test('LinkBio - Component File Checks', () => {
   assert.ok(linkBioCode.includes('brand.logoUrl'), 'Must render brand logo from config');
   assert.ok(linkBioCode.includes('handleShare'), 'Should have link sharing capability');
   assert.ok(linkBioCode.includes('selectedCategory'), 'Should allow filtering/categorizing links');
+  assert.ok(linkBioCode.includes('Island Delivery'), 'Should display Island Delivery');
 });
 

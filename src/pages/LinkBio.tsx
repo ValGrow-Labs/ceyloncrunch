@@ -12,7 +12,6 @@ import {
   Sparkles,
   Instagram,
   Facebook,
-  Youtube,
   Share2,
   Check,
   Copy,
@@ -64,8 +63,6 @@ const renderButtonIcon = (iconName: string, className = 'w-5 h-5') => {
       return <Instagram className={className} />;
     case 'TikTok':
       return <TikTokIcon className={className} />;
-    case 'Youtube':
-      return <Youtube className={className} />;
     case 'Facebook':
       return <Facebook className={className} />;
     case 'Mail':
@@ -85,8 +82,6 @@ const renderSocialIcon = (icon: SocialLink['icon'], className = 'w-5 h-5') => {
       return <Facebook className={className} />;
     case 'tiktok':
       return <TikTokIcon className={className} />;
-    case 'youtube':
-      return <Youtube className={className} />;
     case 'whatsapp':
       return <WhatsAppIcon className={className} />;
     default:
@@ -366,7 +361,7 @@ export const LinkBio: React.FC = () => {
         <div className="mt-8 w-full bg-white/70 backdrop-blur-xs border border-[#EADFD0] rounded-2xl p-4 flex items-center justify-between gap-3 text-xs text-[#6B6B6B]">
           <div className="flex items-center gap-2">
             <ShieldCheck className="w-4 h-4 text-[#C5A059] shrink-0" />
-            <span>100% Handcrafted • Island-Wide Dispatch • Direct WhatsApp Support</span>
+            <span>100% Handcrafted • Island Delivery • Direct WhatsApp Support</span>
           </div>
         </div>
 

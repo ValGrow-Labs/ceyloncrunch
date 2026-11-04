@@ -3,7 +3,7 @@ export interface SocialLink {
   name: string;
   url: string;
   handle: string;
-  icon: 'instagram' | 'facebook' | 'tiktok' | 'youtube' | 'whatsapp' | 'email' | 'phone';
+  icon: 'instagram' | 'facebook' | 'tiktok' | 'whatsapp' | 'email' | 'phone';
   color: string;
 }
 
@@ -69,14 +69,6 @@ export const linkBioConfig: LinkBioConfig = {
       handle: '@ceyloncrunchlk',
       icon: 'tiktok',
       color: '#000000',
-    },
-    {
-      id: 'youtube',
-      name: 'YouTube',
-      url: 'https://www.youtube.com/@CeylonCrunch', // Configurable channel link
-      handle: '@CeylonCrunch',
-      icon: 'youtube',
-      color: '#FF0000',
     },
     {
       id: 'whatsapp',
@@ -163,15 +155,6 @@ export const linkBioConfig: LinkBioConfig = {
       url: 'https://www.tiktok.com/@ceyloncrunchlk?_r=1&_t=ZS-9APNpLNJ9l8',
       isExternal: true,
       icon: 'TikTok',
-      category: 'social',
-    },
-    {
-      id: 'youtube-channel',
-      title: 'Subscribe on YouTube',
-      subtitle: 'Watch farm-to-table sourcing and roasting stories',
-      url: 'https://www.youtube.com/@CeylonCrunch',
-      isExternal: true,
-      icon: 'Youtube',
       category: 'social',
     },
     {
