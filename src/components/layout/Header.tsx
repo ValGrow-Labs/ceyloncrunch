@@ -6,7 +6,7 @@ import { CATALOG_DIRECTORY } from '../../data/products';
 import { Search, ShoppingBag, Menu, X, UserRound, ArrowRight, Phone, ChevronDown, LogIn } from 'lucide-react';
 
 export const Header: React.FC = () => {
-  const { itemCount, patronProfile, isAdmin, customerEmail, siteSettings } = useStore();
+  const { itemCount, patronProfile, isAdmin, customerEmail } = useStore();
   const navigate = useNavigate();
 
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -79,14 +79,6 @@ export const Header: React.FC = () => {
   return (
     <>
       <header className="fixed top-0 left-0 w-full z-40 pt-safe bg-[#FBF7F0]/95 backdrop-blur-xl border-b border-[#EADFD0] shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
-        {/* Top Free Island Delivery Banner */}
-        {siteSettings?.announcementActive !== false && (
-          <div className="bg-[#1F3D2B] text-[#FBF7F0] px-3 sm:px-4 py-1.5 text-center transition-all">
-            <p className="font-sans text-[10px] sm:text-[11px] lg:text-xs font-medium tracking-wide line-clamp-1 sm:line-clamp-none">
-              {siteSettings?.announcementBanner || 'Free island-wide delivery on orders over Rs. 3,000 · Small-Batch Freshness Guaranteed'}
-            </p>
-          </div>
-        )}
         {/* Main Navigation Bar */}
         <div className="max-w-[1320px] mx-auto h-15 sm:h-16 px-3 sm:px-4 lg:px-8 flex items-center justify-between gap-2 sm:gap-4 relative">
           <div className="flex items-center gap-1 sm:gap-2 shrink-0">
@@ -147,17 +139,14 @@ export const Header: React.FC = () => {
                     className="absolute left-4 right-4 top-full z-50 pt-2 max-w-[1240px] mx-auto pointer-events-auto"
                   >
                     <div className="rounded-2xl border border-[#EADFD0] bg-white p-5 sm:p-6 shadow-2xl">
-                      {/* Category Headlines Only - Balanced 8-Column Grid */}
-                      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 lg:gap-4 items-end">
+                      {/* Category Headlines Only - Balanced Grid */}
+                      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 lg:gap-4 items-end">
                         {[
-                          { title: 'ALL PROVISIONS', slug: 'all', href: '/shop' },
+                          { title: 'ALL PRODUCTS', slug: 'all', href: '/shop' },
                           { title: 'NUTS', slug: 'nuts', href: '/category/nuts' },
                           { title: 'DRIED FRUITS', slug: 'dried-fruits', href: '/category/dried-fruits' },
                           { title: 'DATES', slug: 'dates', href: '/category/dates' },
                           { title: 'SEEDS', slug: 'seeds', href: '/category/seeds' },
-                          { title: 'BERRIES', slug: 'berries', href: '/category/berries' },
-                          { title: 'EXOTIC NUTS', slug: 'exotic-nuts', href: '/category/exotic-nuts' },
-                          { title: 'MIXES', slug: 'mixes', href: '/category/mixes' },
                           { title: 'WHOLE SPICES', slug: 'spices', href: '/category/spices' },
                         ].map((cat) => (
                           <Link
@@ -379,9 +368,6 @@ export const Header: React.FC = () => {
             <div className="flex flex-col py-4 space-y-6 flex-1">
               {/* Shop Categories */}
               <div>
-                <span className="text-[11px] font-sans font-bold uppercase tracking-wider text-[#8B5E3C] block mb-2.5">
-                  Harvest Categories
-                </span>
                 <ul className="space-y-2 font-serif text-base text-[#1F3D2B]">
                   <li>
                     <Link
@@ -389,7 +375,7 @@ export const Header: React.FC = () => {
                       onClick={() => setIsMenuOpen(false)}
                       className="flex items-center justify-between py-1 hover:text-[#8B5E3C] transition-colors"
                     >
-                      <span>All Provisions</span>
+                      <span>All Products</span>
                       <ArrowRight className="w-3.5 h-3.5 text-[#8B5E3C]" />
                     </Link>
                   </li>
@@ -430,36 +416,6 @@ export const Header: React.FC = () => {
                       className="flex items-center justify-between py-1 hover:text-[#8B5E3C] transition-colors"
                     >
                       <span>Seeds</span>
-                      <ArrowRight className="w-3.5 h-3.5 text-[#8B5E3C]" />
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/category/berries"
-                      onClick={() => setIsMenuOpen(false)}
-                      className="flex items-center justify-between py-1 hover:text-[#8B5E3C] transition-colors"
-                    >
-                      <span>Berries</span>
-                      <ArrowRight className="w-3.5 h-3.5 text-[#8B5E3C]" />
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/category/exotic-nuts"
-                      onClick={() => setIsMenuOpen(false)}
-                      className="flex items-center justify-between py-1 hover:text-[#8B5E3C] transition-colors"
-                    >
-                      <span>Exotic Nuts</span>
-                      <ArrowRight className="w-3.5 h-3.5 text-[#8B5E3C]" />
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/category/mixes"
-                      onClick={() => setIsMenuOpen(false)}
-                      className="flex items-center justify-between py-1 hover:text-[#8B5E3C] transition-colors"
-                    >
-                      <span>Mixes</span>
                       <ArrowRight className="w-3.5 h-3.5 text-[#8B5E3C]" />
                     </Link>
                   </li>

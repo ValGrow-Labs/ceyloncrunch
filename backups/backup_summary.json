@@ -1,19 +1,19 @@
 {
-  "timestamp": "2026-10-15T11:54:53.985Z",
+  "timestamp": "2026-10-23T15:48:43.139Z",
   "url": "https://qffmgeuolylznbvkhegn.supabase.co",
   "tables": {
     "products": {
-      "count": 32,
+      "count": 38,
       "status": "OK",
       "filePath": "backups\\products.json"
     },
     "product_variants": {
-      "count": 128,
+      "count": 149,
       "status": "OK",
       "filePath": "backups\\product_variants.json"
     },
     "orders": {
-      "count": 2,
+      "count": 0,
       "status": "OK",
       "filePath": "backups\\orders.json"
     },
@@ -23,7 +23,7 @@
       "filePath": "backups\\order_items.json"
     },
     "reviews": {
-      "count": 0,
+      "count": 1,
       "status": "OK",
       "filePath": "backups\\reviews.json"
     },

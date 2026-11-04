@@ -44,6 +44,7 @@ interface ProductsTabProps {
       ingredients?: string;
       isFeatured?: boolean;
       images?: string[];
+      isActive?: boolean;
     }
   ) => Promise<{ success: boolean; error?: string }>;
   onUpdateVariant: (
@@ -55,6 +56,7 @@ interface ProductsTabProps {
   ) => Promise<void>;
   onDeleteProduct: (productId: string) => Promise<{ success: boolean; error?: string }>;
   onUploadImage: (productId: string, file: File) => Promise<void>;
+  onToggleProductVisibility?: (productId: string, isActive: boolean) => Promise<{ success: boolean; error?: string }>;
   showToast: (msg: string) => void;
   isAddModalOpen?: boolean;
   onCloseAddModal?: () => void;
@@ -66,6 +68,20 @@ interface VariantRow {
   price: string;
 }
 
+export const ADMIN_PRODUCT_CATEGORIES = [
+  { slug: 'nuts', name: 'Nuts' },
+  { slug: 'dried-fruits', name: 'Dried Fruits' },
+  { slug: 'dates', name: 'Dates' },
+  { slug: 'seeds', name: 'Seeds & Grains' },
+  { slug: 'exotic-nuts', name: 'Exotic Nuts' },
+  { slug: 'spices', name: 'Whole Spices' },
+  { slug: 'gifts-hampers', name: 'Curated Hampers' },
+  { slug: 'healthy-snacks', name: 'Healthy Snacks' },
+  { slug: 'honey', name: 'Honey' },
+  { slug: 'tea-coffee', name: 'Tea & Coffee' },
+  { slug: 'chocolates', name: 'Chocolates' },
+];
+
 export const ProductsTab: React.FC<ProductsTabProps> = ({
   products,
   onCreateProduct,
@@ -73,6 +89,7 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
   onUpdateVariant,
   onDeleteProduct,
   onUploadImage,
+  onToggleProductVisibility,
   showToast,
   isAddModalOpen = false,
   onCloseAddModal,
@@ -87,40 +104,19 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
 
-  // Hidden products state
-  const [hiddenProductIds, setHiddenProductIds] = useState<Set<string>>(() => {
-    try {
-      const saved = localStorage.getItem('ceylon_crunch_hidden_products');
-      if (saved) return new Set(JSON.parse(saved));
-    } catch {}
-    return new Set<string>();
-  });
-
-  const handleToggleHide = (productId: string, productName: string) => {
-    setHiddenProductIds((prev) => {
-      const next = new Set(prev);
-      const isCurrentlyHidden = next.has(productId);
-      if (isCurrentlyHidden) {
-        next.delete(productId);
-        showToast(`"${productName}" is now visible on storefront.`);
-      } else {
-        next.add(productId);
-        showToast(`"${productName}" is now hidden from storefront.`);
-      }
-      try {
-        localStorage.setItem(
-          'ceylon_crunch_hidden_products',
-          JSON.stringify(Array.from(next))
-        );
-      } catch {}
-      return next;
-    });
+  const handleToggleHide = async (productId: string, productName: string, currentIsActive: boolean) => {
+    const newIsActive = !currentIsActive;
+    if (onToggleProductVisibility) {
+      await onToggleProductVisibility(productId, newIsActive);
+    } else {
+      showToast(newIsActive ? `"${productName}" is now visible on storefront.` : `"${productName}" is now hidden from storefront.`);
+    }
   };
 
   // 1. Basic Info Fields
   const [name, setName] = useState('Roasted Cashews');
   const [slug, setSlug] = useState('roasted-cashews');
-  const [category, setCategory] = useState<string>('Roasted Nuts');
+  const [category, setCategory] = useState<string>('nuts');
   const [price, setPrice] = useState('1200');
   const [description, setDescription] = useState(
     'Golden-roasted to perfection, our cashews are slow-roasted in small batches over measured heat.'
@@ -162,19 +158,10 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
     }
   }, [isAddModalOpen]);
 
-  // Categories list
+  // Categories list for filter bar
   const categories = [
     { slug: 'all', name: 'All Categories' },
-    { slug: 'Roasted Nuts', name: 'Roasted Nuts' },
-    { slug: 'Raw Nuts', name: 'Raw Nuts' },
-    { slug: 'Dried Fruits', name: 'Dried Fruits' },
-    { slug: 'Dates', name: 'Dates' },
-    { slug: 'Seeds & Grains', name: 'Seeds & Grains' },
-    { slug: 'Berries', name: 'Berries' },
-    { slug: 'Exotic Nuts', name: 'Exotic Nuts' },
-    { slug: 'Mixes', name: 'Mixes' },
-    { slug: 'Whole Spices', name: 'Whole Spices' },
-    { slug: 'Curated Hampers', name: 'Curated Hampers' },
+    ...ADMIN_PRODUCT_CATEGORIES,
   ];
 
   // Filter products
@@ -188,8 +175,7 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
 
       const matchCat =
         categoryFilter === 'all' ||
-        p.category.toLowerCase() === categoryFilter.toLowerCase() ||
-        p.category.replace('-', ' ').toLowerCase() === categoryFilter.toLowerCase();
+        p.category.toLowerCase() === categoryFilter.toLowerCase();
       return matchSearch && matchCat;
     });
   }, [products, searchQuery, categoryFilter]);
@@ -198,7 +184,7 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
     setEditingProduct(null);
     setName('');
     setSlug('');
-    setCategory('Roasted Nuts');
+    setCategory('nuts');
     setPrice('1200');
     setDescription('');
     setImageUrl('/img/product-1.jpg');
@@ -229,7 +215,7 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
     setEditingProduct(prod);
     setName(prod.name);
     setSlug(prod.slug || prod.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''));
-    setCategory(prod.category.replace('-', ' ') || 'Roasted Nuts');
+    setCategory(prod.category || 'nuts');
     
     const primaryVariant = prod.variants[0];
     setPrice(primaryVariant ? String(primaryVariant.price) : '1200');
@@ -260,7 +246,7 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
     setBadgeColor('Green (Bestseller)');
     setRating(String(prod.rating || 4.8));
     setReviewCount(String(prod.reviewCount || 142));
-    setIsActive(!hiddenProductIds.has(prod.id));
+    setIsActive(prod.isActive !== false);
 
     setIsFormOpen(true);
   };
@@ -341,10 +327,11 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
     if (editingProduct) {
       const res = await onUpdateProductDetails(editingProduct.id, {
         name,
-        category: category.toLowerCase().replace(/\s+/g, '-'),
+        category,
         badge: badgeText,
         description,
         images: imageUrl ? [imageUrl] : editingProduct.images,
+        isActive,
       });
 
       // Update variants if available
@@ -352,17 +339,6 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
         if (v.id && v.price) {
           await onUpdateVariant(editingProduct.id, v.id, Number(v.price) || numPrice);
         }
-      }
-
-      // Sync active state
-      if (!isActive) {
-        setHiddenProductIds((prev) => new Set(prev).add(editingProduct.id));
-      } else {
-        setHiddenProductIds((prev) => {
-          const next = new Set(prev);
-          next.delete(editingProduct.id);
-          return next;
-        });
       }
 
       setIsSubmitting(false);
@@ -375,7 +351,7 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
     } else {
       const res = await onCreateProduct({
         name,
-        category: category.toLowerCase().replace(/\s+/g, '-'),
+        category,
         badge: badgeText,
         images: imageUrl ? [imageUrl] : [],
         description: description || `${name} artisan provisions.`,
@@ -484,16 +460,11 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
                   onChange={(e) => setCategory(e.target.value)}
                   className="w-full h-11 px-4 bg-white rounded-xl border border-stone-200 text-stone-800 text-xs sm:text-sm focus:outline-none focus:border-[#1E4E35] cursor-pointer"
                 >
-                  <option value="Roasted Nuts">Roasted Nuts</option>
-                  <option value="Raw Nuts">Raw Nuts</option>
-                  <option value="Dried Fruits">Dried Fruits</option>
-                  <option value="Dates">Dates</option>
-                  <option value="Seeds & Grains">Seeds & Grains</option>
-                  <option value="Berries">Berries</option>
-                  <option value="Exotic Nuts">Exotic Nuts</option>
-                  <option value="Mixes">Mixes</option>
-                  <option value="Whole Spices">Whole Spices</option>
-                  <option value="Curated Hampers">Curated Hampers</option>
+                  {ADMIN_PRODUCT_CATEGORIES.map((c) => (
+                    <option key={c.slug} value={c.slug}>
+                      {c.name}
+                    </option>
+                  ))}
                 </select>
               </div>
 
@@ -1006,6 +977,11 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
                             {prod.category.replace('-', ' ')}
                           </span>
                           {stockStatus}
+                          {prod.isActive === false && (
+                            <span className="px-2 py-0.5 rounded-md bg-stone-200 text-stone-600 text-[10px] font-semibold">
+                              Hidden
+                            </span>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -1026,14 +1002,14 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
                         </button>
                         <button
                           type="button"
-                          onClick={() => handleToggleHide(prod.id, prod.name)}
+                          onClick={() => handleToggleHide(prod.id, prod.name, prod.isActive !== false)}
                           className={`px-3.5 py-1 rounded-xl font-bold text-xs transition-colors cursor-pointer ${
-                            hiddenProductIds.has(prod.id)
+                            prod.isActive === false
                               ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
                               : 'bg-[#FDF3E7] hover:bg-[#FAE7D0] text-[#B45309]'
                           }`}
                         >
-                          {hiddenProductIds.has(prod.id) ? 'Show' : 'Hide'}
+                          {prod.isActive === false ? 'Show' : 'Hide'}
                         </button>
                         <button
                           type="button"
@@ -1123,7 +1099,7 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
                         <td className="py-3 px-4">
                           <div className="flex items-center gap-1.5 flex-wrap">
                             {stockStatus}
-                            {hiddenProductIds.has(prod.id) && (
+                            {prod.isActive === false && (
                               <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-stone-100 text-stone-600 border border-stone-200">
                                 Hidden
                               </span>
@@ -1141,14 +1117,14 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
                             </button>
                             <button
                               type="button"
-                              onClick={() => handleToggleHide(prod.id, prod.name)}
+                              onClick={() => handleToggleHide(prod.id, prod.name, prod.isActive !== false)}
                               className={`px-3.5 py-1 rounded-xl font-bold text-xs transition-colors cursor-pointer ${
-                                hiddenProductIds.has(prod.id)
+                                prod.isActive === false
                                   ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
                                   : 'bg-[#FDF3E7] hover:bg-[#FAE7D0] text-[#B45309]'
                               }`}
                             >
-                              {hiddenProductIds.has(prod.id) ? 'Show' : 'Hide'}
+                              {prod.isActive === false ? 'Show' : 'Hide'}
                             </button>
                             <button
                               type="button"

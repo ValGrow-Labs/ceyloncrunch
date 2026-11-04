@@ -47,6 +47,7 @@ export const Admin: React.FC = () => {
     updateProductVariantOriginalPrice,
     createProduct,
     updateProductDetails,
+    toggleProductVisibility,
     deleteProduct,
     subscribers,
     refreshSubscribers,
@@ -253,6 +254,7 @@ export const Admin: React.FC = () => {
               onUpdateVariant={handleUpdateVariant}
               onDeleteProduct={deleteProduct}
               onUploadImage={handleUploadProductImage}
+              onToggleProductVisibility={toggleProductVisibility}
               showToast={showToast}
               isAddModalOpen={isAddProductModalOpen}
               onCloseAddModal={() => setIsAddProductModalOpen(false)}

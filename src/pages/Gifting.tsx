@@ -22,7 +22,7 @@ export const Gifting: React.FC = () => {
 
   // Filter hampers by occasion
   const hampers = useMemo(() => {
-    const allHampers = products.filter((p) => p.category === 'gifts-hampers');
+    const allHampers = products.filter((p) => p.category === 'gifts-hampers' && p.isActive !== false);
     if (selectedOccasion === 'All') return allHampers;
     return allHampers.filter((h) => h.occasions?.includes(selectedOccasion) || true);
   }, [products, selectedOccasion]);

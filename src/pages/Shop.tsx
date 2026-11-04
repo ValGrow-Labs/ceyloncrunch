@@ -48,6 +48,7 @@ export const Shop: React.FC = () => {
   // Filter & Sort Logic
   const filteredProducts = useMemo(() => {
     return products
+      .filter((p) => p.isActive !== false)
       .filter((p) => {
         // Category filter
         if (currentCategory !== 'all' && p.category !== currentCategory) {

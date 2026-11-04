@@ -31,6 +31,7 @@ import { TermsConditions } from './pages/TermsConditions';
 import { ReturnsRefunds } from './pages/ReturnsRefunds';
 import { Admin } from './pages/Admin';
 import { Profile } from './pages/Profile';
+import { LinkBio } from './pages/LinkBio';
 import { NotFound } from './pages/NotFound';
 
 import { Database, AlertTriangle } from 'lucide-react';
@@ -39,6 +40,24 @@ import { isSupabaseConfigured } from './lib/supabase';
 function AppShell() {
   const location = useLocation();
   const isAdminPage = location.pathname === '/admin' || location.pathname.startsWith('/admin/');
+
+  const isLinkBioPage =
+    location.pathname === '/qr' ||
+    location.pathname === '/qr/' ||
+    location.pathname === '/bio' ||
+    location.pathname === '/bio/';
+
+  if (isLinkBioPage) {
+    return (
+      <div className="min-h-screen bg-[#FBF7F0] text-[#2B2B2B] antialiased w-full selection:bg-[#EADFD0] selection:text-[#1F3D2B]">
+        <Routes>
+          <Route path="/qr" element={<LinkBio />} />
+          <Route path="/bio" element={<LinkBio />} />
+        </Routes>
+        <Toast />
+      </div>
+    );
+  }
 
   if (isAdminPage) {
     return (
@@ -54,11 +73,9 @@ function AppShell() {
 
   return (
     <div className="flex flex-col min-h-screen bg-[#FBF7F0] text-[#2B2B2B] antialiased overflow-x-clip">
-      {/* Header */}
       <Header />
 
-      {/* Main Content Area */}
-      <main className="flex-1 w-full max-w-[1320px] mx-auto pt-20 sm:pt-24 lg:pt-28 px-4 sm:px-6 lg:px-8 pb-16 lg:pb-12">
+      <main className="flex-1 w-full max-w-[1320px] mx-auto pt-16 sm:pt-18 lg:pt-20 pb-16 lg:pb-12 px-4 sm:px-6 lg:px-8">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/shop" element={<Shop />} />
@@ -84,6 +101,8 @@ function AppShell() {
           <Route path="/terms-and-conditions" element={<TermsConditions />} />
           <Route path="/refund-policy" element={<ReturnsRefunds />} />
           <Route path="/returns" element={<ReturnsRefunds />} />
+          <Route path="/admin" element={<Admin />} />
+          <Route path="/admin/*" element={<Admin />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/account" element={<Profile />} />
           <Route path="/login" element={<Profile defaultMode="signin" />} />
@@ -94,16 +113,10 @@ function AppShell() {
         </Routes>
       </main>
 
-      {/* Footer */}
-      <Footer />
+      {!isAdminPage && <Footer />}
+      {!isAdminPage && <WhatsAppButton />}
+      {!isAdminPage && <MobileTabBar />}
 
-      {/* Floating WhatsApp Action Button (Hidden on /checkout) */}
-      <WhatsAppButton />
-
-      {/* Mobile Bottom Tab Bar (< 1024px) */}
-      <MobileTabBar />
-
-      {/* Global Aria-Live Toast */}
       <Toast />
     </div>
   );

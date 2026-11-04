@@ -1,31 +1,5 @@
 [
   {
-    "id": "c6c67137-5963-468c-bbb9-d66119930362",
-    "slug": "black-raisins",
-    "name": "Black Raisins",
-    "subtitle": "Naturally Sweet & Seedless · Sun-Dried",
-    "category": "dried-fruits",
-    "badge": "Sun-Dried",
-    "origin": "Selected Mediterranean Vineyards",
-    "roast_style": "Sun-dried raw whole vine fruit",
-    "rating": 4.9,
-    "review_count": 24,
-    "images": [
-      "/products/dried-fruits/black-raisins.jpeg"
-    ],
-    "description": "Naturally sun-dried plump black raisins with rich natural sweetness, succulent texture, and high iron and antioxidant content. Excellent for soaking, daily vitality, and wholesome baking.",
-    "extended_about": [
-      "Carefully harvested from sun-drenched vineyards and gently sun-dried to lock in natural sugars and dense minerals.",
-      "100% seedless with a luscious chew and clean finish without artificial additives."
-    ],
-    "ingredients": "100% Sun-Dried Seedless Black Raisins",
-    "storage": "Store in an airtight container in a cool, dry pantry.",
-    "shelf_life": "9 Months",
-    "allergen_notice": "Processed in a facility that handles tree nuts and seeds.",
-    "is_featured": true,
-    "created_at": "2026-10-14T16:01:14.769531+00:00"
-  },
-  {
     "id": "5f7242f5-8d7d-4124-b403-6841ac445511",
     "slug": "dried-apricots",
     "name": "Dried Apricots",
@@ -49,7 +23,12 @@
     "shelf_life": "8 Months",
     "allergen_notice": "Processed in a facility that handles tree nuts.",
     "is_featured": true,
-    "created_at": "2026-10-14T16:01:14.769531+00:00"
+    "created_at": "2026-10-14T16:01:14.769531+00:00",
+    "is_active": true,
+    "compare_at_price": null,
+    "allergen_info": null,
+    "display_order": 0,
+    "updated_at": "2026-10-15T12:11:02.80944+00:00"
   },
   {
     "id": "2da96274-a4d0-40ed-b4c8-c1e994988122",
@@ -75,7 +54,12 @@
     "shelf_life": "6 Months",
     "allergen_notice": "All-natural fruit. Packaged in a facility handling tree nuts.",
     "is_featured": false,
-    "created_at": "2026-10-14T16:01:14.769531+00:00"
+    "created_at": "2026-10-14T16:01:14.769531+00:00",
+    "is_active": true,
+    "compare_at_price": null,
+    "allergen_info": null,
+    "display_order": 0,
+    "updated_at": "2026-10-15T12:11:02.80944+00:00"
   },
   {
     "id": "95ce321a-1b46-46af-9c69-505de9a13e81",
@@ -101,7 +85,12 @@
     "shelf_life": "8 Months",
     "allergen_notice": "May contain occasional pit fragments.",
     "is_featured": true,
-    "created_at": "2026-10-14T16:01:14.769531+00:00"
+    "created_at": "2026-10-14T16:01:14.769531+00:00",
+    "is_active": true,
+    "compare_at_price": null,
+    "allergen_info": null,
+    "display_order": 0,
+    "updated_at": "2026-10-15T12:11:02.80944+00:00"
   },
   {
     "id": "f36e0c6c-f64b-4e45-bd45-1f373ebec19d",
@@ -127,7 +116,12 @@
     "shelf_life": "9 Months",
     "allergen_notice": "Packed in a facility handling tree nuts and seeds.",
     "is_featured": false,
-    "created_at": "2026-10-14T16:01:14.769531+00:00"
+    "created_at": "2026-10-14T16:01:14.769531+00:00",
+    "is_active": true,
+    "compare_at_price": null,
+    "allergen_info": null,
+    "display_order": 0,
+    "updated_at": "2026-10-15T12:11:02.80944+00:00"
   },
   {
     "id": "65920cb7-b9b7-4973-ad49-79771ee187e1",
@@ -153,7 +147,12 @@
     "shelf_life": "8 Months",
     "allergen_notice": "Processed in a facility handling tree nuts.",
     "is_featured": true,
-    "created_at": "2026-10-14T16:01:14.769531+00:00"
+    "created_at": "2026-10-14T16:01:14.769531+00:00",
+    "is_active": true,
+    "compare_at_price": null,
+    "allergen_info": null,
+    "display_order": 0,
+    "updated_at": "2026-10-15T12:11:02.80944+00:00"
   },
   {
     "id": "0de271b4-a544-42a6-a718-b3fc150a5046",
@@ -178,7 +177,12 @@
     "shelf_life": "7 Months",
     "allergen_notice": "May contain traces of tree nuts.",
     "is_featured": false,
-    "created_at": "2026-10-14T16:01:14.769531+00:00"
+    "created_at": "2026-10-14T16:01:14.769531+00:00",
+    "is_active": true,
+    "compare_at_price": null,
+    "allergen_info": null,
+    "display_order": 0,
+    "updated_at": "2026-10-15T12:11:02.80944+00:00"
   },
   {
     "id": "2eb9cd1d-5950-4b08-90d4-222be309496a",
@@ -204,7 +208,12 @@
     "shelf_life": "8 Months",
     "allergen_notice": "All-natural fruit.",
     "is_featured": true,
-    "created_at": "2026-10-14T16:01:14.769531+00:00"
+    "created_at": "2026-10-14T16:01:14.769531+00:00",
+    "is_active": true,
+    "compare_at_price": null,
+    "allergen_info": null,
+    "display_order": 0,
+    "updated_at": "2026-10-15T12:11:02.80944+00:00"
   },
   {
     "id": "aa9847bb-f81e-480e-abd6-9460f327521f",
@@ -229,7 +238,12 @@
     "shelf_life": "7 Months",
     "allergen_notice": "Packaged in a nut-handling environment.",
     "is_featured": false,
-    "created_at": "2026-10-14T16:01:14.769531+00:00"
+    "created_at": "2026-10-14T16:01:14.769531+00:00",
+    "is_active": true,
+    "compare_at_price": null,
+    "allergen_info": null,
+    "display_order": 0,
+    "updated_at": "2026-10-15T12:11:02.80944+00:00"
   },
   {
     "id": "e7da64da-17b3-49ab-b834-91284f054496",
@@ -254,7 +268,12 @@
     "shelf_life": "8 Months",
     "allergen_notice": "Processed in a facility handling tree nuts.",
     "is_featured": false,
-    "created_at": "2026-10-14T16:01:14.769531+00:00"
+    "created_at": "2026-10-14T16:01:14.769531+00:00",
+    "is_active": true,
+    "compare_at_price": null,
+    "allergen_info": null,
+    "display_order": 0,
+    "updated_at": "2026-10-15T12:11:02.80944+00:00"
   },
   {
     "id": "1d12b853-a83f-455a-8a18-d94bcbc48d37",
@@ -279,7 +298,12 @@
     "shelf_life": "6 Months",
     "allergen_notice": "All-natural fruit.",
     "is_featured": true,
-    "created_at": "2026-10-14T16:01:14.769531+00:00"
+    "created_at": "2026-10-14T16:01:14.769531+00:00",
+    "is_active": true,
+    "compare_at_price": null,
+    "allergen_info": null,
+    "display_order": 0,
+    "updated_at": "2026-10-15T12:11:02.80944+00:00"
   },
   {
     "id": "872a1360-4db3-497c-bdec-716455fec778",
@@ -304,7 +328,12 @@
     "shelf_life": "9 Months",
     "allergen_notice": "Contains natural pits. Handle with care.",
     "is_featured": false,
-    "created_at": "2026-10-14T16:01:14.769531+00:00"
+    "created_at": "2026-10-14T16:01:14.769531+00:00",
+    "is_active": true,
+    "compare_at_price": null,
+    "allergen_info": null,
+    "display_order": 0,
+    "updated_at": "2026-10-15T12:11:02.80944+00:00"
   },
   {
     "id": "7ffe336b-3434-4afd-a32e-c7a032bba8f3",
@@ -329,7 +358,12 @@
     "shelf_life": "6 Months",
     "allergen_notice": "All-natural fruit.",
     "is_featured": true,
-    "created_at": "2026-10-14T16:01:14.769531+00:00"
+    "created_at": "2026-10-14T16:01:14.769531+00:00",
+    "is_active": true,
+    "compare_at_price": null,
+    "allergen_info": null,
+    "display_order": 0,
+    "updated_at": "2026-10-15T12:11:02.80944+00:00"
   },
   {
     "id": "b928fb7c-bd26-443e-ac18-70f991d5f221",
@@ -354,7 +388,12 @@
     "shelf_life": "10 Months",
     "allergen_notice": "Packaged in a facility handling tree nuts.",
     "is_featured": false,
-    "created_at": "2026-10-14T16:01:14.769531+00:00"
+    "created_at": "2026-10-14T16:01:14.769531+00:00",
+    "is_active": true,
+    "compare_at_price": null,
+    "allergen_info": null,
+    "display_order": 0,
+    "updated_at": "2026-10-15T12:11:02.80944+00:00"
   },
   {
     "id": "2345008d-b425-49c6-bfcc-924930573c1e",
@@ -379,7 +418,12 @@
     "shelf_life": "9 Months",
     "allergen_notice": "Packaged in a facility handling tree nuts.",
     "is_featured": false,
-    "created_at": "2026-10-14T16:01:14.769531+00:00"
+    "created_at": "2026-10-14T16:01:14.769531+00:00",
+    "is_active": true,
+    "compare_at_price": null,
+    "allergen_info": null,
+    "display_order": 0,
+    "updated_at": "2026-10-15T12:11:02.80944+00:00"
   },
   {
     "id": "e5754cb4-5271-4f4b-a942-03cf690b8b4f",
@@ -404,7 +448,12 @@
     "shelf_life": "9 Months",
     "allergen_notice": "May contain occasional pit fragments.",
     "is_featured": true,
-    "created_at": "2026-10-14T16:01:14.769531+00:00"
+    "created_at": "2026-10-14T16:01:14.769531+00:00",
+    "is_active": true,
+    "compare_at_price": null,
+    "allergen_info": null,
+    "display_order": 0,
+    "updated_at": "2026-10-15T12:11:02.80944+00:00"
   },
   {
     "id": "db80b4aa-2ae8-4049-9436-e7c1da733c5e",
@@ -429,33 +478,12 @@
     "shelf_life": "8 Months",
     "allergen_notice": "Contains stone-fruit kernels.",
     "is_featured": false,
-    "created_at": "2026-10-14T16:01:14.769531+00:00"
-  },
-  {
-    "id": "032de5b1-c5ba-4e24-b33e-db987daaf54e",
-    "slug": "black-seeds",
-    "name": "Black Seeds (Nigella Sativa / Kalonji)",
-    "subtitle": "Blessed Seed · High Thymoquinone & Purity Tested",
-    "category": "seeds",
-    "badge": "Immunity Vitality",
-    "origin": "Traditional Agro Holdings",
-    "roast_style": "Cleaned raw whole seeds",
-    "rating": 5,
-    "review_count": 52,
-    "images": [
-      "/products/seeds/black-seeds.jpeg"
-    ],
-    "description": "Revered for centuries across Ayurvedic and prophetic medicine. Aromatic, pitch-black seeds with intense herbal pungency and scientifically verified thymoquinone potency.",
-    "extended_about": [
-      "Carefully machine-cleaned and triple-sieved to remove dust and debris.",
-      "Enjoy whole with honey, brewed as herbal tea, or sprinkled over artisan breads."
-    ],
-    "ingredients": "100% Pure Nigella Sativa Seeds (Kalonji)",
-    "storage": "Cool, dark dry container.",
-    "shelf_life": "12 Months",
-    "allergen_notice": "Pure whole spice seed.",
-    "is_featured": true,
-    "created_at": "2026-10-14T16:01:14.769531+00:00"
+    "created_at": "2026-10-14T16:01:14.769531+00:00",
+    "is_active": true,
+    "compare_at_price": null,
+    "allergen_info": null,
+    "display_order": 0,
+    "updated_at": "2026-10-15T12:11:02.80944+00:00"
   },
   {
     "id": "83faba56-7617-4262-a5fb-030664d851c9",
@@ -481,7 +509,12 @@
     "shelf_life": "12 Months",
     "allergen_notice": "Gluten-free seed.",
     "is_featured": true,
-    "created_at": "2026-10-14T16:01:14.769531+00:00"
+    "created_at": "2026-10-14T16:01:14.769531+00:00",
+    "is_active": true,
+    "compare_at_price": null,
+    "allergen_info": null,
+    "display_order": 0,
+    "updated_at": "2026-10-15T12:11:02.80944+00:00"
   },
   {
     "id": "352cec00-5f69-45df-858b-7b8e49b35078",
@@ -506,7 +539,12 @@
     "shelf_life": "10 Months",
     "allergen_notice": "Gluten-free.",
     "is_featured": false,
-    "created_at": "2026-10-14T16:01:14.769531+00:00"
+    "created_at": "2026-10-14T16:01:14.769531+00:00",
+    "is_active": true,
+    "compare_at_price": null,
+    "allergen_info": null,
+    "display_order": 0,
+    "updated_at": "2026-10-15T12:11:02.80944+00:00"
   },
   {
     "id": "04dea125-81d5-4adb-b51d-b48fdae55852",
@@ -531,7 +569,12 @@
     "shelf_life": "8 Months",
     "allergen_notice": "Pure hulled seeds.",
     "is_featured": true,
-    "created_at": "2026-10-14T16:01:14.769531+00:00"
+    "created_at": "2026-10-14T16:01:14.769531+00:00",
+    "is_active": true,
+    "compare_at_price": null,
+    "allergen_info": null,
+    "display_order": 0,
+    "updated_at": "2026-10-15T12:11:02.80944+00:00"
   },
   {
     "id": "1a0e8f2b-592d-4bae-b552-b3579b4814aa",
@@ -556,7 +599,12 @@
     "shelf_life": "9 Months",
     "allergen_notice": "Hulled seed kernel.",
     "is_featured": false,
-    "created_at": "2026-10-14T16:01:14.769531+00:00"
+    "created_at": "2026-10-14T16:01:14.769531+00:00",
+    "is_active": true,
+    "compare_at_price": null,
+    "allergen_info": null,
+    "display_order": 0,
+    "updated_at": "2026-10-15T12:11:02.80944+00:00"
   },
   {
     "id": "61472ae1-180b-46f8-84bb-97af201f610a",
@@ -582,7 +630,12 @@
     "shelf_life": "12 Months",
     "allergen_notice": "Pure single-origin leaf powder.",
     "is_featured": true,
-    "created_at": "2026-10-14T16:01:14.769531+00:00"
+    "created_at": "2026-10-14T16:01:14.769531+00:00",
+    "is_active": true,
+    "compare_at_price": null,
+    "allergen_info": null,
+    "display_order": 0,
+    "updated_at": "2026-10-15T12:11:02.80944+00:00"
   },
   {
     "id": "0e39a704-d8c5-4614-8742-e0d0c66b378a",
@@ -607,7 +660,12 @@
     "shelf_life": "14 Months",
     "allergen_notice": "Drink with adequate water.",
     "is_featured": false,
-    "created_at": "2026-10-14T16:01:14.769531+00:00"
+    "created_at": "2026-10-14T16:01:14.769531+00:00",
+    "is_active": true,
+    "compare_at_price": null,
+    "allergen_info": null,
+    "display_order": 0,
+    "updated_at": "2026-10-15T12:11:02.80944+00:00"
   },
   {
     "id": "9ef839c0-2cea-4f70-8f34-9b3f31cafed0",
@@ -632,7 +690,12 @@
     "shelf_life": "9 Months",
     "allergen_notice": "Allergen-free natural seed.",
     "is_featured": true,
-    "created_at": "2026-10-14T16:01:14.769531+00:00"
+    "created_at": "2026-10-14T16:01:14.769531+00:00",
+    "is_active": true,
+    "compare_at_price": null,
+    "allergen_info": null,
+    "display_order": 0,
+    "updated_at": "2026-10-15T12:11:02.80944+00:00"
   },
   {
     "id": "f5125f62-5496-40c3-8b60-9cb5c25a1474",
@@ -657,57 +720,12 @@
     "shelf_life": "12 Months",
     "allergen_notice": "Gluten-free.",
     "is_featured": false,
-    "created_at": "2026-10-14T16:01:14.769531+00:00"
-  },
-  {
-    "id": "998a8467-13fe-46aa-b8bf-f06c6203e8ce",
-    "slug": "rosemary",
-    "name": "Aromatic Whole Dried Rosemary",
-    "subtitle": "Mountain-Grown Needle Leaves",
-    "category": "seeds",
-    "badge": "Herb & Culinary",
-    "origin": "Sun-Drenched Mediterranean Terraces",
-    "roast_style": "Naturally air-dried whole needle leaves",
-    "rating": 4.7,
-    "review_count": 17,
-    "images": [
-      "/products/seeds/rosemary.jpeg"
-    ],
-    "description": "Pungent, piney dried rosemary needle leaves rich in rosmarinic acid and natural botanical oils. Ideal for herbal infusions, sourdough baking, roast potatoes, and marinades.",
-    "extended_about": [
-      "Hand-harvested prior to flowering for maximum essential oil density."
-    ],
-    "ingredients": "100% Dried Whole Rosemary Leaves",
-    "storage": "Airtight spice jar away from light.",
-    "shelf_life": "12 Months",
-    "allergen_notice": "Pure dried herb.",
-    "is_featured": false,
-    "created_at": "2026-10-14T16:01:14.769531+00:00"
-  },
-  {
-    "id": "ad85edeb-add6-40bf-a9a5-7d5af131aba9",
-    "slug": "sesame-seeds",
-    "name": "Black Sesame Seeds (Kala Til)",
-    "subtitle": "Unpolished Natural Black Sesame",
-    "category": "seeds",
-    "badge": "Calcium Rich",
-    "origin": "Dry Zone Organic Allotments, Sri Lanka",
-    "roast_style": "Triple-sieved raw black sesame",
-    "rating": 4.8,
-    "review_count": 29,
-    "images": [
-      "/products/seeds/sesame-seeds.jpeg"
-    ],
-    "description": "Naturally unpolished black sesame seeds with an earthy aroma and deep mineral richness. High in plant calcium, iron, and lignans for hair and bone strength.",
-    "extended_about": [
-      "Grown traditionally in the dry agricultural zones of northern and eastern Sri Lanka."
-    ],
-    "ingredients": "100% Natural Black Sesame Seeds",
-    "storage": "Sealed cool pantry.",
-    "shelf_life": "10 Months",
-    "allergen_notice": "Contains sesame.",
-    "is_featured": false,
-    "created_at": "2026-10-14T16:01:14.769531+00:00"
+    "created_at": "2026-10-14T16:01:14.769531+00:00",
+    "is_active": true,
+    "compare_at_price": null,
+    "allergen_info": null,
+    "display_order": 0,
+    "updated_at": "2026-10-15T12:11:02.80944+00:00"
   },
   {
     "id": "da439b56-62a9-42da-9462-eda0f772b258",
@@ -732,7 +750,12 @@
     "shelf_life": "9 Months",
     "allergen_notice": "Packaged in a nut-handling environment.",
     "is_featured": true,
-    "created_at": "2026-10-14T16:01:14.769531+00:00"
+    "created_at": "2026-10-14T16:01:14.769531+00:00",
+    "is_active": true,
+    "compare_at_price": null,
+    "allergen_info": null,
+    "display_order": 0,
+    "updated_at": "2026-10-15T12:11:02.80944+00:00"
   },
   {
     "id": "c2f339d6-9f0c-4ab3-b43c-5d365d7b35df",
@@ -757,7 +780,12 @@
     "shelf_life": "9 Months",
     "allergen_notice": "Pure seed kernel.",
     "is_featured": false,
-    "created_at": "2026-10-14T16:01:14.769531+00:00"
+    "created_at": "2026-10-14T16:01:14.769531+00:00",
+    "is_active": true,
+    "compare_at_price": null,
+    "allergen_info": null,
+    "display_order": 0,
+    "updated_at": "2026-10-15T12:11:02.80944+00:00"
   },
   {
     "id": "4fe4c915-914d-455d-9807-13b7902aa55e",
@@ -782,7 +810,12 @@
     "shelf_life": "12 Months",
     "allergen_notice": "Gluten-free seed.",
     "is_featured": false,
-    "created_at": "2026-10-14T16:01:14.769531+00:00"
+    "created_at": "2026-10-14T16:01:14.769531+00:00",
+    "is_active": true,
+    "compare_at_price": null,
+    "allergen_info": null,
+    "display_order": 0,
+    "updated_at": "2026-10-15T12:11:02.80944+00:00"
   },
   {
     "id": "081bc49b-4466-4b43-9e78-ca57e6f95403",
@@ -807,6 +840,319 @@
     "shelf_life": "10 Months",
     "allergen_notice": "Contains sesame.",
     "is_featured": true,
-    "created_at": "2026-10-14T16:01:14.769531+00:00"
+    "created_at": "2026-10-14T16:01:14.769531+00:00",
+    "is_active": true,
+    "compare_at_price": null,
+    "allergen_info": null,
+    "display_order": 0,
+    "updated_at": "2026-10-15T12:11:02.80944+00:00"
+  },
+  {
+    "id": "998a8467-13fe-46aa-b8bf-f06c6203e8ce",
+    "slug": "rosemary",
+    "name": "Aromatic Whole Dried Rosemary",
+    "subtitle": "Mountain-Grown Needle Leaves",
+    "category": "seeds",
+    "badge": "Herb & Culinary",
+    "origin": "Sun-Drenched Mediterranean Terraces",
+    "roast_style": "Naturally air-dried whole needle leaves",
+    "rating": 4.7,
+    "review_count": 17,
+    "images": [
+      "/products/seeds/rosemary.jpeg"
+    ],
+    "description": "Pungent, piney dried rosemary needle leaves rich in rosmarinic acid and natural botanical oils. Ideal for herbal infusions, sourdough baking, roast potatoes, and marinades.",
+    "extended_about": [
+      "Hand-harvested prior to flowering for maximum essential oil density."
+    ],
+    "ingredients": "100% Dried Whole Rosemary Leaves",
+    "storage": "Airtight spice jar away from light.",
+    "shelf_life": "12 Months",
+    "allergen_notice": "Pure dried herb.",
+    "is_featured": false,
+    "created_at": "2026-10-14T16:01:14.769531+00:00",
+    "is_active": true,
+    "compare_at_price": null,
+    "allergen_info": null,
+    "display_order": 0,
+    "updated_at": "2026-10-22T08:31:47.365+00:00"
+  },
+  {
+    "id": "ad85edeb-add6-40bf-a9a5-7d5af131aba9",
+    "slug": "sesame-seeds",
+    "name": "Black Sesame Seeds (Kala Til)",
+    "subtitle": "Unpolished Natural Black Sesame",
+    "category": "seeds",
+    "badge": "Calcium Rich",
+    "origin": "Dry Zone Organic Allotments, Sri Lanka",
+    "roast_style": "Triple-sieved raw black sesame",
+    "rating": 4.8,
+    "review_count": 29,
+    "images": [
+      "/products/seeds/sesame-seeds.jpeg"
+    ],
+    "description": "Naturally unpolished black sesame seeds with an earthy aroma and deep mineral richness. High in plant calcium, iron, and lignans for hair and bone strength.",
+    "extended_about": [
+      "Grown traditionally in the dry agricultural zones of northern and eastern Sri Lanka."
+    ],
+    "ingredients": "100% Natural Black Sesame Seeds",
+    "storage": "Sealed cool pantry.",
+    "shelf_life": "10 Months",
+    "allergen_notice": "Contains sesame.",
+    "is_featured": false,
+    "created_at": "2026-10-14T16:01:14.769531+00:00",
+    "is_active": true,
+    "compare_at_price": null,
+    "allergen_info": null,
+    "display_order": 0,
+    "updated_at": "2026-10-23T08:08:34.963+00:00"
+  },
+  {
+    "id": "feacb1f5-1472-4c19-8794-8dc0927620f2",
+    "slug": "roasted-cashews",
+    "name": "Puttalam Roasted Cashews",
+    "subtitle": "Grade W-210 Golden Roasted Jumbo Cashews",
+    "category": "nuts",
+    "badge": "Popular Pick",
+    "origin": "Puttalam Cashew Belt, Sri Lanka",
+    "roast_style": "Artisan slow-roasted with mineral sea salt",
+    "rating": 5,
+    "review_count": 68,
+    "images": [
+      "/products/nuts/cashews.jpg"
+    ],
+    "description": "Sri Lanka’s finest coastal Grade W-210 jumbo cashew nuts, slow-roasted in small batches to an alluring golden shade with a naturally sweet, buttery finish.",
+    "extended_about": [
+      "Directly sourced from the saline soil of the Puttalam coastal cashew belt.",
+      "No chemical bleaching or artificial glazing—100% pure artisan roast."
+    ],
+    "ingredients": "100% Puttalam Jumbo Cashews, Mineral Sea Salt",
+    "storage": "Airtight sealed jar in cool dry environment.",
+    "shelf_life": "8 Months",
+    "allergen_notice": "Contains tree nuts (cashews).",
+    "is_featured": true,
+    "created_at": "2026-10-23T07:12:14.74898+00:00",
+    "is_active": true,
+    "compare_at_price": null,
+    "allergen_info": null,
+    "display_order": 0,
+    "updated_at": "2026-10-23T07:12:14.74898+00:00"
+  },
+  {
+    "id": "a7cbcb54-a477-4633-9094-59e2237fa07d",
+    "slug": "roasted-pistachios",
+    "name": "Roasted Salted Pistachios",
+    "subtitle": "Naturally Opened Roasted & Lightly Salted",
+    "category": "nuts",
+    "badge": "Popular Pick",
+    "origin": "Sun-Drenched Groves",
+    "roast_style": "In-shell gently roasted with pink mineral salt",
+    "rating": 4.9,
+    "review_count": 39,
+    "images": [
+      "/products/nuts/pistachios.jpg"
+    ],
+    "description": "Gourmet whole in-shell pistachios, naturally smile-opened on the tree, slow-roasted and lightly salted to reveal vibrant emerald-green kernels rich in potassium and antioxidants.",
+    "extended_about": [
+      "Naturally tree-ripened and sun-cured for effortless shelling.",
+      "Satisfying savoury crunch ideal for mindful snacking."
+    ],
+    "ingredients": "100% Whole In-Shell Pistachios, Mineral Salt",
+    "storage": "Store tightly sealed away from direct sunlight.",
+    "shelf_life": "9 Months",
+    "allergen_notice": "Contains tree nuts (pistachios).",
+    "is_featured": true,
+    "created_at": "2026-10-23T07:12:14.74898+00:00",
+    "is_active": true,
+    "compare_at_price": null,
+    "allergen_info": null,
+    "display_order": 0,
+    "updated_at": "2026-10-23T07:12:14.74898+00:00"
+  },
+  {
+    "id": "da8e2230-6472-45f6-b853-ff693fc674b3",
+    "slug": "curated-hamper",
+    "name": "Curated Celebration Hamper",
+    "subtitle": "Luxury Gift Basket with Artisan Nuts, Dates & Fruits",
+    "category": "gifts-hampers",
+    "badge": "Popular Pick",
+    "origin": "Ceylon Crunch Artisan Gifting",
+    "roast_style": "Curated gift packaging with silk ribbon",
+    "rating": 5,
+    "review_count": 62,
+    "images": [
+      "/products/gifting/curated-hamper.jpg"
+    ],
+    "description": "An opulent gift presentation in a handwoven wicker basket adorned with satin ribbon, featuring jars of roasted jumbo cashews, Medjool dates, dried fruits, and artisan nuts.",
+    "extended_about": [
+      "Perfect for weddings, corporate milestones, festive gifting, and gratitude.",
+      "Includes complimentary gift card with your handwritten personalized note."
+    ],
+    "ingredients": "Assorted roasted nuts, premium Medjool dates, dried fruits",
+    "storage": "Store at room temperature in cool area.",
+    "shelf_life": "6 Months",
+    "allergen_notice": "Contains various tree nuts and sesame.",
+    "is_featured": true,
+    "created_at": "2026-10-23T07:12:14.74898+00:00",
+    "is_active": true,
+    "compare_at_price": null,
+    "allergen_info": null,
+    "display_order": 0,
+    "updated_at": "2026-10-23T07:12:14.74898+00:00"
+  },
+  {
+    "id": "7956cec4-f800-4301-8f32-92e114cf2eed",
+    "slug": "nuts-box",
+    "name": "Signature Wooden Nuts Box",
+    "subtitle": "4-Section Handcrafted Wooden Gift Box with Assorted Nuts",
+    "category": "gifts-hampers",
+    "badge": "Popular Pick",
+    "origin": "Ceylon Crunch Bespoke Gifting",
+    "roast_style": "Hand-finished wooden gift box",
+    "rating": 5,
+    "review_count": 47,
+    "images": [
+      "/products/gifting/nuts-box.jpg"
+    ],
+    "description": "A solid wooden presentation box with 4 partitioned compartments showcasing golden cashews, roasted almonds, cracked pistachios, and tender dried fruits with brass hardware.",
+    "extended_about": [
+      "Re-usable heirloom wooden keepsake box crafted by local wood artisans.",
+      "Sealed freshness compartments preserving aromatic crunch."
+    ],
+    "ingredients": "Puttalam Cashews, Roasted Almonds, In-shell Pistachios, Sun-dried Fruits",
+    "storage": "Cool dry storage.",
+    "shelf_life": "6 Months",
+    "allergen_notice": "Contains tree nuts.",
+    "is_featured": true,
+    "created_at": "2026-10-23T07:12:14.74898+00:00",
+    "is_active": true,
+    "compare_at_price": null,
+    "allergen_info": null,
+    "display_order": 0,
+    "updated_at": "2026-10-23T07:12:14.74898+00:00"
+  },
+  {
+    "id": "54796a19-8899-4aaf-a00b-996199520609",
+    "slug": "mixed-nuts",
+    "name": "Artisan Mixed Nuts",
+    "subtitle": "Roasted Cashews, Almonds, Pistachios & Walnuts",
+    "category": "mixes",
+    "badge": "Popular Pick",
+    "origin": "Ceylon Crunch Reserve",
+    "roast_style": "Evenly roasted master blend",
+    "rating": 4.9,
+    "review_count": 54,
+    "images": [
+      "/products/nuts/mixed-nuts.jpg"
+    ],
+    "description": "A harmonious medley of slow-roasted jumbo cashews, California almonds, buttery walnuts, and shelled pistachios. The ultimate balance of crunch, healthy fats, and rich flavour.",
+    "extended_about": [
+      "Balanced ratio of 4 premium tree nuts with zero fillers or peanuts.",
+      "Gently roasted to perfection for everyday vitality and celebratory sharing."
+    ],
+    "ingredients": "Cashews, Almonds, Pistachios, Walnuts, Pure Sea Salt",
+    "storage": "Keep airtight in a dry, dark cupboard.",
+    "shelf_life": "7 Months",
+    "allergen_notice": "Contains tree nuts (cashews, almonds, pistachios, walnuts).",
+    "is_featured": true,
+    "created_at": "2026-10-23T07:12:14.74898+00:00",
+    "is_active": true,
+    "compare_at_price": null,
+    "allergen_info": null,
+    "display_order": 0,
+    "updated_at": "2026-10-23T07:21:19.652+00:00"
+  },
+  {
+    "id": "047c5ca6-20d5-45b9-b9b2-543c31d5a191",
+    "slug": "roasted-almonds",
+    "name": "Roasted Almonds",
+    "subtitle": "Crunchy Slow-Roasted California Almonds",
+    "category": "nuts",
+    "badge": "Popular Pick",
+    "origin": "Selected Groves",
+    "roast_style": "Slow dry-roasted with light sea salt",
+    "rating": 4.9,
+    "review_count": 42,
+    "images": [
+      "/products/nuts/almonds.jpg"
+    ],
+    "description": "Whole premium crunchy almonds, slow dry-roasted to golden perfection. Packed with plant protein, vitamin E, and wholesome dietary fibre for your daily vitality.",
+    "extended_about": [
+      "Carefully selected whole kernel almonds.",
+      "Evenly roasted without excess oils for a clean, rich nutty flavour."
+    ],
+    "ingredients": "100% Whole Roasted Almonds, Sea Salt",
+    "storage": "Store in an airtight container in a cool, dry pantry.",
+    "shelf_life": "9 Months",
+    "allergen_notice": "Contains tree nuts (almonds).",
+    "is_featured": true,
+    "created_at": "2026-10-23T07:12:14.74898+00:00",
+    "is_active": true,
+    "compare_at_price": null,
+    "allergen_info": null,
+    "display_order": 0,
+    "updated_at": "2026-10-23T08:07:35.946+00:00"
+  },
+  {
+    "id": "c6c67137-5963-468c-bbb9-d66119930362",
+    "slug": "black-raisins",
+    "name": "Black Raisins",
+    "subtitle": "Naturally Sweet & Seedless · Sun-Dried",
+    "category": "dried-fruits",
+    "badge": "Sun-Dried",
+    "origin": "Selected Mediterranean Vineyards",
+    "roast_style": "Sun-dried raw whole vine fruit",
+    "rating": 4.9,
+    "review_count": 24,
+    "images": [
+      "/products/dried-fruits/black-raisins.jpeg"
+    ],
+    "description": "Naturally sun-dried plump black raisins with rich natural sweetness, succulent texture, and high iron and antioxidant content. Excellent for soaking, daily vitality, and wholesome baking.",
+    "extended_about": [
+      "Carefully harvested from sun-drenched vineyards and gently sun-dried to lock in natural sugars and dense minerals.",
+      "100% seedless with a luscious chew and clean finish without artificial additives."
+    ],
+    "ingredients": "100% Sun-Dried Seedless Black Raisins",
+    "storage": "Store in an airtight container in a cool, dry pantry.",
+    "shelf_life": "9 Months",
+    "allergen_notice": "Processed in a facility that handles tree nuts and seeds.",
+    "is_featured": true,
+    "created_at": "2026-10-14T16:01:14.769531+00:00",
+    "is_active": true,
+    "compare_at_price": null,
+    "allergen_info": null,
+    "display_order": 0,
+    "updated_at": "2026-10-23T08:08:27.226+00:00"
+  },
+  {
+    "id": "032de5b1-c5ba-4e24-b33e-db987daaf54e",
+    "slug": "black-seeds",
+    "name": "Black Seeds (Nigella Sativa / Kalonji)",
+    "subtitle": "Blessed Seed · High Thymoquinone & Purity Tested",
+    "category": "seeds",
+    "badge": "Immunity Vitality",
+    "origin": "Traditional Agro Holdings",
+    "roast_style": "Cleaned raw whole seeds",
+    "rating": 5,
+    "review_count": 52,
+    "images": [
+      "/products/seeds/black-seeds.jpeg"
+    ],
+    "description": "Revered for centuries across Ayurvedic and prophetic medicine. Aromatic, pitch-black seeds with intense herbal pungency and scientifically verified thymoquinone potency.",
+    "extended_about": [
+      "Carefully machine-cleaned and triple-sieved to remove dust and debris.",
+      "Enjoy whole with honey, brewed as herbal tea, or sprinkled over artisan breads."
+    ],
+    "ingredients": "100% Pure Nigella Sativa Seeds (Kalonji)",
+    "storage": "Cool, dark dry container.",
+    "shelf_life": "12 Months",
+    "allergen_notice": "Pure whole spice seed.",
+    "is_featured": true,
+    "created_at": "2026-10-14T16:01:14.769531+00:00",
+    "is_active": true,
+    "compare_at_price": null,
+    "allergen_info": null,
+    "display_order": 0,
+    "updated_at": "2026-10-23T08:08:28.217+00:00"
   }
 ]
