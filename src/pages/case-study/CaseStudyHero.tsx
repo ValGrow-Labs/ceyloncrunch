@@ -30,16 +30,16 @@ export const CaseStudyHero: React.FC<CaseStudyHeroProps> = ({ onExploreClick }) 
       {/* Main Container */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex-1 flex flex-col justify-center">
         {/* Top Eyebrow Bar */}
-        <div className="flex flex-wrap items-center gap-3 mb-6 sm:mb-8">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#1F3D2B]/8 border border-[#1F3D2B]/15 text-[#1F3D2B] text-[11px] font-mono tracking-[0.2em] uppercase font-semibold">
+        <div className="flex flex-wrap items-center gap-3.5 mb-6 sm:mb-8">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#1F3D2B]/8 border border-[#1F3D2B]/15 text-[#1F3D2B] text-xs sm:text-[13px] font-mono tracking-[0.16em] uppercase font-semibold">
             <img
               src="/valgrow-logo.png"
               alt="ValGrow Labs"
-              className="h-3.5 w-auto object-contain inline-block"
+              className="h-4 w-auto object-contain inline-block"
             />
             <span>Case Study · D2C E-Commerce</span>
           </div>
-          <span className="text-[#8B5E3C] text-[11px] font-mono tracking-[0.18em] uppercase">
+          <span className="text-[#7A4B28] text-xs sm:text-[13px] font-mono tracking-[0.16em] uppercase font-semibold">
             Client: Ceylon Crunch · Colombo, LK
           </span>
         </div>
@@ -57,7 +57,7 @@ export const CaseStudyHero: React.FC<CaseStudyHeroProps> = ({ onExploreClick }) 
               Building a premium digital commerce experience for authentic Sri Lankan flavours.
             </p>
 
-            <p className="text-sm sm:text-base text-[#202820]/80 leading-relaxed max-w-xl font-sans font-normal tracking-[-0.01em]">
+            <p className="text-base sm:text-lg text-[#202820]/90 leading-relaxed max-w-xl font-sans font-normal tracking-[-0.01em]">
               We transformed Ceylon Crunch from a manual social-media ordering business into a modern,
               intelligent, mobile-first e-commerce ecosystem — featuring atomic multi-variant inventory,
               25-district logistics calculation, PayHere payment integration, and a headless merchant CMS.
@@ -67,7 +67,7 @@ export const CaseStudyHero: React.FC<CaseStudyHeroProps> = ({ onExploreClick }) 
             <div className="flex flex-wrap items-center gap-3.5 pt-2">
               <button
                 onClick={scrollToOverview}
-                className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-full text-sm font-semibold text-white bg-[#1F3D2B] hover:bg-[#162C1F] shadow-[0_8px_24px_rgba(31,61,43,0.22)] hover:shadow-[0_12px_32px_rgba(31,61,43,0.32)] transition-all transform hover:-translate-y-0.5 cursor-pointer group"
+                className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-full text-sm sm:text-base font-semibold text-white bg-[#1F3D2B] hover:bg-[#162C1F] shadow-[0_8px_24px_rgba(31,61,43,0.22)] hover:shadow-[0_12px_32px_rgba(31,61,43,0.32)] transition-all transform hover:-translate-y-0.5 cursor-pointer group"
               >
                 <span>Explore the Case Study</span>
                 <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -77,7 +77,7 @@ export const CaseStudyHero: React.FC<CaseStudyHeroProps> = ({ onExploreClick }) 
                 href="https://ceyloncrunch.lk"
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-2 px-5 py-3.5 rounded-full text-sm font-semibold text-[#1F3D2B] bg-white hover:bg-[#FAF6EF] border border-[#EADFD0] shadow-2xs transition-all"
+                className="inline-flex items-center gap-2 px-5 py-3.5 rounded-full text-sm sm:text-base font-semibold text-[#1F3D2B] bg-white hover:bg-[#FAF6EF] border border-[#EADFD0] shadow-2xs transition-all"
               >
                 <span>Visit Live Website</span>
                 <ExternalLink className="w-4 h-4 text-[#8B5E3C]" />
@@ -85,9 +85,9 @@ export const CaseStudyHero: React.FC<CaseStudyHeroProps> = ({ onExploreClick }) 
 
               <Link
                 to="/store"
-                className="inline-flex items-center gap-2 px-4 py-3.5 rounded-full text-xs font-semibold text-[#8B5E3C] hover:text-[#1F3D2B] hover:bg-[#8B5E3C]/8 border border-transparent transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-3.5 rounded-full text-xs sm:text-sm font-semibold text-[#8B5E3C] hover:text-[#1F3D2B] hover:bg-[#8B5E3C]/8 border border-transparent transition-colors"
               >
-                <Sparkles className="w-3.5 h-3.5 text-[#D9A441]" />
+                <Sparkles className="w-4 h-4 text-[#D9A441]" />
                 <span>Store Prototype</span>
               </Link>
             </div>
@@ -107,20 +107,20 @@ export const CaseStudyHero: React.FC<CaseStudyHeroProps> = ({ onExploreClick }) 
 
                 {/* Overlaid Editorial Caption */}
                 <div className="absolute bottom-5 left-5 right-5 text-white">
-                  <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/20 backdrop-blur-md text-[10px] uppercase font-bold tracking-widest text-[#D9A441] mb-1.5">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/25 backdrop-blur-md text-xs uppercase font-bold tracking-wider text-[#D9A441] mb-2">
                     Artisanal Harvest
                   </div>
-                  <h4 className="font-serif text-lg font-semibold leading-tight text-white">
+                  <h4 className="font-serif text-lg sm:text-xl font-bold leading-tight text-white">
                     Jumbo Roasted Cashews & Ceylon Spices
                   </h4>
-                  <p className="text-xs text-white/80 font-sans mt-0.5">
+                  <p className="text-xs sm:text-sm text-white/90 font-sans mt-1">
                     100% natural, slow-roasted in small batches in Colombo.
                   </p>
                 </div>
               </div>
 
               {/* Overlapping Floating Secondary Card (Curated Hamper) */}
-              <div className="hidden sm:flex absolute -bottom-6 -left-8 w-48 rounded-2xl overflow-hidden border-2 border-white shadow-[0_16px_36px_rgba(31,61,43,0.18)] bg-white p-2.5 flex-col gap-2 transform -rotate-2 hover:rotate-0 transition-transform">
+              <div className="hidden sm:flex absolute -bottom-6 -left-8 w-52 rounded-2xl overflow-hidden border-2 border-white shadow-[0_16px_36px_rgba(31,61,43,0.18)] bg-white p-3 flex-col gap-2 transform -rotate-2 hover:rotate-0 transition-transform">
                 <div className="w-full h-24 rounded-xl overflow-hidden bg-[#FAF6EF]">
                   <img
                     src="/products/gifting/curated-hamper.jpg"
@@ -129,28 +129,28 @@ export const CaseStudyHero: React.FC<CaseStudyHeroProps> = ({ onExploreClick }) 
                   />
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-[9px] uppercase font-bold tracking-wider text-[#8B5E3C]">
+                  <span className="text-[11px] uppercase font-bold tracking-wider text-[#7A4B28]">
                     B2B & Gifting
                   </span>
-                  <span className="text-xs font-serif font-bold text-[#1F3D2B] leading-tight">
+                  <span className="text-sm font-serif font-bold text-[#1F3D2B] leading-tight mt-0.5">
                     Luxury Hampers
                   </span>
-                  <span className="text-[10px] text-[#2E7D4F] font-medium mt-0.5">
+                  <span className="text-xs text-[#2E7D4F] font-semibold mt-0.5">
                     Corporate Portal
                   </span>
                 </div>
               </div>
 
               {/* Floating Quality Badge */}
-              <div className="absolute -top-4 -right-4 bg-white/95 backdrop-blur-md border border-[#EADFD0] rounded-2xl p-3 shadow-lg flex items-center gap-2.5 transform rotate-3">
-                <div className="w-9 h-9 rounded-xl bg-[#1F3D2B] text-[#D9A441] flex items-center justify-center">
+              <div className="absolute -top-4 -right-4 bg-white/95 backdrop-blur-md border border-[#EADFD0] rounded-2xl p-3.5 shadow-lg flex items-center gap-3 transform rotate-3">
+                <div className="w-10 h-10 rounded-xl bg-[#1F3D2B] text-[#D9A441] flex items-center justify-center">
                   <ShieldCheck className="w-5 h-5" />
                 </div>
                 <div className="flex flex-col text-left">
-                  <span className="text-[10px] uppercase font-bold tracking-wider text-[#8B5E3C]">
+                  <span className="text-[11px] uppercase font-bold tracking-wider text-[#7A4B28]">
                     Conversion Rate
                   </span>
-                  <span className="text-sm font-bold text-[#1F3D2B]">+42% Growth</span>
+                  <span className="text-base font-bold text-[#1F3D2B]">+42% Growth</span>
                 </div>
               </div>
             </div>

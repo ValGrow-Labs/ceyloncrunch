@@ -32,21 +32,21 @@ export const CaseStudyFooter: React.FC = () => {
                 ValGrow Labs
               </span>
             </div>
-            <p className="text-xs sm:text-sm text-white/70 max-w-sm font-sans leading-relaxed">
+            <p className="text-sm sm:text-base text-white/85 max-w-sm font-sans leading-relaxed">
               We design and engineer bespoke software platforms, high-converting digital storefronts, and intelligent operations systems for forward-thinking enterprises.
             </p>
-            <div className="pt-2 flex items-center gap-2 text-xs font-mono text-[#D9A441]">
+            <div className="pt-2 flex items-center gap-2 text-xs sm:text-sm font-mono text-[#D9A441]">
               <span className="w-2 h-2 rounded-full bg-[#2E7D4F] animate-pulse" />
               <span>Studio: Colombo, Sri Lanka</span>
             </div>
           </div>
 
           {/* Col 2: Case Study Navigation (3 cols) */}
-          <div className="md:col-span-3 space-y-3 font-sans">
-            <span className="text-[10px] font-mono uppercase tracking-widest text-[#D9A441] block">
+          <div className="md:col-span-3 space-y-3.5 font-sans">
+            <span className="text-xs font-mono uppercase tracking-widest text-[#D9A441] font-bold block">
               Case Study Sections
             </span>
-            <ul className="space-y-2 text-xs text-white/80">
+            <ul className="space-y-2.5 text-sm text-white/90">
               <li>
                 <button
                   onClick={() => scrollTo('overview')}
@@ -84,20 +84,20 @@ export const CaseStudyFooter: React.FC = () => {
 
           {/* Col 3: Project Links & Live Store (4 cols) */}
           <div className="md:col-span-4 space-y-4 font-sans">
-            <span className="text-[10px] font-mono uppercase tracking-widest text-[#D9A441] block">
+            <span className="text-xs font-mono uppercase tracking-widest text-[#D9A441] font-bold block">
               Client & Project Metadata
             </span>
-            <div className="space-y-2 text-xs text-white/80">
+            <div className="space-y-2.5 text-sm text-white/90">
               <div className="flex items-center justify-between py-1 border-b border-white/10">
-                <span className="text-white/60">Client:</span>
+                <span className="text-white/75">Client:</span>
                 <span className="font-semibold text-white">Ceylon Crunch LK</span>
               </div>
               <div className="flex items-center justify-between py-1 border-b border-white/10">
-                <span className="text-white/60">Deliverable:</span>
+                <span className="text-white/75">Deliverable:</span>
                 <span className="font-semibold text-white">D2C E-Commerce & CMS</span>
               </div>
               <div className="flex items-center justify-between py-1 border-b border-white/10">
-                <span className="text-white/60">Year:</span>
+                <span className="text-white/75">Year:</span>
                 <span className="font-mono text-white">2026 Production</span>
               </div>
             </div>

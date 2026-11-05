@@ -54,18 +54,18 @@ export const CaseStudyNavbar: React.FC<CaseStudyNavbarProps> = ({ onOpenContact 
                 className="h-8 sm:h-9 w-auto object-contain transition-transform group-hover:scale-105 duration-200"
               />
               <div className="flex flex-col">
-                <span className="font-serif font-bold tracking-[-0.02em] text-xl text-[#1F3D2B] leading-none">
+                <span className="font-serif font-bold tracking-[-0.02em] text-xl sm:text-2xl text-[#1F3D2B] leading-none">
                   ValGrow Labs
                 </span>
-                <span className="text-[9px] uppercase font-mono tracking-[0.24em] text-[#8B5E3C] font-semibold mt-0.5">
+                <span className="text-[11px] uppercase font-mono tracking-[0.16em] text-[#7A4B28] font-bold mt-1">
                   Engineering Studio
                 </span>
               </div>
             </a>
 
             <div className="hidden sm:flex items-center gap-2 pl-3 ml-3 border-l border-[#EADFD0]">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#2E7D4F]" />
-              <span className="font-mono text-[10px] text-[#8B5E3C] tracking-wider uppercase">
+              <span className="w-2 h-2 rounded-full bg-[#2E7D4F]" />
+              <span className="font-mono text-xs text-[#7A4B28] tracking-wider uppercase font-semibold">
                 Work / Ceylon Crunch
               </span>
             </div>
@@ -77,18 +77,18 @@ export const CaseStudyNavbar: React.FC<CaseStudyNavbarProps> = ({ onOpenContact 
               href="https://ceyloncrunch.lk"
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium text-[#1F3D2B] hover:bg-[#FAF6EF] border border-[#EADFD0] transition-colors"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs sm:text-sm font-semibold text-[#1F3D2B] hover:bg-[#FAF6EF] border border-[#EADFD0] transition-colors shadow-2xs"
             >
               <span>Visit Live Store</span>
-              <ExternalLink className="w-3 h-3 text-[#8B5E3C]" />
+              <ExternalLink className="w-3.5 h-3.5 text-[#8B5E3C]" />
             </a>
 
             <button
               onClick={scrollToContact}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold text-white bg-[#1F3D2B] hover:bg-[#162C1F] shadow-sm transition-all cursor-pointer group"
+              className="inline-flex items-center gap-1.5 px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-semibold text-white bg-[#1F3D2B] hover:bg-[#162C1F] shadow-sm transition-all cursor-pointer group"
             >
               <span>Let's Talk</span>
-              <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </button>
           </div>
         </div>
