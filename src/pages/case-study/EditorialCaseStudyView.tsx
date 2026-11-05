@@ -111,15 +111,15 @@ export const EditorialCaseStudyView: React.FC<EditorialCaseStudyViewProps> = ({ 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
           {/* Section Eyebrow & Title */}
           <div className="lg:col-span-4 space-y-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1F3D2B]/8 text-[#1F3D2B] text-[11px] font-mono font-semibold uppercase tracking-[0.2em]">
-              <Sparkles className="w-3.5 h-3.5 text-[#D9A441]" />
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#1F3D2B]/8 text-[#1F3D2B] text-xs font-mono font-semibold uppercase tracking-[0.18em]">
+              <Sparkles className="w-4 h-4 text-[#D9A441]" />
               The Executive Brief
             </div>
-            <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-medium text-[#1F3D2B] tracking-[-0.03em] leading-[1.08]">
+            <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-medium text-[#1F3D2B] tracking-[-0.03em] leading-[1.12]">
               From Manual Chats to <br />
               <span className="italic font-normal text-[#8B5E3C]">Autonomous</span> Commerce.
             </h2>
-            <p className="text-sm text-[#202820]/80 leading-relaxed font-sans">
+            <p className="text-base text-[#202820]/90 leading-relaxed font-sans">
               Ceylon Crunch had exceptional artisanal farm produce, but manual social media coordination created operational bottlenecks during seasonal demand spikes.
             </p>
           </div>
@@ -129,23 +129,23 @@ export const EditorialCaseStudyView: React.FC<EditorialCaseStudyViewProps> = ({ 
             {/* The Operational Bottlenecks (Before) */}
             <div className="p-6 sm:p-7 rounded-3xl bg-[#FAF6EF] border border-[#EADFD0] space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-mono uppercase tracking-widest text-[#8B5E3C] font-bold">
+                <span className="text-xs font-mono uppercase tracking-wider text-[#8B5E3C] font-bold">
                   The Bottlenecks (Before)
                 </span>
-                <span className="w-2 h-2 rounded-full bg-rose-500" />
+                <span className="w-2.5 h-2.5 rounded-full bg-rose-500" />
               </div>
-              <ul className="space-y-3 text-xs text-[#202820]/85 font-sans leading-relaxed">
-                <li className="flex items-start gap-2">
-                  <span className="text-rose-600 font-bold">✕</span>
-                  <span><strong>15 min / order:</strong> Staff manually quoted prices, calculated shipping, and verified bank slips across Instagram & WhatsApp DMs.</span>
+              <ul className="space-y-3.5 text-sm text-[#202820]/90 font-sans leading-relaxed">
+                <li className="flex items-start gap-2.5">
+                  <span className="text-rose-600 font-bold text-base leading-none mt-0.5">✕</span>
+                  <span><strong className="font-semibold text-[#1F3D2B]">15 min / order:</strong> Staff manually quoted prices, calculated shipping, and verified bank slips across Instagram & WhatsApp DMs.</span>
                 </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-rose-600 font-bold">✕</span>
-                  <span><strong>Variant stock drift:</strong> 100g, 250g, 500g, and 1kg pack configurations frequently oversold during holiday surges.</span>
+                <li className="flex items-start gap-2.5">
+                  <span className="text-rose-600 font-bold text-base leading-none mt-0.5">✕</span>
+                  <span><strong className="font-semibold text-[#1F3D2B]">Variant stock drift:</strong> 100g, 250g, 500g, and 1kg pack configurations frequently oversold during holiday surges.</span>
                 </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-rose-600 font-bold">✕</span>
-                  <span><strong>Zero autonomy:</strong> Simple price adjustments and banner updates required developer intervention.</span>
+                <li className="flex items-start gap-2.5">
+                  <span className="text-rose-600 font-bold text-base leading-none mt-0.5">✕</span>
+                  <span><strong className="font-semibold text-[#1F3D2B]">Zero autonomy:</strong> Simple price adjustments and banner updates required developer intervention.</span>
                 </li>
               </ul>
             </div>
@@ -153,23 +153,23 @@ export const EditorialCaseStudyView: React.FC<EditorialCaseStudyViewProps> = ({ 
             {/* The Engineered Transformation (After) */}
             <div className="p-6 sm:p-7 rounded-3xl bg-white border border-[#1F3D2B]/20 shadow-[0_10px_30px_rgba(31,61,43,0.06)] space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-mono uppercase tracking-widest text-[#2E7D4F] font-bold">
+                <span className="text-xs font-mono uppercase tracking-wider text-[#2E7D4F] font-bold">
                   The Solution (Engineered)
                 </span>
-                <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
               </div>
-              <ul className="space-y-3 text-xs text-[#202820]/85 font-sans leading-relaxed">
-                <li className="flex items-start gap-2">
-                  <span className="text-[#2E7D4F] font-bold">✓</span>
-                  <span><strong>&lt; 30s checkout:</strong> Single-page checkout with automatic Sri Lankan phone normalization and 25-district courier fee calculations.</span>
+              <ul className="space-y-3.5 text-sm text-[#202820]/90 font-sans leading-relaxed">
+                <li className="flex items-start gap-2.5">
+                  <span className="text-[#2E7D4F] font-bold text-base leading-none mt-0.5">✓</span>
+                  <span><strong className="font-semibold text-[#1F3D2B]">&lt; 30s checkout:</strong> Single-page checkout with automatic Sri Lankan phone normalization and 25-district courier fee calculations.</span>
                 </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-[#2E7D4F] font-bold">✓</span>
-                  <span><strong>Atomic variant locks:</strong> PostgreSQL transactions guarantee real-time stock sync with zero double-selling.</span>
+                <li className="flex items-start gap-2.5">
+                  <span className="text-[#2E7D4F] font-bold text-base leading-none mt-0.5">✓</span>
+                  <span><strong className="font-semibold text-[#1F3D2B]">Atomic variant locks:</strong> PostgreSQL transactions guarantee real-time stock sync with zero double-selling.</span>
                 </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-[#2E7D4F] font-bold">✓</span>
-                  <span><strong>Full merchant autonomy:</strong> Visual headless CMS for banners & tariffs, plus Gemini 2.0 AI for tasting notes and SEO.</span>
+                <li className="flex items-start gap-2.5">
+                  <span className="text-[#2E7D4F] font-bold text-base leading-none mt-0.5">✓</span>
+                  <span><strong className="font-semibold text-[#1F3D2B]">Full merchant autonomy:</strong> Visual headless CMS for banners & tariffs, plus Gemini 2.0 AI for tasting notes and SEO.</span>
                 </li>
               </ul>
             </div>
@@ -181,11 +181,11 @@ export const EditorialCaseStudyView: React.FC<EditorialCaseStudyViewProps> = ({ 
       <section id="pillars" className="bg-[#FAF6EF] py-16 sm:py-20 border-t border-b border-[#EADFD0]/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mb-12">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1F3D2B]/8 text-[#1F3D2B] text-[11px] font-mono font-semibold uppercase tracking-[0.2em] mb-3">
-              <Sparkles className="w-3.5 h-3.5 text-[#D9A441]" />
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#1F3D2B]/8 text-[#1F3D2B] text-xs font-mono font-semibold uppercase tracking-[0.18em] mb-3">
+              <Sparkles className="w-4 h-4 text-[#D9A441]" />
               Engineering Blueprint
             </div>
-            <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-medium text-[#1F3D2B] tracking-[-0.03em] leading-[1.08]">
+            <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-medium text-[#1F3D2B] tracking-[-0.03em] leading-[1.12]">
               Three Pillars of <br />
               <span className="italic font-normal text-[#8B5E3C]">Digital Excellence</span>.
             </h2>
@@ -201,33 +201,33 @@ export const EditorialCaseStudyView: React.FC<EditorialCaseStudyViewProps> = ({ 
                 >
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <div className="w-10 h-10 rounded-xl bg-[#1F3D2B] text-[#D9A441] flex items-center justify-center">
+                      <div className="w-11 h-11 rounded-xl bg-[#1F3D2B] text-[#D9A441] flex items-center justify-center">
                         <Icon className="w-5 h-5" />
                       </div>
-                      <span className="text-[11px] font-mono font-bold text-[#8B5E3C]">
+                      <span className="text-sm font-mono font-bold text-[#8B5E3C]">
                         {pillar.number}
                       </span>
                     </div>
 
                     <div>
-                      <h3 className="font-serif text-xl font-bold text-[#1F3D2B] leading-tight">
+                      <h3 className="font-serif text-2xl font-bold text-[#1F3D2B] leading-snug">
                         {pillar.title}
                       </h3>
-                      <span className="text-[10px] font-mono text-[#8B5E3C] block mt-1">
+                      <span className="text-xs sm:text-[13px] font-mono text-[#8B5E3C] font-semibold block mt-1.5 tracking-tight">
                         {pillar.subtitle}
                       </span>
                     </div>
 
-                    <p className="text-xs text-[#202820]/75 leading-relaxed font-sans">
+                    <p className="text-sm sm:text-[14.5px] text-[#202820]/90 leading-relaxed font-sans mt-3">
                       {pillar.description}
                     </p>
                   </div>
 
-                  <ul className="mt-6 pt-5 border-t border-[#EADFD0] space-y-2 text-[11px] text-[#202820]/80 font-sans">
+                  <ul className="mt-6 pt-5 border-t border-[#EADFD0] space-y-3 text-xs sm:text-[13.5px] text-[#202820]/90 font-sans">
                     {pillar.specs.map((spec, i) => (
-                      <li key={i} className="flex items-start gap-1.5">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-[#2E7D4F] shrink-0 mt-0.5" />
-                        <span>{spec}</span>
+                      <li key={i} className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-[#2E7D4F] shrink-0 mt-0.5" />
+                        <span className="leading-snug">{spec}</span>
                       </li>
                     ))}
                   </ul>
@@ -241,11 +241,11 @@ export const EditorialCaseStudyView: React.FC<EditorialCaseStudyViewProps> = ({ 
       {/* 03. MEASURABLE BUSINESS IMPACT */}
       <section id="impact" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mb-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1F3D2B]/8 text-[#1F3D2B] text-[11px] font-mono font-semibold uppercase tracking-[0.2em] mb-3">
-            <Sparkles className="w-3.5 h-3.5 text-[#D9A441]" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#1F3D2B]/8 text-[#1F3D2B] text-xs font-mono font-semibold uppercase tracking-[0.18em] mb-3">
+            <Sparkles className="w-4 h-4 text-[#D9A441]" />
             Business Impact
           </div>
-          <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-medium text-[#1F3D2B] tracking-[-0.03em] leading-[1.08]">
+          <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-medium text-[#1F3D2B] tracking-[-0.03em] leading-[1.12]">
             Measurable Growth. <br />
             <span className="italic font-normal text-[#8B5E3C]">Proven</span> Production Metrics.
           </h2>
@@ -256,19 +256,19 @@ export const EditorialCaseStudyView: React.FC<EditorialCaseStudyViewProps> = ({ 
           {benchmarks.map((item, idx) => (
             <div
               key={idx}
-              className={`p-5 sm:p-6 rounded-3xl border ${
+              className={`p-6 sm:p-7 rounded-3xl border ${
                 item.highlight
                   ? 'bg-white border-[#1F3D2B]/20 shadow-[0_10px_30px_rgba(31,61,43,0.06)]'
                   : 'bg-white/80 border-[#EADFD0]'
               }`}
             >
-              <div className="font-serif text-3xl sm:text-4xl font-bold text-[#1F3D2B] mb-1">
+              <div className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#1F3D2B] mb-2">
                 {item.metric}
               </div>
-              <div className="font-sans font-semibold text-xs sm:text-sm text-[#202820] mb-1">
+              <div className="font-sans font-bold text-sm sm:text-base text-[#1F3D2B] mb-1.5">
                 {item.label}
               </div>
-              <p className="text-[11px] text-[#202820]/70 font-sans leading-relaxed">
+              <p className="text-xs sm:text-[13px] text-[#202820]/80 font-sans leading-relaxed">
                 {item.sub}
               </p>
             </div>
@@ -276,23 +276,23 @@ export const EditorialCaseStudyView: React.FC<EditorialCaseStudyViewProps> = ({ 
         </div>
 
         {/* Technology Stack Strip */}
-        <div className="p-6 rounded-3xl bg-[#FAF6EF] border border-[#EADFD0] flex flex-wrap items-center justify-between gap-4">
+        <div className="p-6 sm:p-7 rounded-3xl bg-[#FAF6EF] border border-[#EADFD0] flex flex-wrap items-center justify-between gap-5">
           <div>
-            <span className="text-[10px] font-mono uppercase tracking-widest text-[#8B5E3C] font-bold block">
+            <span className="text-xs font-mono uppercase tracking-wider text-[#8B5E3C] font-bold block mb-1">
               Production Technology Stack
             </span>
-            <span className="text-xs text-[#202820]/80 font-sans">
+            <span className="text-sm sm:text-base text-[#202820]/90 font-sans">
               Clean architecture with zero third-party plugin bloat.
             </span>
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2.5">
             {techStack.map((tech) => (
               <span
                 key={tech.name}
-                className="px-3 py-1.5 rounded-full bg-white border border-[#EADFD0] text-xs font-mono text-[#1F3D2B]"
+                className="px-3.5 py-2 rounded-full bg-white border border-[#EADFD0] text-xs sm:text-[13px] font-mono text-[#1F3D2B] shadow-2xs"
               >
                 <strong className="font-bold">{tech.name}</strong>{' '}
-                <span className="text-[10px] text-[#8B5E3C]">({tech.tag})</span>
+                <span className="text-xs text-[#8B5E3C] font-semibold">({tech.tag})</span>
               </span>
             ))}
           </div>
@@ -303,19 +303,19 @@ export const EditorialCaseStudyView: React.FC<EditorialCaseStudyViewProps> = ({ 
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-[#1F3D2B] text-white rounded-3xl p-8 sm:p-12 relative overflow-hidden">
           <div className="max-w-3xl space-y-6 relative z-10">
-            <span className="text-[11px] font-mono uppercase tracking-widest text-[#D9A441] font-semibold">
+            <span className="text-xs font-mono uppercase tracking-widest text-[#D9A441] font-bold">
               Client Reflection
             </span>
-            <blockquote className="font-serif text-xl sm:text-2xl lg:text-3xl text-[#FAF6EF] italic font-normal leading-snug">
+            <blockquote className="font-serif text-xl sm:text-2xl lg:text-3xl text-[#FAF6EF] italic font-normal leading-relaxed">
               "ValGrow Labs understood our artisanal craft. We didn't just get an online shop; we got an entire operational backbone that freed our team to focus on harvesting and delivering authentic Sri Lankan flavours."
             </blockquote>
-            <div className="flex items-center gap-3 pt-1">
-              <div className="w-9 h-9 rounded-full bg-[#FAF6EF] text-[#1F3D2B] flex items-center justify-center font-serif font-bold text-sm">
+            <div className="flex items-center gap-3 pt-2">
+              <div className="w-10 h-10 rounded-full bg-[#FAF6EF] text-[#1F3D2B] flex items-center justify-center font-serif font-bold text-base">
                 CC
               </div>
               <div>
-                <div className="font-sans font-semibold text-xs text-white">Ceylon Crunch Leadership</div>
-                <div className="text-[11px] text-[#FAF6EF]/70 font-sans">Colombo, Sri Lanka</div>
+                <div className="font-sans font-bold text-sm text-white">Ceylon Crunch Leadership</div>
+                <div className="text-xs text-[#FAF6EF]/80 font-sans mt-0.5">Colombo, Sri Lanka</div>
               </div>
             </div>
           </div>
@@ -327,32 +327,32 @@ export const EditorialCaseStudyView: React.FC<EditorialCaseStudyViewProps> = ({ 
             <img
               src="/valgrow-logo.png"
               alt="ValGrow Labs Logo"
-              className="h-10 w-auto object-contain shrink-0 hidden sm:block"
+              className="h-11 w-auto object-contain shrink-0 hidden sm:block"
             />
             <div className="space-y-1">
               <h3 className="font-serif text-2xl sm:text-3xl font-bold text-[#1F3D2B]">
                 Ready to engineer your next digital platform?
               </h3>
-              <p className="text-xs sm:text-sm text-[#202820]/75 font-sans">
+              <p className="text-sm sm:text-base text-[#202820]/85 font-sans">
                 ValGrow Labs partners with ambitious brands to build scalable, high-converting digital products.
               </p>
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3.5">
             <a
               href="mailto:contact@valgrowlabs.com?subject=Project Inquiry — D2C Platform"
-              className="px-6 py-3 rounded-full bg-[#1F3D2B] text-white text-xs font-semibold hover:bg-[#162C1F] shadow-sm transition-all cursor-pointer inline-flex items-center gap-2 group"
+              className="px-6 py-3.5 rounded-full bg-[#1F3D2B] text-white text-xs sm:text-sm font-semibold hover:bg-[#162C1F] shadow-sm transition-all cursor-pointer inline-flex items-center gap-2 group"
             >
               <span>Start a Project Inquiry</span>
-              <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </a>
 
             <Link
               to="/store"
-              className="px-5 py-3 rounded-full bg-[#FAF6EF] text-[#1F3D2B] text-xs font-semibold hover:bg-white border border-[#EADFD0] transition-colors inline-flex items-center gap-1.5"
+              className="px-5 py-3.5 rounded-full bg-[#FAF6EF] text-[#1F3D2B] text-xs sm:text-sm font-semibold hover:bg-white border border-[#EADFD0] transition-colors inline-flex items-center gap-2"
             >
-              <Sparkles className="w-3.5 h-3.5 text-[#D9A441]" />
+              <Sparkles className="w-4 h-4 text-[#D9A441]" />
               <span>Interactive Store Demo</span>
             </Link>
           </div>
