@@ -31,15 +31,44 @@ import { TermsConditions } from './pages/TermsConditions';
 import { ReturnsRefunds } from './pages/ReturnsRefunds';
 import { Admin } from './pages/Admin';
 import { Profile } from './pages/Profile';
-import { Landing } from './pages/Landing';
 import { NotFound } from './pages/NotFound';
+import { CaseStudyPage } from './pages/case-study/CaseStudyPage';
 
 import { Database, AlertTriangle } from 'lucide-react';
 import { isSupabaseConfigured } from './lib/supabase';
 
+const isCaseStudyRoute = (pathname: string): boolean => {
+  if (!pathname) return false;
+  try {
+    const decoded = decodeURIComponent(pathname).trim().toLowerCase().replace(/\/+$/, '') || '/';
+    return (
+      decoded === '/casestudy' ||
+      decoded === '/case-study' ||
+      decoded === '/case study' ||
+      decoded === '/case_study' ||
+      decoded === '/casestudies' ||
+      decoded === '/case-studies'
+    );
+  } catch {
+    const raw = pathname.trim().toLowerCase().replace(/\/+$/, '') || '/';
+    return (
+      raw === '/casestudy' ||
+      raw === '/case-study' ||
+      raw === '/case%20study' ||
+      raw === '/case study' ||
+      raw === '/case_study'
+    );
+  }
+};
+
 function AppShell() {
   const location = useLocation();
+  const isCaseStudy = isCaseStudyRoute(location.pathname);
   const isAdminPage = location.pathname === '/admin' || location.pathname.startsWith('/admin/');
+
+  if (isCaseStudy) {
+    return <CaseStudyPage />;
+  }
 
   if (isAdminPage) {
     return (
@@ -62,10 +91,11 @@ function AppShell() {
       <main className="flex-1 w-full max-w-[1320px] mx-auto pt-20 sm:pt-24 lg:pt-28 px-4 sm:px-6 lg:px-8 pb-16 lg:pb-12">
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/landing" element={<Landing />} />
-          <Route path="/landingpage" element={<Landing />} />
-          <Route path="/landing-page" element={<Landing />} />
-          <Route path="/welcome" element={<Landing />} />
+          <Route path="/casestudy" element={<CaseStudyPage />} />
+          <Route path="/case-study" element={<CaseStudyPage />} />
+          <Route path="/case study" element={<CaseStudyPage />} />
+          <Route path="/case%20study" element={<CaseStudyPage />} />
+          <Route path="/store" element={<Home />} />
           <Route path="/shop" element={<Shop />} />
           <Route path="/category/:slug" element={<CategoryPage />} />
           <Route path="/product/:slug" element={<ProductDetail />} />
@@ -115,7 +145,10 @@ function AppShell() {
 }
 
 export default function App() {
-  if (!isSupabaseConfigured) {
+  const isCaseStudyPath =
+    typeof window !== 'undefined' && isCaseStudyRoute(window.location.pathname);
+
+  if (!isSupabaseConfigured && !isCaseStudyPath) {
     return (
       <div className="min-h-screen bg-[#FBF7F0] flex items-center justify-center p-4">
         <div className="max-w-md w-full bg-white border border-[#EADFD0] rounded-3xl p-8 shadow-sm text-center space-y-4">

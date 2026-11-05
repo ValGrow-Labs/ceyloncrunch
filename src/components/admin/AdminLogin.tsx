@@ -138,7 +138,12 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin, showToast }) =>
       </div>
 
       {/* Footer Branding */}
-      <div className="mt-8 text-center text-xs text-stone-400 font-normal">
+      <div className="mt-8 flex items-center justify-center gap-1.5 text-xs text-stone-400 font-normal">
+        <img
+          src="/valgrow-logo.png"
+          alt="ValGrow Labs Logo"
+          className="h-3.5 w-auto object-contain opacity-80"
+        />
         <span>Designed & Developed by </span>
         <span className="font-semibold text-[#C59B27]">ValGrow Labs</span>
       </div>

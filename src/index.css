@@ -4,21 +4,31 @@
   --color-canvas: #FBF7F0;
   --color-primary: #1F3D2B;
   --color-primary-hover: #162C1F;
+  --color-dark-forest: #162C1F;
   --color-secondary: #8B5E3C;
   --color-tertiary: #D9A441;
+  --color-gold: #D9A441;
+  --color-gold-secondary: #C5A059;
   --color-charcoal: #2B2B2B;
+  --color-dark-text: #202820;
   --color-muted: #6B6B6B;
   --color-surface: #FFFFFF;
   --color-outline: #EADFD0;
   --color-success: #2E7D4F;
   --color-error: #B3261E;
 
-  --font-serif: "Playfair Display", Georgia, serif;
-  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-serif: "Cormorant Garamond", "Playfair Display", Georgia, serif;
+  --font-sans: "Plus Jakarta Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-display: "Cormorant Garamond", "Playfair Display", serif;
 
   --shadow-soft: 0 4px 20px -2px rgba(139, 94, 60, 0.06);
   --shadow-hover: 0 12px 28px -4px rgba(31, 61, 43, 0.08);
   --shadow-float: 0 20px 40px -8px rgba(43, 43, 43, 0.12);
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 @layer base {
@@ -26,14 +36,23 @@
     background-color: var(--color-canvas);
     color: var(--color-charcoal);
     font-family: var(--font-sans);
+    text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    letter-spacing: -0.01em;
     overscroll-behavior-y: none;
     overflow-x: hidden;
   }
 
-  h1, h2, h3, .font-serif {
+  h1, h2, h3, h4, .font-serif {
     font-family: var(--font-serif);
+    font-feature-settings: "liga" 1, "kern" 1, "cv02" 1;
+    letter-spacing: -0.025em;
+  }
+
+  code, pre, .font-mono {
+    font-family: var(--font-mono);
+    font-feature-settings: "zero" 1;
   }
 
   input, textarea, select {

@@ -1,0 +1,98 @@
+import React, { useState, useEffect } from 'react';
+import { ArrowUpRight, ExternalLink } from 'lucide-react';
+
+interface CaseStudyNavbarProps {
+  onOpenContact?: () => void;
+}
+
+export const CaseStudyNavbar: React.FC<CaseStudyNavbarProps> = ({ onOpenContact }) => {
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 30);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToContact = () => {
+    if (onOpenContact) {
+      onOpenContact();
+    } else {
+      const element = document.getElementById('contact');
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  };
+
+  return (
+    <header
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        isScrolled
+          ? 'bg-[#FBF7F0]/92 backdrop-blur-md border-b border-[#EADFD0]/80 py-3 shadow-[0_2px_16px_rgba(31,61,43,0.04)]'
+          : 'bg-transparent py-5'
+      }`}
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between">
+          {/* Left: ValGrow Labs Branding + Case Study Context */}
+          <div className="flex items-center gap-3">
+            <a
+              href="#hero"
+              onClick={(e) => {
+                e.preventDefault();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              className="group flex items-center gap-3"
+            >
+              <img
+                src="/valgrow-logo.png"
+                alt="ValGrow Labs Logo"
+                className="h-8 sm:h-9 w-auto object-contain transition-transform group-hover:scale-105 duration-200"
+              />
+              <div className="flex flex-col">
+                <span className="font-serif font-bold tracking-[-0.02em] text-xl text-[#1F3D2B] leading-none">
+                  ValGrow Labs
+                </span>
+                <span className="text-[9px] uppercase font-mono tracking-[0.24em] text-[#8B5E3C] font-semibold mt-0.5">
+                  Engineering Studio
+                </span>
+              </div>
+            </a>
+
+            <div className="hidden sm:flex items-center gap-2 pl-3 ml-3 border-l border-[#EADFD0]">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#2E7D4F]" />
+              <span className="font-mono text-[10px] text-[#8B5E3C] tracking-wider uppercase">
+                Work / Ceylon Crunch
+              </span>
+            </div>
+          </div>
+
+          {/* Right: Clean, Uncluttered Actions */}
+          <div className="flex items-center gap-2.5 sm:gap-3">
+            <a
+              href="https://ceyloncrunch.lk"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium text-[#1F3D2B] hover:bg-[#FAF6EF] border border-[#EADFD0] transition-colors"
+            >
+              <span>Visit Live Store</span>
+              <ExternalLink className="w-3 h-3 text-[#8B5E3C]" />
+            </a>
+
+            <button
+              onClick={scrollToContact}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold text-white bg-[#1F3D2B] hover:bg-[#162C1F] shadow-sm transition-all cursor-pointer group"
+            >
+              <span>Let's Talk</span>
+              <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+};
