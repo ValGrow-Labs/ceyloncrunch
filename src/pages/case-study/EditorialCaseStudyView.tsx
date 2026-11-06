@@ -105,7 +105,7 @@ export const EditorialCaseStudyView: React.FC<EditorialCaseStudyViewProps> = ({ 
   ];
 
   return (
-    <div className="space-y-16 sm:space-y-24 py-12 sm:py-20">
+    <div className="space-y-8 sm:space-y-12 py-6 sm:py-8">
       {/* 01. THE BRIEF: PROBLEM VS TRANSFORMATION */}
       <section id="overview" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
@@ -178,9 +178,9 @@ export const EditorialCaseStudyView: React.FC<EditorialCaseStudyViewProps> = ({ 
       </section>
 
       {/* 02. THREE CORE ENGINEERING PILLARS */}
-      <section id="pillars" className="bg-[#FAF6EF] py-16 sm:py-20 border-t border-b border-[#EADFD0]/80">
+      <section id="pillars" className="bg-[#FAF6EF] py-10 sm:py-14 border-t border-b border-[#EADFD0]/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl mb-12">
+          <div className="max-w-3xl mb-8 sm:mb-10">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#1F3D2B]/8 text-[#1F3D2B] text-sm font-sans font-bold uppercase tracking-[0.15em] mb-3">
               <Sparkles className="w-4 h-4 text-[#D9A441]" />
               Engineering Blueprint
@@ -240,7 +240,7 @@ export const EditorialCaseStudyView: React.FC<EditorialCaseStudyViewProps> = ({ 
 
       {/* 03. MEASURABLE BUSINESS IMPACT */}
       <section id="impact" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="max-w-3xl mb-10">
+        <div className="max-w-3xl mb-6 sm:mb-8">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#1F3D2B]/8 text-[#1F3D2B] text-sm font-sans font-bold uppercase tracking-[0.15em] mb-3">
             <Sparkles className="w-4 h-4 text-[#D9A441]" />
             Business Impact
@@ -252,7 +252,7 @@ export const EditorialCaseStudyView: React.FC<EditorialCaseStudyViewProps> = ({ 
         </div>
 
         {/* 4 Metric Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
           {benchmarks.map((item, idx) => (
             <div
               key={idx}
@@ -301,7 +301,7 @@ export const EditorialCaseStudyView: React.FC<EditorialCaseStudyViewProps> = ({ 
 
       {/* 04. CLIENT TESTIMONIAL & MINIMAL CALL TO ACTION */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-[#1F3D2B] text-white rounded-3xl p-8 sm:p-12 relative overflow-hidden">
+        <div className="bg-[#1F3D2B] text-white rounded-3xl p-6 sm:p-10 relative overflow-hidden">
           <div className="max-w-3xl space-y-6 relative z-10">
             <span className="text-sm font-sans uppercase tracking-widest text-[#D9A441] font-bold">
               Client Reflection
@@ -322,7 +322,7 @@ export const EditorialCaseStudyView: React.FC<EditorialCaseStudyViewProps> = ({ 
         </div>
 
         {/* Minimal Inquiry Banner */}
-        <div id="contact" className="mt-8 p-8 sm:p-10 rounded-3xl bg-white border border-[#EADFD0] shadow-sm flex flex-col sm:flex-row items-center justify-between gap-6">
+        <div id="contact" className="mt-6 sm:mt-8 p-6 sm:p-8 rounded-3xl bg-white border border-[#EADFD0] shadow-sm flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-4 text-center sm:text-left">
             <img
               src="/valgrow-logo.png"
