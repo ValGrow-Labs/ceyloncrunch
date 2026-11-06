@@ -31,15 +31,15 @@ export const CaseStudyHero: React.FC<CaseStudyHeroProps> = ({ onExploreClick }) 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex-1 flex flex-col justify-center">
         {/* Top Eyebrow Bar */}
         <div className="flex flex-wrap items-center gap-3.5 mb-6 sm:mb-8">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#1F3D2B]/8 border border-[#1F3D2B]/15 text-[#1F3D2B] text-xs sm:text-[13px] font-mono tracking-[0.16em] uppercase font-semibold">
+          <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-[#1F3D2B]/8 border border-[#1F3D2B]/15 text-[#1F3D2B] text-sm font-sans tracking-[0.14em] uppercase font-bold">
             <img
               src="/valgrow-logo.png"
               alt="ValGrow Labs"
-              className="h-4 w-auto object-contain inline-block"
+              className="h-4.5 w-auto object-contain inline-block"
             />
             <span>Case Study · D2C E-Commerce</span>
           </div>
-          <span className="text-[#7A4B28] text-xs sm:text-[13px] font-mono tracking-[0.16em] uppercase font-semibold">
+          <span className="text-[#7A4B28] text-sm font-sans tracking-[0.14em] uppercase font-bold">
             Client: Ceylon Crunch · Colombo, LK
           </span>
         </div>
@@ -57,7 +57,7 @@ export const CaseStudyHero: React.FC<CaseStudyHeroProps> = ({ onExploreClick }) 
               Building a premium digital commerce experience for authentic Sri Lankan flavours.
             </p>
 
-            <p className="text-base sm:text-lg text-[#202820]/90 leading-relaxed max-w-xl font-sans font-normal tracking-[-0.01em]">
+            <p className="text-lg sm:text-xl text-[#202820] leading-relaxed max-w-xl font-sans font-normal">
               We transformed Ceylon Crunch from a manual social-media ordering business into a modern,
               intelligent, mobile-first e-commerce ecosystem — featuring atomic multi-variant inventory,
               25-district logistics calculation, PayHere payment integration, and a headless merchant CMS.
@@ -85,7 +85,7 @@ export const CaseStudyHero: React.FC<CaseStudyHeroProps> = ({ onExploreClick }) 
 
               <Link
                 to="/store"
-                className="inline-flex items-center gap-2 px-4 py-3.5 rounded-full text-xs sm:text-sm font-semibold text-[#8B5E3C] hover:text-[#1F3D2B] hover:bg-[#8B5E3C]/8 border border-transparent transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-3.5 rounded-full text-sm font-semibold text-[#8B5E3C] hover:text-[#1F3D2B] hover:bg-[#8B5E3C]/8 border border-transparent transition-colors"
               >
                 <Sparkles className="w-4 h-4 text-[#D9A441]" />
                 <span>Store Prototype</span>
@@ -110,17 +110,17 @@ export const CaseStudyHero: React.FC<CaseStudyHeroProps> = ({ onExploreClick }) 
                   <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/25 backdrop-blur-md text-xs uppercase font-bold tracking-wider text-[#D9A441] mb-2">
                     Artisanal Harvest
                   </div>
-                  <h4 className="font-sans text-lg sm:text-xl font-bold leading-tight text-white">
+                  <h4 className="font-sans text-xl sm:text-2xl font-bold leading-tight text-white">
                     Jumbo Roasted Cashews & Ceylon Spices
                   </h4>
-                  <p className="text-xs sm:text-sm text-white/90 font-sans mt-1">
+                  <p className="text-sm sm:text-base text-white/95 font-sans mt-1">
                     100% natural, slow-roasted in small batches in Colombo.
                   </p>
                 </div>
               </div>
 
               {/* Overlapping Floating Secondary Card (Curated Hamper) */}
-              <div className="hidden sm:flex absolute -bottom-6 -left-8 w-52 rounded-2xl overflow-hidden border-2 border-white shadow-[0_16px_36px_rgba(31,61,43,0.18)] bg-white p-3 flex-col gap-2 transform -rotate-2 hover:rotate-0 transition-transform">
+              <div className="hidden sm:flex absolute -bottom-6 -left-8 w-56 rounded-2xl overflow-hidden border-2 border-white shadow-[0_16px_36px_rgba(31,61,43,0.18)] bg-white p-3.5 flex-col gap-2 transform -rotate-2 hover:rotate-0 transition-transform">
                 <div className="w-full h-24 rounded-xl overflow-hidden bg-[#FAF6EF]">
                   <img
                     src="/products/gifting/curated-hamper.jpg"
@@ -129,28 +129,28 @@ export const CaseStudyHero: React.FC<CaseStudyHeroProps> = ({ onExploreClick }) 
                   />
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-[11px] uppercase font-bold tracking-wider text-[#7A4B28]">
+                  <span className="text-xs uppercase font-bold tracking-wider text-[#7A4B28]">
                     B2B & Gifting
                   </span>
-                  <span className="text-sm font-sans font-bold text-[#1F3D2B] leading-tight mt-0.5">
+                  <span className="text-base font-sans font-bold text-[#1F3D2B] leading-tight mt-0.5">
                     Luxury Hampers
                   </span>
-                  <span className="text-xs text-[#2E7D4F] font-semibold mt-0.5">
+                  <span className="text-sm text-[#2E7D4F] font-bold mt-0.5">
                     Corporate Portal
                   </span>
                 </div>
               </div>
 
               {/* Floating Quality Badge */}
-              <div className="absolute -top-4 -right-4 bg-white/95 backdrop-blur-md border border-[#EADFD0] rounded-2xl p-3.5 shadow-lg flex items-center gap-3 transform rotate-3">
-                <div className="w-10 h-10 rounded-xl bg-[#1F3D2B] text-[#D9A441] flex items-center justify-center">
-                  <ShieldCheck className="w-5 h-5" />
+              <div className="absolute -top-4 -right-4 bg-white/95 backdrop-blur-md border border-[#EADFD0] rounded-2xl p-4 shadow-lg flex items-center gap-3 transform rotate-3">
+                <div className="w-11 h-11 rounded-xl bg-[#1F3D2B] text-[#D9A441] flex items-center justify-center">
+                  <ShieldCheck className="w-6 h-6" />
                 </div>
                 <div className="flex flex-col text-left">
-                  <span className="text-[11px] uppercase font-bold tracking-wider text-[#7A4B28]">
+                  <span className="text-xs uppercase font-bold tracking-wider text-[#7A4B28]">
                     Conversion Rate
                   </span>
-                  <span className="text-base font-bold text-[#1F3D2B]">+42% Growth</span>
+                  <span className="text-lg font-bold text-[#1F3D2B]">+42% Growth</span>
                 </div>
               </div>
             </div>
@@ -162,33 +162,33 @@ export const CaseStudyHero: React.FC<CaseStudyHeroProps> = ({ onExploreClick }) 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full mt-12 pt-8 border-t border-[#EADFD0]/80">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 items-center">
           <div>
-            <span className="block text-[10px] uppercase font-mono tracking-[0.22em] text-[#8B5E3C] mb-0.5">
+            <span className="block text-xs uppercase font-sans tracking-[0.16em] text-[#7A4B28] font-bold mb-1">
               Client
             </span>
-            <span className="text-sm font-semibold text-[#1F3D2B] tracking-[-0.01em]">Ceylon Crunch LK</span>
+            <span className="text-base sm:text-lg font-bold text-[#1F3D2B] tracking-[-0.01em]">Ceylon Crunch LK</span>
           </div>
 
           <div>
-            <span className="block text-[10px] uppercase font-mono tracking-[0.22em] text-[#8B5E3C] mb-0.5">
+            <span className="block text-xs uppercase font-sans tracking-[0.16em] text-[#7A4B28] font-bold mb-1">
               Industry
             </span>
-            <span className="text-sm font-semibold text-[#1F3D2B] tracking-[-0.01em]">D2C E-Commerce & Gifting</span>
+            <span className="text-base sm:text-lg font-bold text-[#1F3D2B] tracking-[-0.01em]">D2C E-Commerce & Gifting</span>
           </div>
 
           <div>
-            <span className="block text-[10px] uppercase font-mono tracking-[0.22em] text-[#8B5E3C] mb-0.5">
+            <span className="block text-xs uppercase font-sans tracking-[0.16em] text-[#7A4B28] font-bold mb-1">
               Services
             </span>
-            <span className="text-sm font-semibold text-[#1F3D2B] tracking-[-0.01em]">
-              UI/UX · Full-Stack · Headless CMS
+            <span className="text-base sm:text-lg font-bold text-[#1F3D2B] tracking-[-0.01em]">
+              UI/UX · Full-Stack · CMS
             </span>
           </div>
 
           <div>
-            <span className="block text-[10px] uppercase font-mono tracking-[0.22em] text-[#8B5E3C] mb-0.5">
+            <span className="block text-xs uppercase font-sans tracking-[0.16em] text-[#7A4B28] font-bold mb-1">
               Core Stack
             </span>
-            <span className="text-sm font-semibold text-[#1F3D2B] tracking-[-0.01em]">React 19 · TS · Supabase</span>
+            <span className="text-base sm:text-lg font-bold text-[#1F3D2B] tracking-[-0.01em]">React 19 · TS · Supabase</span>
           </div>
         </div>
 
@@ -196,10 +196,10 @@ export const CaseStudyHero: React.FC<CaseStudyHeroProps> = ({ onExploreClick }) 
         <div className="flex justify-center mt-8">
           <button
             onClick={scrollToOverview}
-            className="group flex flex-col items-center gap-1.5 text-xs text-[#8B5E3C] hover:text-[#1F3D2B] transition-colors cursor-pointer"
+            className="group flex flex-col items-center gap-1.5 text-sm text-[#7A4B28] hover:text-[#1F3D2B] transition-colors cursor-pointer"
             aria-label="Scroll to overview"
           >
-            <span className="text-[10px] uppercase tracking-[0.25em] font-mono">Scroll to explore</span>
+            <span className="text-xs uppercase tracking-[0.2em] font-sans font-bold">Scroll to explore</span>
             <div className="w-7 h-10 rounded-full border border-[#8B5E3C]/40 flex items-start justify-center p-1.5">
               <div className="w-1.5 h-2.5 rounded-full bg-[#1F3D2B] animate-bounce" />
             </div>
