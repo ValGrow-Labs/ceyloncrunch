@@ -28,25 +28,25 @@ export const CaseStudyFooter: React.FC = () => {
                 alt="ValGrow Labs Logo"
                 className="h-8 w-auto object-contain"
               />
-              <span className="font-sans font-extrabold tracking-tight text-xl text-white">
+              <span className="font-sans font-extrabold tracking-tight text-xl sm:text-2xl text-white">
                 ValGrow Labs
               </span>
             </div>
-            <p className="text-sm sm:text-base text-white/85 max-w-sm font-sans leading-relaxed">
+            <p className="text-base sm:text-lg text-white/90 max-w-sm font-sans leading-relaxed">
               We design and engineer bespoke software platforms, high-converting digital storefronts, and intelligent operations systems for forward-thinking enterprises.
             </p>
-            <div className="pt-2 flex items-center gap-2 text-xs sm:text-sm font-mono text-[#D9A441]">
-              <span className="w-2 h-2 rounded-full bg-[#2E7D4F] animate-pulse" />
+            <div className="pt-2 flex items-center gap-2 text-sm font-sans text-[#D9A441] font-bold">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#2E7D4F] animate-pulse" />
               <span>Studio: Colombo, Sri Lanka</span>
             </div>
           </div>
 
           {/* Col 2: Case Study Navigation (3 cols) */}
-          <div className="md:col-span-3 space-y-3.5 font-sans">
-            <span className="text-xs font-mono uppercase tracking-widest text-[#D9A441] font-bold block">
+          <div className="md:col-span-3 space-y-4 font-sans">
+            <span className="text-sm font-sans uppercase tracking-widest text-[#D9A441] font-bold block">
               Case Study Sections
             </span>
-            <ul className="space-y-2.5 text-sm text-white/90">
+            <ul className="space-y-3 text-base text-white/90 font-medium">
               <li>
                 <button
                   onClick={() => scrollTo('overview')}
@@ -84,40 +84,40 @@ export const CaseStudyFooter: React.FC = () => {
 
           {/* Col 3: Project Links & Live Store (4 cols) */}
           <div className="md:col-span-4 space-y-4 font-sans">
-            <span className="text-xs font-mono uppercase tracking-widest text-[#D9A441] font-bold block">
+            <span className="text-sm font-sans uppercase tracking-widest text-[#D9A441] font-bold block">
               Client & Project Metadata
             </span>
-            <div className="space-y-2.5 text-sm text-white/90">
-              <div className="flex items-center justify-between py-1 border-b border-white/10">
-                <span className="text-white/75">Client:</span>
-                <span className="font-semibold text-white">Ceylon Crunch LK</span>
+            <div className="space-y-3 text-sm sm:text-base text-white/90">
+              <div className="flex items-center justify-between py-1.5 border-b border-white/10">
+                <span className="text-white/75 font-medium">Client:</span>
+                <span className="font-bold text-white">Ceylon Crunch LK</span>
               </div>
-              <div className="flex items-center justify-between py-1 border-b border-white/10">
-                <span className="text-white/75">Deliverable:</span>
-                <span className="font-semibold text-white">D2C E-Commerce & CMS</span>
+              <div className="flex items-center justify-between py-1.5 border-b border-white/10">
+                <span className="text-white/75 font-medium">Deliverable:</span>
+                <span className="font-bold text-white">D2C E-Commerce & CMS</span>
               </div>
-              <div className="flex items-center justify-between py-1 border-b border-white/10">
-                <span className="text-white/75">Year:</span>
-                <span className="font-mono text-white">2026 Production</span>
+              <div className="flex items-center justify-between py-1.5 border-b border-white/10">
+                <span className="text-white/75 font-medium">Year:</span>
+                <span className="font-bold text-white">2026 Production</span>
               </div>
             </div>
 
-            <div className="pt-2 flex flex-col gap-2">
+            <div className="pt-2 flex flex-col gap-2.5">
               <a
                 href="https://ceyloncrunch.lk"
                 target="_blank"
                 rel="noreferrer"
-                className="w-full py-2.5 px-4 rounded-xl bg-white/10 hover:bg-white/15 text-xs font-semibold text-white flex items-center justify-center gap-2 border border-white/15 transition-colors"
+                className="w-full py-3 px-4 rounded-xl bg-white/10 hover:bg-white/15 text-sm font-semibold text-white flex items-center justify-center gap-2 border border-white/15 transition-colors"
               >
                 <span>Visit Ceylon Crunch Live</span>
-                <ExternalLink className="w-3.5 h-3.5 text-[#D9A441]" />
+                <ExternalLink className="w-4 h-4 text-[#D9A441]" />
               </a>
 
               <Link
                 to="/store"
-                className="w-full py-2.5 px-4 rounded-xl bg-[#D9A441] hover:bg-[#C5A059] text-xs font-semibold text-[#162C1F] flex items-center justify-center gap-2 shadow-sm transition-colors"
+                className="w-full py-3 px-4 rounded-xl bg-[#D9A441] hover:bg-[#C5A059] text-sm font-bold text-[#162C1F] flex items-center justify-center gap-2 shadow-sm transition-colors"
               >
-                <Sparkles className="w-3.5 h-3.5" />
+                <Sparkles className="w-4 h-4" />
                 <span>Launch Interactive Store Prototype</span>
               </Link>
             </div>
@@ -125,16 +125,16 @@ export const CaseStudyFooter: React.FC = () => {
         </div>
 
         {/* Bottom Bar: Copyright & Back-to-Top */}
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-white/60 font-sans">
+        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-white/70 font-sans">
           <p>© 2026 ValGrow Labs. All rights reserved.</p>
 
           <button
             onClick={scrollToTop}
-            className="flex items-center gap-1.5 text-xs text-[#D9A441] hover:text-white transition-colors cursor-pointer font-mono uppercase tracking-wider"
+            className="flex items-center gap-2 text-sm text-[#D9A441] hover:text-white transition-colors cursor-pointer font-sans font-bold uppercase tracking-wider"
           >
             <span>Back to top</span>
-            <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center">
-              <ArrowUp className="w-3.5 h-3.5" />
+            <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center">
+              <ArrowUp className="w-4 h-4" />
             </div>
           </button>
         </div>
