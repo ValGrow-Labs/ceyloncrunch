@@ -50,6 +50,32 @@ html {
     letter-spacing: -0.025em;
   }
 
+  .case-study-root,
+  .case-study-root h1,
+  .case-study-root h2,
+  .case-study-root h3,
+  .case-study-root h4,
+  .case-study-root h5,
+  .case-study-root h6,
+  .case-study-root p,
+  .case-study-root span,
+  .case-study-root a,
+  .case-study-root button,
+  .case-study-root blockquote,
+  .case-study-root div {
+    font-family: var(--font-sans) !important;
+  }
+
+  .case-study-root h1,
+  .case-study-root h2,
+  .case-study-root h3,
+  .case-study-root h4,
+  .case-study-root h5,
+  .case-study-root h6 {
+    font-style: normal;
+    letter-spacing: -0.02em;
+  }
+
   code, pre, .font-mono {
     font-family: var(--font-mono);
     font-feature-settings: "zero" 1;

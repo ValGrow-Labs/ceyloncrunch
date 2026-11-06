@@ -28,7 +28,7 @@ export const CaseStudyFooter: React.FC = () => {
                 alt="ValGrow Labs Logo"
                 className="h-8 w-auto object-contain"
               />
-              <span className="font-serif font-bold tracking-tight text-xl text-white">
+              <span className="font-sans font-extrabold tracking-tight text-xl text-white">
                 ValGrow Labs
               </span>
             </div>

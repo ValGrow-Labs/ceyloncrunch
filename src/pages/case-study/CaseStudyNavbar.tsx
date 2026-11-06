@@ -54,10 +54,10 @@ export const CaseStudyNavbar: React.FC<CaseStudyNavbarProps> = ({ onOpenContact 
                 className="h-8 sm:h-9 w-auto object-contain transition-transform group-hover:scale-105 duration-200"
               />
               <div className="flex flex-col">
-                <span className="font-serif font-bold tracking-[-0.02em] text-xl sm:text-2xl text-[#1F3D2B] leading-none">
+                <span className="font-sans font-extrabold tracking-tight text-xl sm:text-2xl text-[#1F3D2B] leading-none">
                   ValGrow Labs
                 </span>
-                <span className="text-[11px] uppercase font-mono tracking-[0.16em] text-[#7A4B28] font-bold mt-1">
+                <span className="text-[11px] uppercase font-sans tracking-wider text-[#7A4B28] font-bold mt-1">
                   Engineering Studio
                 </span>
               </div>
@@ -65,7 +65,7 @@ export const CaseStudyNavbar: React.FC<CaseStudyNavbarProps> = ({ onOpenContact 
 
             <div className="hidden sm:flex items-center gap-2 pl-3 ml-3 border-l border-[#EADFD0]">
               <span className="w-2 h-2 rounded-full bg-[#2E7D4F]" />
-              <span className="font-mono text-xs text-[#7A4B28] tracking-wider uppercase font-semibold">
+              <span className="font-sans text-xs text-[#7A4B28] tracking-wider uppercase font-semibold">
                 Work / Ceylon Crunch
               </span>
             </div>
