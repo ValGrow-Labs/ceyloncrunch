@@ -103,20 +103,6 @@ export const CaseStudyHero: React.FC<CaseStudyHeroProps> = ({ onExploreClick }) 
                   alt="Ceylon Crunch Premium Roasted Cashews"
                   className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#162C1F]/80 via-transparent to-transparent" />
-
-                {/* Overlaid Editorial Caption */}
-                <div className="absolute bottom-5 left-5 right-5 text-white">
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/25 backdrop-blur-md text-xs uppercase font-bold tracking-wider text-[#D9A441] mb-2">
-                    Artisanal Harvest
-                  </div>
-                  <h4 className="font-sans text-xl sm:text-2xl font-bold leading-tight text-white">
-                    Jumbo Roasted Cashews & Ceylon Spices
-                  </h4>
-                  <p className="text-sm sm:text-base text-white/95 font-sans mt-1">
-                    100% natural, slow-roasted in small batches in Colombo.
-                  </p>
-                </div>
               </div>
 
               {/* Overlapping Floating Secondary Card (Curated Hamper) */}
