@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowDown, ExternalLink, Sparkles, ShieldCheck, ChevronRight } from 'lucide-react';
+import { ExternalLink, Sparkles, ShieldCheck, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 interface CaseStudyHeroProps {
@@ -21,7 +21,7 @@ export const CaseStudyHero: React.FC<CaseStudyHeroProps> = ({ onExploreClick }) 
   return (
     <section
       id="hero"
-      className="relative min-h-screen pt-28 pb-16 lg:pt-32 lg:pb-24 flex flex-col justify-between overflow-hidden bg-[#FBF7F0]"
+      className="relative pt-24 pb-8 sm:pt-28 sm:pb-10 lg:pt-32 lg:pb-10 overflow-hidden bg-[#FBF7F0]"
     >
       {/* Subtle organic background accents */}
       <div className="absolute top-0 right-0 w-[55vw] h-[55vw] max-w-[800px] max-h-[800px] rounded-full bg-radial from-[#1F3D2B]/[0.04] via-[#D9A441]/[0.02] to-transparent pointer-events-none blur-3xl -z-10" />
@@ -158,8 +158,8 @@ export const CaseStudyHero: React.FC<CaseStudyHeroProps> = ({ onExploreClick }) 
         </div>
       </div>
 
-      {/* Bottom Metadata Bar & Scroll Indicator */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full mt-12 pt-8 border-t border-[#EADFD0]/80">
+      {/* Bottom Metadata Bar */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full mt-8 sm:mt-10 pt-6 border-t border-[#EADFD0]/80">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 items-center">
           <div>
             <span className="block text-xs uppercase font-sans tracking-[0.16em] text-[#7A4B28] font-bold mb-1">
@@ -190,20 +190,6 @@ export const CaseStudyHero: React.FC<CaseStudyHeroProps> = ({ onExploreClick }) 
             </span>
             <span className="text-base sm:text-lg font-bold text-[#1F3D2B] tracking-[-0.01em]">React 19 · TS · Supabase</span>
           </div>
-        </div>
-
-        {/* Animated Scroll Down Indicator */}
-        <div className="flex justify-center mt-8">
-          <button
-            onClick={scrollToOverview}
-            className="group flex flex-col items-center gap-1.5 text-sm text-[#7A4B28] hover:text-[#1F3D2B] transition-colors cursor-pointer"
-            aria-label="Scroll to overview"
-          >
-            <span className="text-xs uppercase tracking-[0.2em] font-sans font-bold">Scroll to explore</span>
-            <div className="w-7 h-10 rounded-full border border-[#8B5E3C]/40 flex items-start justify-center p-1.5">
-              <div className="w-1.5 h-2.5 rounded-full bg-[#1F3D2B] animate-bounce" />
-            </div>
-          </button>
         </div>
       </div>
     </section>
