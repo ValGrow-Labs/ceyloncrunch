@@ -48,12 +48,12 @@ export const CaseStudyHero: React.FC<CaseStudyHeroProps> = ({ onExploreClick }) 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
           {/* Left Column: Editorial Headline & Copy (7 cols) */}
           <div className="lg:col-span-7 space-y-6 sm:space-y-8 z-10">
-            <h1 className="font-serif text-5xl sm:text-7xl lg:text-8xl xl:text-[5.5rem] font-medium text-[#1F3D2B] tracking-[-0.035em] leading-[0.98]">
+            <h1 className="font-sans text-5xl sm:text-7xl lg:text-8xl xl:text-[5.5rem] font-extrabold text-[#1F3D2B] tracking-[-0.035em] leading-[0.98]">
               From Nature <br />
-              <span className="italic font-normal text-[#8B5E3C] pr-1.5">to Your</span> Doorstep<span className="text-[#D9A441]">.</span>
+              <span className="text-[#8B5E3C] pr-1.5 font-bold">to Your</span> Doorstep<span className="text-[#D9A441]">.</span>
             </h1>
 
-            <p className="font-serif italic text-xl sm:text-2xl lg:text-3xl text-[#8B5E3C] leading-snug tracking-[-0.015em] max-w-2xl font-normal">
+            <p className="font-sans text-xl sm:text-2xl lg:text-3xl text-[#8B5E3C] leading-snug tracking-[-0.015em] max-w-2xl font-semibold">
               Building a premium digital commerce experience for authentic Sri Lankan flavours.
             </p>
 
@@ -110,7 +110,7 @@ export const CaseStudyHero: React.FC<CaseStudyHeroProps> = ({ onExploreClick }) 
                   <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/25 backdrop-blur-md text-xs uppercase font-bold tracking-wider text-[#D9A441] mb-2">
                     Artisanal Harvest
                   </div>
-                  <h4 className="font-serif text-lg sm:text-xl font-bold leading-tight text-white">
+                  <h4 className="font-sans text-lg sm:text-xl font-bold leading-tight text-white">
                     Jumbo Roasted Cashews & Ceylon Spices
                   </h4>
                   <p className="text-xs sm:text-sm text-white/90 font-sans mt-1">
@@ -132,7 +132,7 @@ export const CaseStudyHero: React.FC<CaseStudyHeroProps> = ({ onExploreClick }) 
                   <span className="text-[11px] uppercase font-bold tracking-wider text-[#7A4B28]">
                     B2B & Gifting
                   </span>
-                  <span className="text-sm font-serif font-bold text-[#1F3D2B] leading-tight mt-0.5">
+                  <span className="text-sm font-sans font-bold text-[#1F3D2B] leading-tight mt-0.5">
                     Luxury Hampers
                   </span>
                   <span className="text-xs text-[#2E7D4F] font-semibold mt-0.5">

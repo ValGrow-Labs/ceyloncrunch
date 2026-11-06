@@ -27,7 +27,7 @@ export const CaseStudyPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#FBF7F0] text-[#202820] antialiased selection:bg-[#EADFD0] selection:text-[#1F3D2B] overflow-x-hidden font-sans">
+    <div className="case-study-root min-h-screen bg-[#FBF7F0] text-[#202820] antialiased selection:bg-[#EADFD0] selection:text-[#1F3D2B] overflow-x-hidden font-sans">
       {/* 01. Minimal Agency Header (Clean, Zero Clutter) */}
       <CaseStudyNavbar onOpenContact={handleOpenContact} />
 

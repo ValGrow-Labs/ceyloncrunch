@@ -115,9 +115,9 @@ export const EditorialCaseStudyView: React.FC<EditorialCaseStudyViewProps> = ({ 
               <Sparkles className="w-4 h-4 text-[#D9A441]" />
               The Executive Brief
             </div>
-            <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-medium text-[#1F3D2B] tracking-[-0.03em] leading-[1.12]">
+            <h2 className="font-sans text-3xl sm:text-4xl lg:text-5xl font-bold text-[#1F3D2B] tracking-[-0.03em] leading-[1.12]">
               From Manual Chats to <br />
-              <span className="italic font-normal text-[#8B5E3C]">Autonomous</span> Commerce.
+              <span className="text-[#8B5E3C]">Autonomous</span> Commerce.
             </h2>
             <p className="text-base text-[#202820]/90 leading-relaxed font-sans">
               Ceylon Crunch had exceptional artisanal farm produce, but manual social media coordination created operational bottlenecks during seasonal demand spikes.
@@ -185,9 +185,9 @@ export const EditorialCaseStudyView: React.FC<EditorialCaseStudyViewProps> = ({ 
               <Sparkles className="w-4 h-4 text-[#D9A441]" />
               Engineering Blueprint
             </div>
-            <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-medium text-[#1F3D2B] tracking-[-0.03em] leading-[1.12]">
+            <h2 className="font-sans text-3xl sm:text-4xl lg:text-5xl font-bold text-[#1F3D2B] tracking-[-0.03em] leading-[1.12]">
               Three Pillars of <br />
-              <span className="italic font-normal text-[#8B5E3C]">Digital Excellence</span>.
+              <span className="text-[#8B5E3C]">Digital Excellence</span>.
             </h2>
           </div>
 
@@ -210,7 +210,7 @@ export const EditorialCaseStudyView: React.FC<EditorialCaseStudyViewProps> = ({ 
                     </div>
 
                     <div>
-                      <h3 className="font-serif text-2xl font-bold text-[#1F3D2B] leading-snug">
+                      <h3 className="font-sans text-2xl font-bold text-[#1F3D2B] leading-snug">
                         {pillar.title}
                       </h3>
                       <span className="text-xs sm:text-[13px] font-mono text-[#8B5E3C] font-semibold block mt-1.5 tracking-tight">
@@ -245,9 +245,9 @@ export const EditorialCaseStudyView: React.FC<EditorialCaseStudyViewProps> = ({ 
             <Sparkles className="w-4 h-4 text-[#D9A441]" />
             Business Impact
           </div>
-          <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-medium text-[#1F3D2B] tracking-[-0.03em] leading-[1.12]">
+          <h2 className="font-sans text-3xl sm:text-4xl lg:text-5xl font-bold text-[#1F3D2B] tracking-[-0.03em] leading-[1.12]">
             Measurable Growth. <br />
-            <span className="italic font-normal text-[#8B5E3C]">Proven</span> Production Metrics.
+            <span className="text-[#8B5E3C]">Proven</span> Production Metrics.
           </h2>
         </div>
 
@@ -262,7 +262,7 @@ export const EditorialCaseStudyView: React.FC<EditorialCaseStudyViewProps> = ({ 
                   : 'bg-white/80 border-[#EADFD0]'
               }`}
             >
-              <div className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#1F3D2B] mb-2">
+              <div className="font-sans text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#1F3D2B] tracking-tight mb-2">
                 {item.metric}
               </div>
               <div className="font-sans font-bold text-sm sm:text-base text-[#1F3D2B] mb-1.5">
@@ -306,11 +306,11 @@ export const EditorialCaseStudyView: React.FC<EditorialCaseStudyViewProps> = ({ 
             <span className="text-xs font-mono uppercase tracking-widest text-[#D9A441] font-bold">
               Client Reflection
             </span>
-            <blockquote className="font-serif text-xl sm:text-2xl lg:text-3xl text-[#FAF6EF] italic font-normal leading-relaxed">
+            <blockquote className="font-sans text-xl sm:text-2xl lg:text-3xl text-[#FAF6EF] font-medium leading-relaxed">
               "ValGrow Labs understood our artisanal craft. We didn't just get an online shop; we got an entire operational backbone that freed our team to focus on harvesting and delivering authentic Sri Lankan flavours."
             </blockquote>
             <div className="flex items-center gap-3 pt-2">
-              <div className="w-10 h-10 rounded-full bg-[#FAF6EF] text-[#1F3D2B] flex items-center justify-center font-serif font-bold text-base">
+              <div className="w-10 h-10 rounded-full bg-[#FAF6EF] text-[#1F3D2B] flex items-center justify-center font-sans font-bold text-base">
                 CC
               </div>
               <div>
@@ -330,7 +330,7 @@ export const EditorialCaseStudyView: React.FC<EditorialCaseStudyViewProps> = ({ 
               className="h-11 w-auto object-contain shrink-0 hidden sm:block"
             />
             <div className="space-y-1">
-              <h3 className="font-serif text-2xl sm:text-3xl font-bold text-[#1F3D2B]">
+              <h3 className="font-sans text-2xl sm:text-3xl font-bold text-[#1F3D2B]">
                 Ready to engineer your next digital platform?
               </h3>
               <p className="text-sm sm:text-base text-[#202820]/85 font-sans">
