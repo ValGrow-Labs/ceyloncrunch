@@ -96,31 +96,31 @@ export const CaseStudyHero: React.FC<CaseStudyHeroProps> = ({ onExploreClick }) 
           {/* Right Column: Editorial Food & Packaging Composition (5 cols) */}
           <div className="lg:col-span-5 relative">
             <div className="relative mx-auto max-w-md lg:max-w-none">
-              {/* Main Feature Image (High-res roasted cashews / artisanal spread) */}
+              {/* Main Feature Image (High-res roasted almonds / artisanal harvest) */}
               <div className="relative rounded-3xl overflow-hidden border-2 border-[#EADFD0] shadow-[0_20px_50px_rgba(31,61,43,0.14)] bg-white aspect-[4/5] group">
                 <img
-                  src="/products/nuts/cashews.jpg"
-                  alt="Ceylon Crunch Premium Roasted Cashews"
+                  src="/products/nuts/almonds.jpg"
+                  alt="Ceylon Crunch Premium Roasted Almonds"
                   className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#162C1F]/90 via-[#162C1F]/25 to-transparent pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#162C1F]/90 via-[#162C1F]/30 to-transparent" />
 
-                {/* Overlaid Editorial Caption - Positioned in Right Bottom Corner to avoid overlap */}
-                <div className="absolute bottom-4 right-4 sm:bottom-5 sm:right-5 left-auto max-w-[230px] sm:max-w-[260px] text-right flex flex-col items-end z-10 pointer-events-none">
-                  <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#162C1F]/80 backdrop-blur-md text-[11px] sm:text-xs uppercase font-bold tracking-wider text-[#D9A441] mb-1.5 border border-white/15 shadow-xs">
+                {/* Overlaid Editorial Caption - Right Bottom Corner */}
+                <div className="absolute bottom-5 right-5 max-w-[240px] sm:max-w-[250px] text-right text-white z-10 flex flex-col items-end">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/25 backdrop-blur-md text-xs uppercase font-bold tracking-wider text-[#D9A441] mb-2">
                     Artisanal Harvest
                   </div>
-                  <h4 className="font-sans text-base sm:text-lg lg:text-xl font-bold leading-tight text-white drop-shadow-md">
-                    Jumbo Roasted Cashews & Ceylon Spices
+                  <h4 className="font-sans text-xl sm:text-2xl font-bold leading-tight text-white drop-shadow-md">
+                    Roasted Almonds & Ceylon Spices
                   </h4>
-                  <p className="text-xs sm:text-sm text-white/90 font-sans mt-1 drop-shadow-sm leading-snug">
+                  <p className="text-xs sm:text-sm text-white/95 font-sans mt-1 leading-snug drop-shadow-sm">
                     100% natural, slow-roasted in small batches in Colombo.
                   </p>
                 </div>
               </div>
 
               {/* Overlapping Floating Secondary Card (Curated Hamper) */}
-              <div className="hidden sm:flex absolute -bottom-6 -left-8 w-56 rounded-2xl overflow-hidden border-2 border-white shadow-[0_16px_36px_rgba(31,61,43,0.18)] bg-white p-3.5 flex-col gap-2 transform -rotate-2 hover:rotate-0 transition-transform z-20">
+              <div className="hidden sm:flex absolute -bottom-5 -left-6 w-48 sm:w-52 rounded-2xl overflow-hidden border-2 border-white shadow-[0_16px_36px_rgba(31,61,43,0.18)] bg-white p-3.5 flex-col gap-2 transform -rotate-2 hover:rotate-0 transition-transform">
                 <div className="w-full h-24 rounded-xl overflow-hidden bg-[#FAF6EF]">
                   <img
                     src="/products/gifting/curated-hamper.jpg"
