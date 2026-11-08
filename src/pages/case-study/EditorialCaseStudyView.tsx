@@ -29,25 +29,25 @@ export const EditorialCaseStudyView: React.FC<EditorialCaseStudyViewProps> = ({ 
     {
       metric: '< 30s',
       label: 'Order Processing Time',
-      sub: 'Down from 12–15 min per order over manual WhatsApp DMs.',
+      sub: 'Down from 12–15 minutes per order over manual WhatsApp DMs.',
       highlight: true,
     },
     {
       metric: '100%',
       label: 'Variant Stock Accuracy',
-      sub: 'Atomic PostgreSQL locks eliminate overselling across 100g to 1kg sizes.',
+      sub: 'Atomic PostgreSQL locks across the 100g to 1kg sizes.',
       highlight: true,
     },
     {
       metric: '+42%',
       label: 'Mobile Storefront Conversion',
-      sub: 'Frictionless 1-page checkout with automatic Sri Lankan phone formatting.',
+      sub: 'Frictionless 1 page checkout with automatic Sri Lankan phone number formatting.',
       highlight: true,
     },
     {
       metric: '95+',
       label: 'Google Lighthouse Score',
-      sub: 'Instantaneous sub-second load times on 3G/4G cellular networks.',
+      sub: 'Instantaneous sub second load times on 3G/4G cellular networks.',
       highlight: false,
     },
   ];
@@ -59,10 +59,10 @@ export const EditorialCaseStudyView: React.FC<EditorialCaseStudyViewProps> = ({ 
       subtitle: 'React 19 · TypeScript · Vite · Tailwind v4',
       icon: ShoppingBag,
       description:
-        'A high-performance, mobile-first shopping experience tailored for domestic shoppers on cellular data. Features multi-variant pack selectors (100g, 250g, 500g, 1kg), automatic phone normalization (+94 LK), and 25-district delivery tariff calculations.',
+        'A high performance, mobile first shopping experience for the domestic shopper on cellular data. Multi-variant pack selectors (100g, 250g, 500g, 1kg), automatic phone normalisation (+94 LK) and 25 district delivery tariff calculations.',
       specs: [
         'Sub-second page hydration on mobile 3G/4G networks',
-        'Zod-validated 1-page checkout with real-time subtotal sync',
+        'Zod-validated 1-page checkout with real time subtotal sync',
         '25-District courier matrix with automated waybill generation',
       ],
     },
@@ -72,10 +72,10 @@ export const EditorialCaseStudyView: React.FC<EditorialCaseStudyViewProps> = ({ 
       subtitle: 'Supabase PostgreSQL · PayHere MD5 · Cloud Storage',
       icon: Database,
       description:
-        'A battle-tested backend architecture designed to prevent inventory race conditions and secure transactions across card, bank slip, and cash-on-delivery rails.',
+        'A battle hardened backend architecture to prevent inventory race conditions and secure the transaction across the card, bank slip and cash on delivery rails.',
       specs: [
-        'Atomic database locks (SELECT FOR UPDATE) preventing double-selling',
-        'Server-side MD5 signature hashing securing PayHere card gateways',
+        'Atomic database locks (SELECT FOR UPDATE) preventing double selling',
+        'Server side MD5 signature hashing securing PayHere card gateways',
         'Encrypted private storage bucket for bank transfer slip verification',
       ],
     },
@@ -85,10 +85,10 @@ export const EditorialCaseStudyView: React.FC<EditorialCaseStudyViewProps> = ({ 
       subtitle: 'Visual Headless CMS · Google Gemini 2.0 API',
       icon: Sliders,
       description:
-        'Full operational independence for store staff. Non-technical operators can adjust prices, manage inventory thresholds, update announcement banners, and generate culinary tasting stories with one click.',
+        'Full operational independence for store staff. Non technical operators can adjust prices, manage inventory thresholds, update the announcement banners and generate the culinary tasting stories with one click.',
       specs: [
-        'Code-free visual CMS for announcement ribbons & delivery tariffs',
-        'Interactive variant inventory controller with low-stock alerts',
+        'Code free visual CMS for announcement ribbons & delivery tariffs',
+        'Interactive variant inventory controller with low stock alerts',
         'Gemini 2.0 AI generating artisanal tasting stories, pairings & SEO copy',
       ],
     },
@@ -120,7 +120,7 @@ export const EditorialCaseStudyView: React.FC<EditorialCaseStudyViewProps> = ({ 
               <span className="text-[#8B5E3C]">Autonomous</span> Commerce.
             </h2>
             <p className="text-base sm:text-lg lg:text-xl text-[#202820] leading-relaxed font-sans font-normal">
-              Ceylon Crunch had exceptional artisanal farm produce, but manual social media coordination created operational bottlenecks during seasonal demand spikes.
+              Ceylon Crunch had some of the best artisanal farm produce around but the manual social media coordination was a complete operational bottleneck during the peak seasons.
             </p>
           </div>
 
@@ -137,15 +137,15 @@ export const EditorialCaseStudyView: React.FC<EditorialCaseStudyViewProps> = ({ 
               <ul className="space-y-3 sm:space-y-4 text-sm sm:text-base lg:text-[17px] text-[#202820] font-sans leading-relaxed">
                 <li className="flex items-start gap-2.5 sm:gap-3">
                   <span className="text-rose-600 font-extrabold text-base sm:text-lg leading-none mt-1 shrink-0">✕</span>
-                  <span><strong className="font-bold text-[#1F3D2B]">15 min / order:</strong> Staff manually quoted prices, calculated shipping, and verified bank slips across Instagram & WhatsApp DMs.</span>
+                  <span><strong className="font-bold text-[#1F3D2B]">15 min / order:</strong> Staff manually quoted the prices, calculated shipping and checked the bank slips via Instagram and WhatsApp DMs.</span>
                 </li>
                 <li className="flex items-start gap-2.5 sm:gap-3">
                   <span className="text-rose-600 font-extrabold text-base sm:text-lg leading-none mt-1 shrink-0">✕</span>
-                  <span><strong className="font-bold text-[#1F3D2B]">Variant stock drift:</strong> 100g, 250g, 500g, and 1kg pack configurations frequently oversold during holiday surges.</span>
+                  <span><strong className="font-bold text-[#1F3D2B]">Variant stock drift:</strong> 100g, 250g, 500g and 1kg pack sizes all tend to be oversold during the holiday surge.</span>
                 </li>
                 <li className="flex items-start gap-2.5 sm:gap-3">
                   <span className="text-rose-600 font-extrabold text-base sm:text-lg leading-none mt-1 shrink-0">✕</span>
-                  <span><strong className="font-bold text-[#1F3D2B]">Zero autonomy:</strong> Simple price adjustments and banner updates required developer intervention.</span>
+                  <span><strong className="font-bold text-[#1F3D2B]">Zero autonomy.</strong> All that was required was price adjustments and banner updates which would have required developer intervention.</span>
                 </li>
               </ul>
             </div>
@@ -161,11 +161,11 @@ export const EditorialCaseStudyView: React.FC<EditorialCaseStudyViewProps> = ({ 
               <ul className="space-y-3 sm:space-y-4 text-sm sm:text-base lg:text-[17px] text-[#202820] font-sans leading-relaxed">
                 <li className="flex items-start gap-2.5 sm:gap-3">
                   <span className="text-[#2E7D4F] font-extrabold text-base sm:text-lg leading-none mt-1 shrink-0">✓</span>
-                  <span><strong className="font-bold text-[#1F3D2B]">&lt; 30s checkout:</strong> Single-page checkout with automatic Sri Lankan phone normalization and 25-district courier fee calculations.</span>
+                  <span><strong className="font-bold text-[#1F3D2B]">&lt;30s checkout:</strong> Single page checkout with automatic Sri Lankan phone number normalisation and 25 district courier fee calculation.</span>
                 </li>
                 <li className="flex items-start gap-2.5 sm:gap-3">
                   <span className="text-[#2E7D4F] font-extrabold text-base sm:text-lg leading-none mt-1 shrink-0">✓</span>
-                  <span><strong className="font-bold text-[#1F3D2B]">Atomic variant locks:</strong> PostgreSQL transactions guarantee real-time stock sync with zero double-selling.</span>
+                  <span><strong className="font-bold text-[#1F3D2B]">Atomic variant locks:</strong> PostgreSQL transactions ensure real time stock sync with zero chance of double selling.</span>
                 </li>
                 <li className="flex items-start gap-2.5 sm:gap-3">
                   <span className="text-[#2E7D4F] font-extrabold text-base sm:text-lg leading-none mt-1 shrink-0">✓</span>
@@ -282,7 +282,7 @@ export const EditorialCaseStudyView: React.FC<EditorialCaseStudyViewProps> = ({ 
               Production Technology Stack
             </span>
             <span className="text-sm sm:text-lg text-[#202820] font-sans font-medium">
-              Clean architecture with zero third-party plugin bloat.
+              Clean architecture with absolutely zero third party plugin bloat.
             </span>
           </div>
           <div className="flex flex-wrap gap-2 sm:gap-3">
@@ -307,7 +307,7 @@ export const EditorialCaseStudyView: React.FC<EditorialCaseStudyViewProps> = ({ 
               Client Reflection
             </span>
             <blockquote className="font-sans text-lg sm:text-2xl lg:text-3xl text-[#FAF6EF] font-medium leading-relaxed">
-              "ValGrow Labs understood our artisanal craft. We didn't just get an online shop; we got an entire operational backbone that freed our team to focus on harvesting and delivering authentic Sri Lankan flavours."
+              "ValGrow Labs fully understood our artisanal approach. We didn't just get an online shop, we got the complete operational backbone which in turn allowed us to focus entirely on the harvesting and delivery of our genuine Sri Lankan flavours."
             </blockquote>
             <div className="flex items-center gap-3 pt-1 sm:pt-2">
               <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#FAF6EF] text-[#1F3D2B] flex items-center justify-center font-sans font-bold text-base sm:text-lg shrink-0">
@@ -322,37 +322,37 @@ export const EditorialCaseStudyView: React.FC<EditorialCaseStudyViewProps> = ({ 
         </div>
 
         {/* Minimal Inquiry Banner */}
-        <div id="contact" className="mt-6 sm:mt-8 p-5 sm:p-8 rounded-2xl sm:rounded-3xl bg-white border border-[#EADFD0] shadow-sm flex flex-col sm:flex-row items-center justify-between gap-5 sm:gap-6 text-center sm:text-left">
-          <div className="flex items-center gap-4 text-center sm:text-left">
+        <div id="contact" className="mt-4 sm:mt-6 p-4 sm:py-4 sm:px-6 lg:py-5 lg:px-7 rounded-xl sm:rounded-2xl bg-white border border-[#EADFD0] shadow-2xs flex flex-col lg:flex-row items-center justify-between gap-4 sm:gap-5 text-center sm:text-left">
+          <div className="flex items-center gap-3.5 sm:gap-4 text-center sm:text-left min-w-0 flex-1">
             <img
               src="/valgrow-logo.png"
               alt="ValGrow Labs Logo"
-              className="h-10 sm:h-12 w-auto object-contain shrink-0 hidden sm:block"
+              className="h-8 sm:h-9 w-auto object-contain shrink-0 hidden sm:block"
             />
-            <div className="space-y-1 sm:space-y-1.5">
-              <h3 className="font-sans text-xl sm:text-2xl lg:text-3xl font-bold text-[#1F3D2B]">
-                Ready to engineer your next digital platform?
+            <div className="space-y-0.5">
+              <h3 className="font-sans text-base sm:text-lg lg:text-xl font-bold text-[#1F3D2B]">
+                Ready to build your next digital platform?
               </h3>
-              <p className="text-sm sm:text-base lg:text-lg text-[#202820] font-sans font-medium">
-                ValGrow Labs partners with ambitious brands to build scalable, high-converting digital products.
+              <p className="text-xs sm:text-sm text-[#202820] font-sans font-medium">
+                ValGrow Labs work with exciting brands to build out scalable, high-converting digital products.
               </p>
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 w-full lg:w-auto shrink-0">
             <a
               href="mailto:contact@valgrowlabs.com?subject=Project Inquiry — D2C Platform"
-              className="w-full sm:w-auto justify-center px-5 sm:px-6 py-3.5 sm:py-4 rounded-full bg-[#1F3D2B] text-white text-sm sm:text-base font-semibold hover:bg-[#162C1F] shadow-sm transition-all cursor-pointer inline-flex items-center gap-2 group"
+              className="w-full sm:w-auto justify-center px-4 sm:px-5 py-2.5 rounded-full bg-[#1F3D2B] text-white text-xs sm:text-sm font-semibold hover:bg-[#162C1F] shadow-sm transition-all cursor-pointer inline-flex items-center gap-1.5 group whitespace-nowrap shrink-0"
             >
               <span>Start a Project Inquiry</span>
-              <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </a>
 
             <Link
               to="/store"
-              className="w-full sm:w-auto justify-center px-5 py-3.5 sm:py-4 rounded-full bg-[#FAF6EF] text-[#1F3D2B] text-sm sm:text-base font-semibold hover:bg-white border border-[#EADFD0] transition-colors inline-flex items-center gap-2"
+              className="w-full sm:w-auto justify-center px-4 py-2.5 rounded-full bg-[#FAF6EF] text-[#1F3D2B] text-xs sm:text-sm font-semibold hover:bg-white border border-[#EADFD0] transition-colors inline-flex items-center gap-1.5 whitespace-nowrap shrink-0"
             >
-              <Sparkles className="w-4 h-4 text-[#D9A441]" />
+              <Sparkles className="w-3.5 h-3.5 text-[#D9A441]" />
               <span>Interactive Store Demo</span>
             </Link>
           </div>

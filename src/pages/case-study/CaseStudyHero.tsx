@@ -39,9 +39,6 @@ export const CaseStudyHero: React.FC<CaseStudyHeroProps> = ({ onExploreClick }) 
             />
             <span>Case Study · D2C E-Commerce</span>
           </div>
-          <span className="text-[#7A4B28] text-xs sm:text-sm font-sans tracking-[0.14em] uppercase font-bold">
-            Client: Ceylon Crunch · Colombo, LK
-          </span>
         </div>
 
         {/* Asymmetrical Editorial Grid */}
@@ -54,13 +51,11 @@ export const CaseStudyHero: React.FC<CaseStudyHeroProps> = ({ onExploreClick }) 
             </h1>
 
             <p className="font-sans text-lg sm:text-2xl lg:text-3xl text-[#8B5E3C] leading-snug tracking-[-0.015em] max-w-2xl font-semibold">
-              Building a premium digital commerce experience for authentic Sri Lankan flavours.
+              Building a premium digital commerce experience for genuine Sri Lankan flavours.
             </p>
 
             <p className="text-base sm:text-lg lg:text-xl text-[#202820] leading-relaxed max-w-xl font-sans font-normal">
-              We transformed Ceylon Crunch from a manual social-media ordering business into a modern,
-              intelligent, mobile-first e-commerce ecosystem — featuring atomic multi-variant inventory,
-              25-district logistics calculation, PayHere payment integration, and a headless merchant CMS.
+              We took Ceylon Crunch from a manual social media ordering business to a modern, intelligent, mobile first e-commerce system. That includes atomic multi variant inventory, 25 district logistics calculation, PayHere integration and a headless merchant CMS.
             </p>
 
             {/* CTA Buttons */}
@@ -114,7 +109,7 @@ export const CaseStudyHero: React.FC<CaseStudyHeroProps> = ({ onExploreClick }) 
                     Roasted Almonds & Ceylon Spices
                   </h4>
                   <p className="text-[11px] sm:text-xs sm:text-sm text-white/95 font-sans mt-0.5 sm:mt-1 leading-snug drop-shadow-sm">
-                    100% natural, slow-roasted in small batches in Colombo.
+                    100% natural, slow roasted in small batches in Colombo.
                   </p>
                 </div>
               </div>
@@ -180,7 +175,7 @@ export const CaseStudyHero: React.FC<CaseStudyHeroProps> = ({ onExploreClick }) 
               Services
             </span>
             <span className="text-sm sm:text-base lg:text-lg font-bold text-[#1F3D2B] tracking-[-0.01em]">
-              UI/UX · Full-Stack · CMS
+              UI/UX · Full Stack · CMS
             </span>
           </div>
 
