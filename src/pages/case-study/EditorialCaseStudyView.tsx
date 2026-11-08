@@ -47,7 +47,7 @@ export const EditorialCaseStudyView: React.FC<EditorialCaseStudyViewProps> = ({ 
     {
       metric: '95+',
       label: 'Google Lighthouse Score',
-      sub: 'Instantaneous sub-second load times on 3G/4G cellular networks.',
+      sub: 'Instantaneous sub second load times on 3G/4G cellular networks.',
       highlight: false,
     },
   ];
@@ -62,7 +62,7 @@ export const EditorialCaseStudyView: React.FC<EditorialCaseStudyViewProps> = ({ 
         'A high performance, mobile first shopping experience for the domestic shopper on cellular data. Multi-variant pack selectors (100g, 250g, 500g, 1kg), automatic phone normalisation (+94 LK) and 25 district delivery tariff calculations.',
       specs: [
         'Sub-second page hydration on mobile 3G/4G networks',
-        'Zod-validated 1-page checkout with real-time subtotal sync',
+        'Zod-validated 1-page checkout with real time subtotal sync',
         '25-District courier matrix with automated waybill generation',
       ],
     },
@@ -74,8 +74,8 @@ export const EditorialCaseStudyView: React.FC<EditorialCaseStudyViewProps> = ({ 
       description:
         'A battle hardened backend architecture to prevent inventory race conditions and secure the transaction across the card, bank slip and cash on delivery rails.',
       specs: [
-        'Atomic database locks (SELECT FOR UPDATE) preventing double-selling',
-        'Server-side MD5 signature hashing securing PayHere card gateways',
+        'Atomic database locks (SELECT FOR UPDATE) preventing double selling',
+        'Server side MD5 signature hashing securing PayHere card gateways',
         'Encrypted private storage bucket for bank transfer slip verification',
       ],
     },
@@ -87,8 +87,8 @@ export const EditorialCaseStudyView: React.FC<EditorialCaseStudyViewProps> = ({ 
       description:
         'Full operational independence for store staff. Non technical operators can adjust prices, manage inventory thresholds, update the announcement banners and generate the culinary tasting stories with one click.',
       specs: [
-        'Code-free visual CMS for announcement ribbons & delivery tariffs',
-        'Interactive variant inventory controller with low-stock alerts',
+        'Code free visual CMS for announcement ribbons & delivery tariffs',
+        'Interactive variant inventory controller with low stock alerts',
         'Gemini 2.0 AI generating artisanal tasting stories, pairings & SEO copy',
       ],
     },
@@ -161,11 +161,11 @@ export const EditorialCaseStudyView: React.FC<EditorialCaseStudyViewProps> = ({ 
               <ul className="space-y-3 sm:space-y-4 text-sm sm:text-base lg:text-[17px] text-[#202820] font-sans leading-relaxed">
                 <li className="flex items-start gap-2.5 sm:gap-3">
                   <span className="text-[#2E7D4F] font-extrabold text-base sm:text-lg leading-none mt-1 shrink-0">✓</span>
-                  <span><strong className="font-bold text-[#1F3D2B]">&lt; 30s checkout:</strong> Single page checkout with automatic Sri Lankan phone number normalisation and 25 district courier fee calculation.</span>
+                  <span><strong className="font-bold text-[#1F3D2B]">&lt;30s checkout:</strong> Single page checkout with automatic Sri Lankan phone number normalisation and 25 district courier fee calculation.</span>
                 </li>
                 <li className="flex items-start gap-2.5 sm:gap-3">
                   <span className="text-[#2E7D4F] font-extrabold text-base sm:text-lg leading-none mt-1 shrink-0">✓</span>
-                  <span><strong className="font-bold text-[#1F3D2B]">Atomic variant locks:</strong> PostgreSQL transactions ensure real-time stock sync with zero chance of double selling.</span>
+                  <span><strong className="font-bold text-[#1F3D2B]">Atomic variant locks:</strong> PostgreSQL transactions ensure real time stock sync with zero chance of double selling.</span>
                 </li>
                 <li className="flex items-start gap-2.5 sm:gap-3">
                   <span className="text-[#2E7D4F] font-extrabold text-base sm:text-lg leading-none mt-1 shrink-0">✓</span>

@@ -58,9 +58,7 @@ export const CaseStudyHero: React.FC<CaseStudyHeroProps> = ({ onExploreClick }) 
             </p>
 
             <p className="text-base sm:text-lg lg:text-xl text-[#202820] leading-relaxed max-w-xl font-sans font-normal">
-              We took Ceylon Crunch from a manual social media ordering business to a modern,
-              intelligent, mobile first e-commerce system. That includes atomic multi-variant inventory,
-              25 district logistics calculation, PayHere integration and a headless merchant CMS.
+              We took Ceylon Crunch from a manual social media ordering business to a modern, intelligent, mobile first e-commerce system. That includes atomic multi variant inventory, 25 district logistics calculation, PayHere integration and a headless merchant CMS.
             </p>
 
             {/* CTA Buttons */}
@@ -180,7 +178,7 @@ export const CaseStudyHero: React.FC<CaseStudyHeroProps> = ({ onExploreClick }) 
               Services
             </span>
             <span className="text-sm sm:text-base lg:text-lg font-bold text-[#1F3D2B] tracking-[-0.01em]">
-              UI/UX · Full-Stack · CMS
+              UI/UX · Full Stack · CMS
             </span>
           </div>
 
