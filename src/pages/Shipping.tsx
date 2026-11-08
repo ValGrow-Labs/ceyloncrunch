@@ -53,9 +53,6 @@ export const Shipping: React.FC = () => {
           <p className="font-semibold text-base text-[#1F3D2B]">
             Delivery charges are calculated according to your delivery location and order.
           </p>
-          <p className="text-xs text-[#6B6B6B]">
-            Complimentary delivery is applied automatically on orders over Rs. 5,000.
-          </p>
         </div>
 
         <div className="p-4 rounded-xl bg-[#FAF8F4] border border-[#EADFD0] space-y-1.5">
