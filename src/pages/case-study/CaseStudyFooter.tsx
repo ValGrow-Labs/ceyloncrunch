@@ -53,7 +53,7 @@ export const CaseStudyFooter: React.FC = () => {
             </div>
 
             <p className="text-sm sm:text-base text-white/80 max-w-md leading-relaxed">
-              We design and engineer bespoke software platforms, high-converting digital storefronts, and intelligent operations systems for forward-thinking enterprises.
+              We design and engineer custom software platforms, high conversion digital storefronts and intelligent operations systems for progressive businesses.
             </p>
 
             <div className="flex flex-wrap items-center gap-3 pt-1">
