@@ -47,6 +47,7 @@ export interface Product {
   pairsWithIds: string[];
   occasions?: string[];
   isFeatured?: boolean;
+  isActive?: boolean;
 }
 
 export const CATEGORIES = [
