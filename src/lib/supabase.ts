@@ -1,7 +1,8 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
-export const DEFAULT_SUPABASE_URL = 'https://aqmpsnaithpwdlklvsai.supabase.co';
-export const DEFAULT_SUPABASE_ANON_KEY = 'sb_publishable_AaCYAhp8HsvVYx9g7TvZMQ_bIs2a95H';
+// Production default Supabase fallback credentials
+export const DEFAULT_SUPABASE_URL = 'https://qffmgeuolylznbvkhegn.supabase.co';
+export const DEFAULT_SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFmZm1nZXVvbHlsem5idmtoZWduIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4OTM3NjIsImV4cCI6MjEwNzQ2OTc2Mn0.uUM5WypotpetJaLLPQyqmBT1laZeEeCDTyXExMSgYLs';
 
 // Safe credential resolver across Vite browser runtime, Vite define, and Node
 const resolveEnv = (key: string, fallback: string): string => {
@@ -18,13 +19,14 @@ const resolveEnv = (key: string, fallback: string): string => {
   return fallback;
 };
 
+// Retrieve credentials from environment variables (falls back to production defaults)
 const rawUrl = resolveEnv('VITE_SUPABASE_URL', DEFAULT_SUPABASE_URL);
 const supabaseAnonKey = resolveEnv('VITE_SUPABASE_ANON_KEY', DEFAULT_SUPABASE_ANON_KEY);
 
 // Normalize URL: Strip accidental '/rest/v1' or trailing slashes from dashboard copy-paste
 export const supabaseUrl = rawUrl
   ? rawUrl.trim().replace(/\/rest\/v1\/?$/, '').replace(/\/+$/, '')
-  : DEFAULT_SUPABASE_URL;
+  : undefined;
 
 export const isSupabaseConfigured: boolean = Boolean(
   supabaseUrl &&
@@ -33,39 +35,6 @@ export const isSupabaseConfigured: boolean = Boolean(
   supabaseAnonKey.trim().length > 0 &&
   !supabaseUrl.includes('your-project-id')
 );
-
-// Clean up any stale or expired Supabase auth sessions from localStorage
-export function clearExpiredAuthTokens(): void {
-  if (typeof window === 'undefined') return;
-  try {
-    const keysToRemove: string[] = [];
-    for (let i = 0; i < window.localStorage.length; i++) {
-      const key = window.localStorage.key(i);
-      if (key && (key.startsWith('sb-') && key.endsWith('-auth-token'))) {
-        const item = window.localStorage.getItem(key);
-        if (item) {
-          try {
-            const parsed = JSON.parse(item);
-            if (parsed?.expires_at && parsed.expires_at * 1000 <= Date.now()) {
-              keysToRemove.push(key);
-            }
-          } catch {
-            keysToRemove.push(key);
-          }
-        }
-      }
-    }
-    keysToRemove.forEach((k) => {
-      console.warn('[Supabase] Cleared expired session from storage:', k);
-      window.localStorage.removeItem(k);
-    });
-  } catch (e) {
-    // ignore
-  }
-}
-
-// Clear on module import
-clearExpiredAuthTokens();
 
 // Initialize Supabase Client singleton (or null if unconfigured)
 export const supabase: SupabaseClient | null = isSupabaseConfigured
@@ -77,10 +46,6 @@ export const supabase: SupabaseClient | null = isSupabaseConfigured
       },
     })
   : null;
-
-// In the browser, secret API keys must NEVER be passed to createClient.
-// All privileged operations are proxied safely through the server /api/ routes.
-export const adminSupabase: SupabaseClient | null = supabase;
 
 // ==========================================
 // DATABASE TYPES
@@ -105,6 +70,7 @@ export interface DbProduct {
   shelf_life: string;
   allergen_notice?: string | null;
   is_featured: boolean;
+  is_active?: boolean;
   created_at?: string;
   variants?: DbVariant[];
 }
@@ -120,6 +86,7 @@ export interface DbVariant {
 
 export interface DbOrder {
   id: string;
+  user_id?: string | null;
   customer_name: string;
   customer_phone: string;
   customer_email?: string | null;
@@ -194,15 +161,41 @@ export interface PlaceOrderPayload {
   shipping_district: string;
   shipping_postal?: string | null;
   landmark?: string | null;
-  payment_method: string;
+  payment_method: 'cod' | 'bank' | 'card';
   items: PlaceOrderItemPayload[];
   order_notes?: string | null;
   gift_note?: string | null;
   idempotency_key?: string | null;
-  full_items?: any[];
-  subtotal?: number;
-  delivery_fee?: number;
-  total?: number;
+  user_id?: string | null;
+}
+
+export interface DbCustomerAddress {
+  id: string;
+  user_id?: string;
+  label: string;
+  recipient_name: string;
+  phone: string;
+  street: string;
+  landmark?: string | null;
+  city: string;
+  district: string;
+  postal_code?: string | null;
+  is_default: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface DbCustomerProfile {
+  user_id: string;
+  name?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  city?: string | null;
+  district?: string | null;
+  dietary_preferences?: string[] | null;
+  loyalty_tier?: string | null;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface PlaceOrderResult {
@@ -246,30 +239,19 @@ export interface TrackOrderResult {
 }
 
 export interface DbSiteSettings {
-  id?: string;
-  store_name?: string;
-  announcement_banner?: string;
-  free_delivery_threshold?: number;
-  standard_delivery_fee?: number;
-  payhere_merchant_id?: string;
-  payhere_mode?: string;
-  payhere_enabled?: boolean;
-  payhere_secret?: string;
-  cod_enabled?: boolean;
-  bank_transfer_enabled?: boolean;
-  bank_name?: string;
-  bank_account_name?: string;
-  bank_account_number?: string;
-  bank_branch?: string;
-  bank_details?: string;
-  contact_email?: string;
-  contact_phone?: string;
-  whatsapp_number?: string;
-  instagram_url?: string;
-  facebook_url?: string;
-  tiktok_url?: string;
+  id: string;
+  store_name: string;
+  announcement_banner: string;
+  free_delivery_threshold: number;
+  standard_delivery_fee: number;
+  bank_details: string;
+  contact_email: string;
+  contact_phone: string;
+  whatsapp_number: string;
+  instagram_url: string;
+  facebook_url: string;
+  tiktok_url: string;
   updated_at?: string;
-  [key: string]: any;
 }
 
 export interface DbOrderWithItems extends DbOrder {
@@ -277,33 +259,29 @@ export interface DbOrderWithItems extends DbOrder {
 }
 
 /**
- * Fetch all products from Supabase (supports both relational and single-table models)
+ * Fetch all products with their nested variants from Supabase
+ * By default includes all products so that the admin can manage visibility
  */
-export async function getProductsFromSupabase(): Promise<any[] | null> {
-  const client = adminSupabase || supabase;
-  if (!client) return null;
+export async function getProductsFromSupabase(includeInactive = true): Promise<DbProduct[] | null> {
+  if (!supabase) return null;
   try {
-    // Try relational query first
-    const { data: relationalData, error: relError } = await client
+    let query = supabase
       .from('products')
       .select('*, variants:product_variants(*)')
+      .order('display_order', { ascending: true })
       .order('name', { ascending: true });
 
-    if (!relError && relationalData && relationalData.length > 0) {
-      return relationalData;
+    if (!includeInactive) {
+      query = query.eq('is_active', true);
     }
 
-    // Direct table fallback
-    const { data, error } = await client
-      .from('products')
-      .select('*')
-      .order('name', { ascending: true });
+    const { data, error } = await query;
 
     if (error) {
       console.warn('Supabase getProducts error:', error.message);
       return null;
     }
-    return data;
+    return data as DbProduct[];
   } catch (err) {
     console.warn('Supabase fetch failed:', err);
     return null;
@@ -311,86 +289,30 @@ export async function getProductsFromSupabase(): Promise<any[] | null> {
 }
 
 /**
- * Admin: Update variant price directly in Supabase (persisting to products or product_variants)
+ * Admin: Update variant price directly in Supabase product_variants table
  */
 export async function adminUpdateVariantPrice(
-  productId: string,
   variantId: string,
   newPrice: number
 ): Promise<{ success: boolean; error?: string }> {
-  const client = adminSupabase || supabase;
-  if (!client) return { success: false, error: 'Database is not connected.' };
+  if (!supabase) return { success: false, error: 'Database is not connected.' };
   if (isNaN(newPrice) || newPrice < 0) {
     return { success: false, error: 'Price must be a non-negative number.' };
   }
 
   const rounded = Math.round(newPrice);
-
-  // 1. Try our backend API route (runs on Node server with service role key)
   try {
-    const res = await fetch('/api/update-variant-price', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ productId, variantId, newPrice: rounded }),
-    });
-    if (res.ok) {
-      const json = await res.json();
-      if (json.success) return { success: true };
+    const { error } = await supabase
+      .from('product_variants')
+      .update({ price: rounded, updated_at: new Date().toISOString() })
+      .eq('id', variantId);
+
+    if (error) {
+      return { success: false, error: error.message };
     }
-  } catch {}
-
-  try {
-    // 1. Find product in `products` table
-    let { data: product } = await client
-      .from('products')
-      .select('*')
-      .or(`id.eq.${productId},slug.eq.${productId}`)
-      .maybeSingle();
-
-    if (!product) {
-      const { data: allProds } = await client.from('products').select('*');
-      product = allProds?.find((p: any) => p.id === productId || p.slug === productId || (p.slug && variantId.toLowerCase().includes(p.slug.toLowerCase()))) || null;
-    }
-
-    if (product) {
-      let variants = Array.isArray(product.variants) ? [...product.variants] : [];
-      let updatedVariants = variants.map((v: any) => {
-        const size = typeof v === 'string' ? v : (v.size || v.weight || '');
-        const isMatch = (typeof v === 'object' && (v.id === variantId || v.size === variantId)) ||
-                        Boolean(size && variantId.toLowerCase().includes(size.toLowerCase()));
-        if (isMatch) {
-          return typeof v === 'string'
-            ? { size, price: rounded }
-            : { ...v, price: rounded };
-        }
-        return typeof v === 'string'
-          ? { size, price: product.price || rounded }
-          : v;
-      });
-
-      // Update product in Supabase
-      await client
-        .from('products')
-        .update({
-          price: rounded,
-          variants: updatedVariants.length > 0 ? updatedVariants : undefined,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', product.id);
-    }
-
-    // Also attempt updating product_variants table if it exists
-    try {
-      await client
-        .from('product_variants')
-        .update({ price: rounded, updated_at: new Date().toISOString() })
-        .eq('id', variantId);
-    } catch {}
-
     return { success: true };
   } catch (err: any) {
-    console.warn('adminUpdateVariantPrice error:', err);
-    return { success: true };
+    return { success: false, error: err?.message || 'Failed to update price.' };
   }
 }
 
@@ -419,104 +341,24 @@ export async function adminUpdateVariantOriginalPrice(
 }
 
 /**
- * Admin: Update variant stock directly in Supabase products table (persisting to products.variants)
+ * Admin: Update variant stock directly in Supabase product_variants table
  */
 export async function adminUpdateVariantStock(
-  productIdOrVariantId: string,
-  newStockOrVariantId: any,
-  maybeStock?: number
+  variantId: string,
+  newStock: number
 ): Promise<{ success: boolean; error?: string }> {
-  let productId: string | undefined;
-  let variantId: string;
-  let newStock: number;
-
-  if (maybeStock !== undefined) {
-    productId = productIdOrVariantId;
-    variantId = String(newStockOrVariantId);
-    newStock = Math.max(0, Math.round(Number(maybeStock)));
-  } else {
-    variantId = productIdOrVariantId;
-    newStock = Math.max(0, Math.round(Number(newStockOrVariantId)));
-  }
-
-  // 1. Try our backend API route (runs on Node server with service role key, bypassing RLS)
-  try {
-    const res = await fetch('/api/update-variant-stock', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ productId, variantId, newStock }),
-    });
-    if (res.ok) {
-      const json = await res.json();
-      if (json.success) return { success: true };
-    }
-  } catch (apiErr) {
-    console.warn('API update-variant-stock notice:', apiErr);
-  }
-
-  // 2. Direct client fallback on products table
-  const client = adminSupabase || supabase;
-  if (!client) return { success: false, error: 'Database is not connected.' };
+  if (!supabase) return { success: false, error: 'Database is not connected.' };
+  const safeStock = Math.max(0, Math.round(newStock));
 
   try {
-    let prod: any = null;
-    if (productId) {
-      const { data } = await client
-        .from('products')
-        .select('*')
-        .or(`id.eq.${productId},slug.eq.${productId}`)
-        .maybeSingle();
-      prod = data;
+    const { error } = await supabase
+      .from('product_variants')
+      .update({ stock: safeStock, updated_at: new Date().toISOString() })
+      .eq('id', variantId);
+
+    if (error) {
+      return { success: false, error: error.message };
     }
-
-    if (!prod) {
-      const { data: allProds } = await client.from('products').select('*');
-      prod = allProds?.find((p: any) =>
-        (productId && (p.id === productId || p.slug === productId)) ||
-        (Array.isArray(p.variants) && p.variants.some((v: any) => {
-          const size = typeof v === 'string' ? v : v.size || v.weight || '';
-          return v.id === variantId || size === variantId || (variantId && size.toLowerCase().includes(variantId.toLowerCase()));
-        }))
-      ) || null;
-    }
-
-    if (prod && Array.isArray(prod.variants)) {
-      let matched = false;
-      const updatedVariants = prod.variants.map((v: any) => {
-        const size = typeof v === 'string' ? v : v.size || v.weight || '';
-        const match =
-          (typeof v === 'object' && (v.id === variantId || v.size === variantId || v.weight === variantId)) ||
-          Boolean(size && variantId && (variantId.toLowerCase().includes(size.toLowerCase()) || size.toLowerCase().includes(variantId.toLowerCase())));
-
-        if (match) {
-          matched = true;
-          return typeof v === 'string'
-            ? { size: v, price: prod.price || 0, stock: newStock }
-            : { ...v, stock: newStock };
-        }
-        return v;
-      });
-
-      if (!matched) {
-        const weightName = variantId ? variantId.split('-').pop() || '250g' : '250g';
-        updatedVariants.push({
-          size: weightName,
-          price: prod.price || 1200,
-          stock: newStock,
-        });
-      }
-
-      const { error } = await client
-        .from('products')
-        .update({ variants: updatedVariants, updated_at: new Date().toISOString() })
-        .eq('id', prod.id);
-
-      if (error) {
-        return { success: false, error: error.message };
-      }
-      return { success: true };
-    }
-
     return { success: true };
   } catch (err: any) {
     return { success: false, error: err?.message || 'Failed to update stock.' };
@@ -532,135 +374,98 @@ export async function adminUpdateVariant(
     price?: number;
     original_price?: number | null;
     stock?: number;
-  },
-  productId?: string
+  }
 ): Promise<{ success: boolean; error?: string }> {
-  if (updates.price !== undefined && updates.price >= 0) {
-    await adminUpdateVariantPrice(productId || variantId, variantId, updates.price);
-  }
-  if (updates.stock !== undefined && updates.stock >= 0) {
-    await adminUpdateVariantStock(productId || variantId, variantId, updates.stock);
-  }
-  return { success: true };
-}
+  if (!supabase) return { success: false, error: 'Database is not connected.' };
 
-/**
- * Helper to compress image and convert to Base64 data URL
- */
-export async function fileToBase64(file: File, maxDimension = 1200, quality = 0.85): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onerror = reject;
-    reader.onload = () => {
-      const img = new Image();
-      img.onerror = () => resolve(reader.result as string);
-      img.onload = () => {
-        try {
-          let { width, height } = img;
-          if (width > maxDimension || height > maxDimension) {
-            if (width > height) {
-              height = Math.round((height * maxDimension) / width);
-              width = maxDimension;
-            } else {
-              width = Math.round((width * maxDimension) / height);
-              height = maxDimension;
-            }
-          }
-          const canvas = document.createElement('canvas');
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext('2d');
-          if (!ctx) return resolve(reader.result as string);
-          ctx.drawImage(img, 0, 0, width, height);
-          const mimeType = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
-          const compressed = canvas.toDataURL(mimeType, quality);
-          resolve(compressed);
-        } catch {
-          resolve(reader.result as string);
-        }
-      };
-      img.src = reader.result as string;
-    };
-    reader.readAsDataURL(file);
-  });
+  const payload: Record<string, any> = { updated_at: new Date().toISOString() };
+  if (updates.price !== undefined) {
+    if (isNaN(updates.price) || updates.price < 0) {
+      return { success: false, error: 'Price must be a non-negative number.' };
+    }
+    payload.price = Math.round(updates.price);
+  }
+  if (updates.original_price !== undefined) {
+    payload.original_price =
+      updates.original_price === null || isNaN(updates.original_price)
+        ? null
+        : Math.round(updates.original_price);
+  }
+  if (updates.stock !== undefined) {
+    payload.stock = Math.max(0, Math.round(updates.stock));
+  }
+
+  try {
+    const { error } = await supabase
+      .from('product_variants')
+      .update(payload)
+      .eq('id', variantId);
+
+    if (error) {
+      return { success: false, error: error.message };
+    }
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err?.message || 'Failed to update variant.' };
+  }
 }
 
 /**
  * Admin: Upload product image to Supabase Storage and update database image URL
  */
 export async function adminUploadProductImage(
-  productId?: string,
-  file?: File
+  productId: string,
+  file: File
 ): Promise<{ success: boolean; url?: string; error?: string }> {
-  if (!file) return { success: false, error: 'No file provided' };
-
+  if (!supabase) return { success: false, error: 'Database is not connected.' };
   try {
-    const base64 = await fileToBase64(file);
+    const fileExt = file.name.split('.').pop() || 'jpg';
+    const filePath = `products/${productId}_${Date.now()}.${fileExt}`;
 
-    // 1. Try server API route first (runs with service role key, immune to browser RLS)
-    try {
-      const res = await fetch('/api/upload-image', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          imageBase64: base64,
-          filename: file.name,
-          productId: productId || undefined,
-        }),
-      });
+    const { error: uploadError } = await supabase.storage
+      .from('product-images')
+      .upload(filePath, file, { upsert: true });
 
-      if (res.ok) {
-        const json = await res.json();
-        if (json.success && json.url) {
-          return { success: true, url: json.url };
-        }
-      }
-    } catch (apiErr) {
-      console.warn('API upload-image notice:', apiErr);
+    if (uploadError) {
+      return { success: false, error: uploadError.message };
     }
 
-    // 2. Direct client upload to Supabase storage fallback
-    const client = adminSupabase || supabase;
-    if (client) {
-      try {
-        const fileExt = file.name.split('.').pop() || 'jpg';
-        const safeName = (file.name.replace(/\.[^/.]+$/, '').replace(/[^a-z0-9]/gi, '-') || 'product').slice(0, 25);
-        const filePath = `products/${productId || 'new'}_${safeName}_${Date.now()}.${fileExt}`;
+    const { data: publicData } = supabase.storage
+      .from('product-images')
+      .getPublicUrl(filePath);
 
-        const { error: uploadError } = await client.storage
-          .from('product-images')
-          .upload(filePath, file, { upsert: true });
-
-        if (!uploadError) {
-          const { data: publicData } = client.storage
-            .from('product-images')
-            .getPublicUrl(filePath);
-
-          if (publicData?.publicUrl) {
-            const publicUrl = publicData.publicUrl;
-            if (productId) {
-              await client
-                .from('products')
-                .update({ image_url: publicUrl, updated_at: new Date().toISOString() })
-                .or(`id.eq.${productId},slug.eq.${productId}`);
-            }
-            return { success: true, url: publicUrl };
-          }
-        }
-      } catch (clientErr) {
-        console.warn('Client storage upload notice:', clientErr);
-      }
+    const publicUrl = publicData?.publicUrl;
+    if (!publicUrl) {
+      return { success: false, error: 'Failed to retrieve public image URL.' };
     }
 
-    // 3. Fallback: Base64 data URL (works anywhere, zero broken images)
-    if (productId && client) {
-      await client
-        .from('products')
-        .update({ image_url: base64, updated_at: new Date().toISOString() })
-        .or(`id.eq.${productId},slug.eq.${productId}`);
-    }
+    // Update in product_images table and products.images array
+    await supabase.from('product_images').insert([
+      {
+        product_id: productId,
+        url: publicUrl,
+        is_primary: true,
+        display_order: 0,
+      },
+    ]);
 
-    return { success: true, url: base64 };
+    // Update primary image in products table
+    const { data: currentProd } = await supabase
+      .from('products')
+      .select('images')
+      .eq('id', productId)
+      .single();
+
+    const otherImages = currentProd?.images ? currentProd.images.slice(1) : [];
+    await supabase
+      .from('products')
+      .update({
+        images: [publicUrl, ...otherImages],
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', productId);
+
+    return { success: true, url: publicUrl };
   } catch (err: any) {
     return { success: false, error: err?.message || 'Image upload failed.' };
   }
@@ -673,249 +478,90 @@ export async function adminUpdateProductImageUrl(
   productId: string,
   newImageUrl: string
 ): Promise<{ success: boolean; error?: string }> {
+  if (!supabase) return { success: false, error: 'Database is not connected.' };
   const trimmed = newImageUrl.trim();
   if (!trimmed) return { success: false, error: 'Image URL cannot be empty.' };
 
-  // Try API route first
   try {
-    const res = await fetch('/api/update-product-image', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ productId, imageUrl: trimmed }),
-    });
-    if (res.ok) {
-      const json = await res.json();
-      if (json.success) return { success: true };
-    }
-  } catch {}
+    const { data: currentProd } = await supabase
+      .from('products')
+      .select('images')
+      .eq('id', productId)
+      .single();
 
-  const client = adminSupabase || supabase;
-  if (!client) return { success: false, error: 'Database is not connected.' };
-
-  try {
-    await client
+    const otherImages = currentProd?.images ? currentProd.images.slice(1) : [];
+    const { error } = await supabase
       .from('products')
       .update({
-        image_url: trimmed,
+        images: [trimmed, ...otherImages],
         updated_at: new Date().toISOString(),
       })
-      .or(`id.eq.${productId},slug.eq.${productId}`);
+      .eq('id', productId);
 
+    if (error) {
+      return { success: false, error: error.message };
+    }
     return { success: true };
   } catch (err: any) {
-    return { success: true };
+    return { success: false, error: err?.message || 'Failed to update image URL.' };
   }
 }
 
 /**
- * Place order directly into orders table (via /api/place-order with service client or direct fallback)
+ * Place order via SECURITY DEFINER RPC (Atomic stock decrement and server-side pricing)
  */
 export async function placeOrderRpc(
   payload: PlaceOrderPayload
 ): Promise<PlaceOrderResult> {
-  // Clear any expired tokens from localStorage to prevent header poisoning
-  clearExpiredAuthTokens();
-
-  // 1. Try our backend API route (runs on Node server with service role key, immune to browser origin restrictions)
-  const cleanEmail =
-    (payload.customer_email && String(payload.customer_email).trim()) ||
-    `customer-${String(payload.customer_phone || '').replace(/\D/g, '') || Date.now()}@ceyloncrunch.lk`;
-
-  const sanitizedPayload: PlaceOrderPayload = {
-    ...payload,
-    customer_email: cleanEmail,
-  };
-
-  try {
-    const res = await fetch('/api/place-order', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(sanitizedPayload),
-    });
-    if (res.ok) {
-      const result = await res.json();
-      if (result.success && result.order_id) {
-        return result as PlaceOrderResult;
-      }
-    }
-  } catch (apiErr) {
-    console.warn('API place-order fetch notice:', apiErr);
+  if (!supabase) {
+    return { success: false, error: 'Database is not connected.' };
   }
 
-  const client = adminSupabase || supabase;
-  if (!client) {
-    const fallbackOrderId = `CC-${Date.now().toString(36).toUpperCase()}-${Math.floor(1000 + Math.random() * 9000)}`;
-    const waybill = `CLN-${Math.floor(10000000 + Math.random() * 90000000)}-LK`;
-    return {
-      success: true,
-      order_id: fallbackOrderId,
-      waybill,
-      status: 'pending',
-      subtotal: payload.subtotal,
-      delivery_fee: payload.delivery_fee,
-      total: payload.total,
+  try {
+    const rpcParams: Record<string, any> = {
+      p_customer_name: payload.customer_name,
+      p_customer_phone: payload.customer_phone,
+      p_shipping_street: payload.shipping_street,
+      p_shipping_city: payload.shipping_city,
+      p_shipping_district: payload.shipping_district,
+      p_payment_method: payload.payment_method,
+      p_items: payload.items,
+      p_customer_email: payload.customer_email || null,
+      p_shipping_postal: payload.shipping_postal || null,
+      p_landmark: payload.landmark || null,
+      p_order_notes: payload.order_notes || null,
+      p_gift_note: payload.gift_note || null,
+      p_idempotency_key: payload.idempotency_key || null,
     };
-  }
-
-  try {
-    const formattedAddress = [
-      payload.shipping_street,
-      payload.landmark ? `Landmark: ${payload.landmark}` : null,
-      payload.shipping_postal ? `Postal: ${payload.shipping_postal}` : null,
-    ]
-      .filter(Boolean)
-      .join(', ');
-
-    const formattedCity = [payload.shipping_city, payload.shipping_district]
-      .filter(Boolean)
-      .join(', ');
-
-    const orderItems = (payload.full_items && payload.full_items.length > 0)
-      ? payload.full_items.map((i: any) => ({
-          id: i.variantId || i.productId || i.id,
-          name: i.productName || i.name || 'Product',
-          price: Number(i.price || 0),
-          variant: i.variantWeight || i.variant || 'Standard',
-          quantity: Number(i.quantity || 1),
-          image: i.image || null,
-        }))
-      : (payload.items || []).map((i: any) => ({
-          id: i.variant_id || i.id,
-          name: i.name || 'Product',
-          price: Number(i.price || 0),
-          variant: i.variant || 'Standard',
-          quantity: Number(i.quantity || 1),
-        }));
-
-    const calculatedSubtotal =
-      payload.subtotal ??
-      orderItems.reduce((acc: number, item: any) => acc + item.price * item.quantity, 0);
-    const calculatedDelivery = payload.delivery_fee ?? 0;
-    const calculatedTotal = payload.total ?? calculatedSubtotal + calculatedDelivery;
-
-    const notes = [
-      payload.order_notes ? `Notes: ${payload.order_notes}` : null,
-      payload.gift_note ? `Gift Note: ${payload.gift_note}` : null,
-    ]
-      .filter(Boolean)
-      .join(' | ') || null;
-
-    const { data, error } = await client
-      .from('orders')
-      .insert({
-        customer_name: payload.customer_name || 'Customer',
-        customer_email: cleanEmail,
-        customer_phone: payload.customer_phone || '+94 77 000 0000',
-        shipping_address: formattedAddress || 'Colombo, Sri Lanka',
-        city: formattedCity || 'Colombo',
-        items: orderItems,
-        subtotal: calculatedSubtotal,
-        delivery: calculatedDelivery,
-        total: calculatedTotal,
-        status: 'pending',
-        payment_method: payload.payment_method || 'cod',
-        notes: notes,
-        updated_at: new Date().toISOString(),
-      })
-      .select()
-      .single();
-
-    if (!error && data) {
-      const waybill = `CLN-${Math.floor(10000000 + Math.random() * 90000000)}-LK`;
-      return {
-        success: true,
-        order_id: data.id,
-        waybill,
-        status: data.status || 'pending',
-        subtotal: calculatedSubtotal,
-        delivery_fee: calculatedDelivery,
-        total: calculatedTotal,
-      };
+    if (payload.user_id) {
+      rpcParams.p_user_id = payload.user_id;
     }
+
+    const { data, error } = await supabase.rpc('place_order', rpcParams);
 
     if (error) {
-      console.warn('Direct order insert notice:', error.message);
-      if (error.message?.includes('JWT') || error.message?.includes('expired')) {
-        clearExpiredAuthTokens();
-      }
+      return { success: false, error: error.message };
     }
-  } catch (err: any) {
-    console.warn('Direct order insert exception:', err);
-  }
 
-  // Fallback: Gracefully generate local order ID so patron checkout NEVER fails
-  const localOrderId = `CC-${Date.now().toString(36).toUpperCase()}-${Math.floor(1000 + Math.random() * 9000)}`;
-  const waybill = `CLN-${Math.floor(10000000 + Math.random() * 90000000)}-LK`;
-  return {
-    success: true,
-    order_id: localOrderId,
-    waybill,
-    status: 'pending',
-    subtotal: payload.subtotal,
-    delivery_fee: payload.delivery_fee,
-    total: payload.total,
-  };
+    return data as PlaceOrderResult;
+  } catch (err: any) {
+    return { success: false, error: err?.message || 'Order placement failed.' };
+  }
 }
 
 /**
- * Track an order via direct orders table query with RPC fallback
+ * Track an order via SECURITY DEFINER RPC
  */
 export async function trackOrderRpc(
   orderId: string,
   phone: string
 ): Promise<TrackOrderResult> {
-  const client = adminSupabase || supabase;
-  if (!client) {
+  if (!supabase) {
     return { found: false, error: 'Database is not connected.' };
   }
 
-  clearExpiredAuthTokens();
-
   try {
-    const cleanId = orderId.trim();
-    const cleanPhone = phone.trim().replace(/\s+/g, '');
-
-    const { data: orderData, error: orderErr } = await client
-      .from('orders')
-      .select('*')
-      .or(`id.eq.${cleanId},id.ilike.%${cleanId}%`)
-      .limit(1)
-      .maybeSingle();
-
-    if (!orderErr && orderData) {
-      return {
-        found: true,
-        order: {
-          id: orderData.id,
-          status: orderData.status || 'pending',
-          payment_method: orderData.payment_method || 'cod',
-          payment_status: 'pending',
-          payment_slip_url: null,
-          subtotal: Number(orderData.subtotal || 0),
-          delivery_fee: Number(orderData.delivery || 0),
-          total: Number(orderData.total || 0),
-          waybill: `CLN-${orderData.id.slice(0, 8).toUpperCase()}-LK`,
-          estimated_arrival: 'In 1-2 business days',
-          shipping_city: orderData.city || '',
-          shipping_district: '',
-          created_at: orderData.created_at || new Date().toISOString(),
-          items: (orderData.items || []).map((it: any) => ({
-            product_name: it.name || it.product_name || 'Product',
-            variant_weight: it.variant || it.variant_weight || '',
-            price: Number(it.price || 0),
-            quantity: Number(it.quantity || 1),
-            image: it.image || null,
-          })),
-        },
-      };
-    }
-  } catch (e) {
-    console.warn('Track order direct query error:', e);
-  }
-
-  // Fallback to RPC if available
-  try {
-    const { data, error } = await client.rpc('track_order', {
+    const { data, error } = await supabase.rpc('track_order', {
       p_order_id: orderId,
       p_phone: phone,
     });
@@ -934,38 +580,18 @@ export async function trackOrderRpc(
  * Admin: Fetch all orders with order items
  */
 export async function fetchAdminOrders(): Promise<DbOrderWithItems[] | null> {
-  const client = adminSupabase || supabase;
-  if (!client) return null;
-  clearExpiredAuthTokens();
-
+  if (!supabase) return null;
   try {
-    const { data, error } = await client
+    const { data, error } = await supabase
       .from('orders')
-      .select('*')
+      .select('*, items:order_items(*)')
       .order('created_at', { ascending: false });
 
     if (error) {
       console.warn('Fetch admin orders error:', error.message);
       return null;
     }
-
-    return (data || []).map((order: any) => ({
-      ...order,
-      items: Array.isArray(order.items)
-        ? order.items.map((it: any, idx: number) => ({
-            id: it.id || String(idx),
-            order_id: order.id,
-            product_id: it.id || String(idx),
-            variant_id: it.id || String(idx),
-            product_name: it.name || it.product_name || 'Product',
-            variant_weight: it.variant || it.variant_weight || '',
-            unit_price: Number(it.price || 0),
-            quantity: Number(it.quantity || 1),
-            total_price: Number(it.price || 0) * Number(it.quantity || 1),
-            image_url: it.image || null,
-          }))
-        : [],
-    })) as DbOrderWithItems[];
+    return data as DbOrderWithItems[];
   } catch (err) {
     console.warn('Fetch admin orders exception:', err);
     return null;
@@ -979,25 +605,9 @@ export async function adminUpdateOrderStatus(
   orderId: string,
   status: string
 ): Promise<{ success: boolean; error?: string }> {
-  // Try API route first
+  if (!supabase) return { success: false, error: 'Database is not connected.' };
   try {
-    const res = await fetch('/api/update-order-status', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ orderId, status }),
-    });
-    if (res.ok) {
-      const json = await res.json();
-      if (json.success) return { success: true };
-    }
-  } catch {}
-
-  const client = adminSupabase || supabase;
-  if (!client) return { success: false, error: 'Database is not connected.' };
-  clearExpiredAuthTokens();
-
-  try {
-    const { error } = await client
+    const { error } = await supabase
       .from('orders')
       .update({ status, updated_at: new Date().toISOString() })
       .eq('id', orderId);
@@ -1016,12 +626,9 @@ export async function adminUpdatePaymentStatus(
   orderId: string,
   paymentStatus: string
 ): Promise<{ success: boolean; error?: string }> {
-  const client = adminSupabase || supabase;
-  if (!client) return { success: false, error: 'Database is not connected.' };
-  clearExpiredAuthTokens();
-
+  if (!supabase) return { success: false, error: 'Database is not connected.' };
   try {
-    const { error } = await client
+    const { error } = await supabase
       .from('orders')
       .update({ payment_status: paymentStatus, updated_at: new Date().toISOString() })
       .eq('id', orderId);
@@ -1037,22 +644,12 @@ export async function adminUpdatePaymentStatus(
  * Fetch public site settings (banner, delivery fees, bank info)
  */
 export async function fetchPublicSiteSettings(): Promise<DbSiteSettings | null> {
-  try {
-    const res = await fetch('/api/get-site-settings', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({}),
-    });
-    const data = await res.json();
-    if (data.success && data.settings) return data.settings as DbSiteSettings;
-  } catch {}
-
   if (!supabase) return null;
   try {
     const { data, error } = await supabase
       .from('public_site_settings')
       .select('*')
-      .maybeSingle();
+      .single();
 
     if (error || !data) return null;
     return data as DbSiteSettings;
@@ -1067,24 +664,17 @@ export async function fetchPublicSiteSettings(): Promise<DbSiteSettings | null> 
 export async function adminUpdateSiteSettings(
   settings: Partial<DbSiteSettings>
 ): Promise<{ success: boolean; error?: string }> {
+  if (!supabase) return { success: false, error: 'Database is not connected.' };
   try {
-    const res = await fetch('/api/update-site-settings', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(settings),
-    });
-    const data = await res.json();
-    if (data.success) return { success: true };
-  } catch {}
-
-  if (!supabase) return { success: true };
-  try {
-    await supabase
+    const { error } = await supabase
       .from('site_settings')
-      .upsert({ ...settings, updated_at: new Date().toISOString() });
+      .update({ ...settings, updated_at: new Date().toISOString() })
+      .eq('id', 'default');
+
+    if (error) return { success: false, error: error.message };
     return { success: true };
   } catch (err: any) {
-    return { success: true };
+    return { success: false, error: err?.message || 'Failed to update settings.' };
   }
 }
 
@@ -1169,8 +759,6 @@ export async function adminCreateProduct(payload: {
   subtitle?: string;
   category: string;
   badge?: string;
-  badgeType?: string;
-  badge_type?: string;
   origin?: string;
   roast_style?: string;
   images: string[];
@@ -1184,36 +772,8 @@ export async function adminCreateProduct(payload: {
   original_price?: number | null;
   stock: number;
   weight?: string;
-  rating?: number;
-  reviews?: number;
-  review_count?: number;
-  nutritionInfo?: any;
-  nutrition_info?: any;
-  active?: boolean;
-  variants?: any[];
-}): Promise<{ success: boolean; product?: any; error?: string }> {
-  // 1. Try server API route first (runs with service role key)
-  try {
-    const res = await fetch('/api/create-product', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-    const json = await res.json().catch(() => null);
-    if (res.ok && json?.success) {
-      return json;
-    }
-    if (json?.error) {
-      return { success: false, error: json.error };
-    }
-  } catch (apiErr) {
-    console.warn('API create-product notice:', apiErr);
-  }
-
-  // 2. Direct client fallback
-  const client = adminSupabase || supabase;
-  if (!client) return { success: false, error: 'Database is not connected.' };
-
+}): Promise<{ success: boolean; product?: DbProduct; error?: string }> {
+  if (!supabase) return { success: false, error: 'Database is not connected.' };
   try {
     const slug = payload.name
       .toLowerCase()
@@ -1221,45 +781,27 @@ export async function adminCreateProduct(payload: {
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-+|-+$/g, '') + '-' + Math.floor(100 + Math.random() * 900);
 
-    const primaryPrice = Math.round(payload.price);
-    const primaryStock = Math.max(0, Math.round(payload.stock));
-    const primaryWeight = payload.weight || '250g';
-
-    const formattedVariants = (Array.isArray(payload.variants) && payload.variants.length > 0)
-      ? payload.variants.map((v: any, idx: number) => ({
-          size: v.size || v.weight || `Pack ${idx + 1}`,
-          price: Number(v.price) || primaryPrice,
-          original_price: v.original_price ? Number(v.original_price) : null,
-          stock: typeof v.stock === 'number' ? v.stock : primaryStock,
-        }))
-      : [
-          {
-            size: primaryWeight,
-            price: primaryPrice,
-            original_price: payload.original_price ? Math.round(payload.original_price) : null,
-            stock: primaryStock,
-          },
-        ];
-
-    const imageUrl = payload.images?.length > 0 ? payload.images[0] : '/img/product-1.jpg';
-
-    const { data: insertedProduct, error: prodErr } = await client
+    const { data: insertedProduct, error: prodErr } = await supabase
       .from('products')
       .insert([
         {
           slug,
           name: payload.name.trim(),
-          category: payload.category.trim().toLowerCase(),
-          price: primaryPrice,
-          variants: formattedVariants,
-          badge: payload.badge ? String(payload.badge).trim() : null,
-          badge_type: payload.badge_type || payload.badgeType || null,
-          rating: Number(payload.rating) || 5.0,
-          reviews: Number(payload.reviews ?? payload.review_count ?? 0),
-          image_url: imageUrl,
-          description: payload.description ? String(payload.description).trim() : `${payload.name} artisan provisions.`,
-          nutrition_info: payload.nutrition_info || payload.nutritionInfo || null,
-          active: payload.active !== undefined ? Boolean(payload.active) : true,
+          subtitle: payload.subtitle?.trim() || null,
+          category: payload.category,
+          badge: payload.badge?.trim() || null,
+          origin: payload.origin?.trim() || 'Ceylon, Sri Lanka',
+          roast_style: payload.roast_style?.trim() || 'Artisan Roasted',
+          rating: 5.0,
+          review_count: 0,
+          images: payload.images.length > 0 ? payload.images : ['https://images.unsplash.com/photo-1549488344-1f9b8d2bd1f3?auto=format&fit=crop&w=800&q=80'],
+          description: payload.description.trim(),
+          extended_about: [],
+          ingredients: payload.ingredients?.trim() || '100% pure artisan harvested',
+          storage: payload.storage?.trim() || 'Store in a cool, dry place away from direct sunlight.',
+          shelf_life: payload.shelf_life?.trim() || '6 months from seal date',
+          allergen_notice: payload.allergen_notice?.trim() || null,
+          is_featured: payload.is_featured || false,
         },
       ])
       .select('*')
@@ -1269,9 +811,32 @@ export async function adminCreateProduct(payload: {
       return { success: false, error: prodErr?.message || 'Failed to insert product.' };
     }
 
+    // Insert default variant
+    const variantWeight = payload.weight || '250g';
+    const { data: insertedVariant, error: varErr } = await supabase
+      .from('product_variants')
+      .insert([
+        {
+          product_id: insertedProduct.id,
+          weight: variantWeight,
+          price: Math.round(payload.price),
+          original_price: payload.original_price ? Math.round(payload.original_price) : null,
+          stock: Math.max(0, Math.round(payload.stock)),
+        },
+      ])
+      .select('*')
+      .single();
+
+    if (varErr) {
+      console.warn('Variant insertion notice:', varErr.message);
+    }
+
     return {
       success: true,
-      product: insertedProduct,
+      product: {
+        ...insertedProduct,
+        variants: insertedVariant ? [insertedVariant] : [],
+      },
     };
   } catch (err: any) {
     return { success: false, error: err?.message || 'Product creation failed.' };
@@ -1288,65 +853,36 @@ export async function adminUpdateProductDetails(
     subtitle?: string;
     category?: string;
     badge?: string;
-    badgeType?: string;
-    badge_type?: string;
     origin?: string;
     roast_style?: string;
     description?: string;
     ingredients?: string;
     is_featured?: boolean;
     images?: string[];
-    price?: number;
-    rating?: number;
-    reviews?: number;
-    nutritionInfo?: any;
-    nutrition_info?: any;
-    active?: boolean;
+    is_active?: boolean;
   }
 ): Promise<{ success: boolean; error?: string }> {
-  // 1. Try our backend API route (runs on Node server with service role key, bypassing RLS)
-  try {
-    const res = await fetch('/api/update-product-details', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ productId, updates }),
-    });
-    if (res.ok) {
-      const json = await res.json();
-      if (json.success) return { success: true };
-    }
-  } catch {}
-
-  const client = adminSupabase || supabase;
-  if (!client) return { success: false, error: 'Database is not connected.' };
+  if (!supabase) return { success: false, error: 'Database is not connected.' };
   try {
     const payload: Record<string, any> = {
       updated_at: new Date().toISOString(),
     };
     if (updates.name !== undefined) payload.name = updates.name.trim();
-    if (updates.category !== undefined) payload.category = updates.category.trim().toLowerCase();
+    if (updates.subtitle !== undefined) payload.subtitle = updates.subtitle.trim() || null;
+    if (updates.category !== undefined) payload.category = updates.category;
     if (updates.badge !== undefined) payload.badge = updates.badge.trim() || null;
-    if (updates.badge_type !== undefined || updates.badgeType !== undefined) {
-      payload.badge_type = updates.badge_type || updates.badgeType || null;
-    }
+    if (updates.origin !== undefined) payload.origin = updates.origin.trim();
+    if (updates.roast_style !== undefined) payload.roast_style = updates.roast_style.trim() || null;
     if (updates.description !== undefined) payload.description = updates.description.trim();
-    if (updates.price !== undefined && !isNaN(Number(updates.price))) payload.price = Math.round(Number(updates.price));
-    if (updates.rating !== undefined && !isNaN(Number(updates.rating))) payload.rating = Number(updates.rating);
-    if (updates.reviews !== undefined && !isNaN(Number(updates.reviews))) payload.reviews = Number(updates.reviews);
-    if (updates.nutrition_info !== undefined || updates.nutritionInfo !== undefined) {
-      payload.nutrition_info = updates.nutrition_info || updates.nutritionInfo || null;
-    }
-    if (updates.active !== undefined) payload.active = Boolean(updates.active);
+    if (updates.ingredients !== undefined) payload.ingredients = updates.ingredients.trim();
+    if (updates.is_featured !== undefined) payload.is_featured = updates.is_featured;
+    if (updates.images !== undefined) payload.images = updates.images;
+    if (updates.is_active !== undefined) payload.is_active = updates.is_active;
 
-    // Database schema uses image_url (string), NOT images array!
-    if (updates.images && Array.isArray(updates.images) && updates.images.length > 0) {
-      payload.image_url = updates.images[0];
-    }
-
-    const { error } = await client
+    const { error } = await supabase
       .from('products')
       .update(payload)
-      .or(`id.eq.${productId},slug.eq.${productId}`);
+      .eq('id', productId);
 
     if (error) {
       return { success: false, error: error.message };
@@ -1358,53 +894,42 @@ export async function adminUpdateProductDetails(
 }
 
 /**
+ * Admin: Toggle product active / hidden visibility in Supabase
+ */
+export async function adminToggleProductActive(
+  productId: string,
+  isActive: boolean
+): Promise<{ success: boolean; error?: string }> {
+  if (!supabase) return { success: false, error: 'Database is not connected.' };
+  try {
+    const { error } = await supabase
+      .from('products')
+      .update({ is_active: isActive, updated_at: new Date().toISOString() })
+      .eq('id', productId);
+
+    if (error) {
+      return { success: false, error: error.message };
+    }
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err?.message || 'Failed to toggle product visibility.' };
+  }
+}
+
+/**
  * Admin: Delete a product from Supabase
  */
 export async function adminDeleteProduct(
-  productId: string,
-  slug?: string
+  productId: string
 ): Promise<{ success: boolean; error?: string }> {
-  // 1. Try server API route first (runs with service role key)
+  if (!supabase) return { success: false, error: 'Database is not connected.' };
   try {
-    const res = await fetch('/api/delete-product', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ productId, slug }),
-    });
-    if (res.ok) {
-      const json = await res.json();
-      if (json.success) return { success: true };
-      if (json.error) return { success: false, error: json.error };
+    // Delete product variants first if foreign key cascade is not enabled
+    await supabase.from('product_variants').delete().eq('product_id', productId);
+    const { error } = await supabase.from('products').delete().eq('id', productId);
+    if (error) {
+      return { success: false, error: error.message };
     }
-  } catch (apiErr) {
-    console.warn('API delete-product notice:', apiErr);
-  }
-
-  // 2. Direct client fallback
-  const client = adminSupabase || supabase;
-  if (!client) return { success: false, error: 'Database is not connected.' };
-
-  try {
-    const isUuid = Boolean(productId && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(productId));
-
-    if (isUuid) {
-      const { error } = await client.from('products').delete().eq('id', productId);
-      if (error) {
-        return { success: false, error: error.message };
-      }
-    } else {
-      const targetSlug = slug || (productId ? String(productId).replace(/^prod-/, '') : null);
-      if (targetSlug) {
-        const { error } = await client
-          .from('products')
-          .delete()
-          .or(`slug.eq.${targetSlug},slug.eq.${productId}`);
-        if (error) {
-          return { success: false, error: error.message };
-        }
-      }
-    }
-
     return { success: true };
   } catch (err: any) {
     return { success: false, error: err?.message || 'Failed to delete product.' };
@@ -1490,6 +1015,316 @@ export async function adminUploadBannerImage(
     return { success: true, url: publicData?.publicUrl };
   } catch (err: any) {
     return { success: false, error: err?.message || 'Banner upload failed.' };
+  }
+}
+
+// ==========================================
+// AUTHENTICATED CUSTOMER DATA SERVICE HELPERS
+// ==========================================
+
+/**
+ * Customer: Fetch orders belonging exclusively to the authenticated customer
+ */
+export async function fetchCustomerOrders(userId?: string): Promise<DbOrderWithItems[] | null> {
+  if (!supabase) return null;
+  try {
+    let effectiveUid = userId;
+    if (!effectiveUid) {
+      const { data: { user } } = await supabase.auth.getUser();
+      effectiveUid = user?.id;
+    }
+    if (!effectiveUid) return null;
+
+    const { data, error } = await supabase
+      .from('orders')
+      .select('*, items:order_items(*)')
+      .eq('user_id', effectiveUid)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.warn('Fetch customer orders error:', error.message);
+      return null;
+    }
+    return data as DbOrderWithItems[];
+  } catch (err) {
+    console.warn('Fetch customer orders exception:', err);
+    return null;
+  }
+}
+
+/**
+ * Customer: Fetch saved addresses belonging exclusively to the authenticated customer
+ */
+export async function fetchCustomerAddresses(userId?: string): Promise<DbCustomerAddress[] | null> {
+  if (!supabase) return null;
+  try {
+    let effectiveUid = userId;
+    if (!effectiveUid) {
+      const { data: { user } } = await supabase.auth.getUser();
+      effectiveUid = user?.id;
+    }
+    if (!effectiveUid) return null;
+
+    const { data, error } = await supabase
+      .from('customer_addresses')
+      .select('*')
+      .eq('user_id', effectiveUid)
+      .order('is_default', { ascending: false })
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.warn('Fetch customer addresses error:', error.message);
+      return null;
+    }
+    return data as DbCustomerAddress[];
+  } catch (err) {
+    console.warn('Fetch customer addresses exception:', err);
+    return null;
+  }
+}
+
+/**
+ * Customer: Add a new saved address in Supabase
+ */
+export async function saveCustomerAddress(
+  address: Omit<DbCustomerAddress, 'id' | 'created_at' | 'updated_at'>
+): Promise<{ success: boolean; data?: DbCustomerAddress; error?: string }> {
+  if (!supabase) return { success: false, error: 'Database offline' };
+  try {
+    let uid = address.user_id;
+    if (!uid) {
+      const { data: { user } } = await supabase.auth.getUser();
+      uid = user?.id;
+    }
+    if (!uid) return { success: false, error: 'User authentication required' };
+
+    // If marked default, unset default on other addresses for this user
+    if (address.is_default) {
+      await supabase
+        .from('customer_addresses')
+        .update({ is_default: false })
+        .eq('user_id', uid);
+    }
+
+    const { data, error } = await supabase
+      .from('customer_addresses')
+      .insert([{ ...address, user_id: uid }])
+      .select()
+      .single();
+
+    if (error) return { success: false, error: error.message };
+    return { success: true, data: data as DbCustomerAddress };
+  } catch (err: any) {
+    return { success: false, error: err?.message || 'Failed to save address' };
+  }
+}
+
+/**
+ * Customer: Update an existing saved address in Supabase
+ */
+export async function updateCustomerAddress(
+  id: string,
+  updates: Partial<DbCustomerAddress>
+): Promise<{ success: boolean; error?: string }> {
+  if (!supabase) return { success: false, error: 'Database offline' };
+  try {
+    if (updates.is_default) {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        await supabase
+          .from('customer_addresses')
+          .update({ is_default: false })
+          .eq('user_id', user.id);
+      }
+    }
+
+    const { error } = await supabase
+      .from('customer_addresses')
+      .update({ ...updates, updated_at: new Date().toISOString() })
+      .eq('id', id);
+
+    if (error) return { success: false, error: error.message };
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err?.message || 'Failed to update address' };
+  }
+}
+
+/**
+ * Customer: Delete a saved address in Supabase
+ */
+export async function deleteCustomerAddress(id: string): Promise<{ success: boolean; error?: string }> {
+  if (!supabase) return { success: false, error: 'Database offline' };
+  try {
+    const { error } = await supabase
+      .from('customer_addresses')
+      .delete()
+      .eq('id', id);
+
+    if (error) return { success: false, error: error.message };
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err?.message || 'Failed to delete address' };
+  }
+}
+
+/**
+ * Customer: Fetch wishlist product IDs belonging exclusively to the authenticated customer
+ */
+export async function fetchCustomerWishlist(userId?: string): Promise<string[] | null> {
+  if (!supabase) return null;
+  try {
+    let effectiveUid = userId;
+    if (!effectiveUid) {
+      const { data: { user } } = await supabase.auth.getUser();
+      effectiveUid = user?.id;
+    }
+    if (!effectiveUid) return null;
+
+    const { data, error } = await supabase
+      .from('customer_wishlist')
+      .select('product_id')
+      .eq('user_id', effectiveUid);
+
+    if (error) {
+      console.warn('Fetch wishlist error:', error.message);
+      return null;
+    }
+    return (data || []).map((row: any) => row.product_id);
+  } catch (err) {
+    console.warn('Fetch wishlist exception:', err);
+    return null;
+  }
+}
+
+/**
+ * Customer: Add item to wishlist in Supabase (safe check avoids conflict RLS issues)
+ */
+export async function addCustomerWishlistItem(productId: string): Promise<boolean> {
+  if (!supabase) return false;
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return false;
+
+    // Verify if already present
+    const { data: existing } = await supabase
+      .from('customer_wishlist')
+      .select('id')
+      .eq('user_id', user.id)
+      .eq('product_id', productId)
+      .maybeSingle();
+
+    if (existing) return true;
+
+    const { error } = await supabase
+      .from('customer_wishlist')
+      .insert([{ user_id: user.id, product_id: productId }]);
+
+    return !error;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Customer: Remove item from wishlist in Supabase
+ */
+export async function removeCustomerWishlistItem(productId: string): Promise<boolean> {
+  if (!supabase) return false;
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return false;
+    const { error } = await supabase
+      .from('customer_wishlist')
+      .delete()
+      .eq('user_id', user.id)
+      .eq('product_id', productId);
+    return !error;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Customer: Link a guest order to the authenticated customer account in Supabase
+ */
+export async function linkCustomerOrderRpc(
+  orderId: string,
+  phone: string
+): Promise<{ success: boolean; error?: string }> {
+  if (!supabase) return { success: false, error: 'Database offline' };
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { success: false, error: 'Authentication required' };
+
+    // 1. Try backend RPC
+    const { data: rpcData, error: rpcError } = await supabase.rpc('link_customer_order', {
+      p_order_id: orderId.trim(),
+      p_phone: phone.trim(),
+    });
+
+    if (!rpcError && rpcData?.success) {
+      return { success: true };
+    }
+
+    // 2. Direct secure fallback if order verified via trackOrderRpc
+    const trackRes = await trackOrderRpc(orderId.trim(), phone.trim());
+    if (!trackRes.found || !trackRes.order) {
+      return { success: false, error: 'No matching order found for this Order ID and phone number.' };
+    }
+
+    const { error: updErr } = await supabase
+      .from('orders')
+      .update({ user_id: user.id, updated_at: new Date().toISOString() })
+      .eq('id', trackRes.order.id);
+
+    return { success: !updErr };
+  } catch (err: any) {
+    return { success: false, error: err?.message || 'Failed to link order' };
+  }
+}
+
+/**
+ * Customer: Fetch customer profile from Supabase
+ */
+export async function fetchCustomerProfile(): Promise<DbCustomerProfile | null> {
+  if (!supabase) return null;
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return null;
+    const { data, error } = await supabase
+      .from('customer_profiles')
+      .select('*')
+      .eq('user_id', user.id)
+      .maybeSingle();
+
+    if (error || !data) return null;
+    return data as DbCustomerProfile;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Customer: Upsert customer profile in Supabase
+ */
+export async function upsertCustomerProfile(
+  profile: Partial<DbCustomerProfile>
+): Promise<boolean> {
+  if (!supabase) return false;
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return false;
+    const { error } = await supabase
+      .from('customer_profiles')
+      .upsert({
+        user_id: user.id,
+        ...profile,
+        updated_at: new Date().toISOString(),
+      });
+    return !error;
+  } catch {
+    return false;
   }
 }
 

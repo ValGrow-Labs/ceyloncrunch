@@ -47,6 +47,7 @@ export const Admin: React.FC = () => {
     updateProductVariantOriginalPrice,
     createProduct,
     updateProductDetails,
+    toggleProductVisibility,
     deleteProduct,
     subscribers,
     refreshSubscribers,
@@ -123,25 +124,15 @@ export const Admin: React.FC = () => {
   };
 
   // Image uploader handler
-  const handleUploadProductImage = async (productIdOrFile?: string | File, maybeFile?: File) => {
-    let productId: string | undefined;
-    let file: File | undefined;
-    if (productIdOrFile instanceof File) {
-      file = productIdOrFile;
-    } else {
-      productId = productIdOrFile;
-      file = maybeFile;
-    }
-    if (!file) return { success: false, error: 'No file provided' };
+  const handleUploadProductImage = async (productId: string, file: File) => {
     showToast('Uploading photo to Supabase Storage...');
     const res = await adminUploadProductImage(productId, file);
     if (res.success && res.url) {
-      showToast('Image uploaded and synced!');
-      if (productId) await refreshProducts();
+      showToast('Image uploaded and updated in Supabase catalog!');
+      await refreshProducts();
     } else {
       showToast(res.error || 'Failed to upload photo.');
     }
-    return res;
   };
 
   // Variant price & stock updater
@@ -263,6 +254,7 @@ export const Admin: React.FC = () => {
               onUpdateVariant={handleUpdateVariant}
               onDeleteProduct={deleteProduct}
               onUploadImage={handleUploadProductImage}
+              onToggleProductVisibility={toggleProductVisibility}
               showToast={showToast}
               isAddModalOpen={isAddProductModalOpen}
               onCloseAddModal={() => setIsAddProductModalOpen(false)}

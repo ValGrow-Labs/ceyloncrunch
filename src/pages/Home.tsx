@@ -20,12 +20,12 @@ export const Home: React.FC = () => {
     ];
     const picked: typeof products = [];
     for (const slug of desiredSlugs) {
-      const match = products.find((p) => p.slug === slug);
+      const match = products.find((p) => p.slug === slug && p.isActive !== false);
       if (match) picked.push(match);
     }
-    // If any items are missing, fill with featured products
+    // If any items are missing, fill with active featured products
     if (picked.length === 0) {
-      return products.filter((p) => p.isFeatured).slice(0, 6);
+      return products.filter((p) => p.isFeatured && p.isActive !== false).slice(0, 6);
     }
     return picked;
   }, [products]);
@@ -358,7 +358,7 @@ export const Home: React.FC = () => {
           </div>
         </motion.div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3.5 lg:gap-5">
+        <div className="grid grid-cols-2 gap-3.5 sm:gap-5 lg:gap-6">
           {[
             {
               name: 'Nuts',
@@ -404,7 +404,7 @@ export const Home: React.FC = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-30px' }}
               whileHover={{ y: -6 }}
-              transition={{ duration: 0.4, delay: (idx % 3) * 0.08 }}
+              transition={{ duration: 0.4, delay: (idx % 2) * 0.08 }}
             >
               <Link
                 to={cat.isCustomRoute ? `/${cat.slug}` : `/category/${cat.slug}`}

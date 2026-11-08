@@ -137,6 +137,7 @@ export const Profile: React.FC<ProfileProps> = ({ defaultMode }) => {
     products,
     addToCart,
     showToast,
+    customerId,
     customerEmail,
     isCustomerLoggedIn,
     loginCustomer,
@@ -151,6 +152,44 @@ export const Profile: React.FC<ProfileProps> = ({ defaultMode }) => {
   // Search & Filter Orders
   const [orderSearchQuery, setOrderSearchQuery] = useState('');
   const [orderStatusFilter, setOrderStatusFilter] = useState<string>('all');
+
+  // Customer-scoped orders: strictly for the current logged-in customer or their verified email/userId
+  const customerOrders = useMemo(() => {
+    if (!customerId && !customerEmail) {
+      return orders;
+    }
+    return orders.filter((o) => {
+      if (customerId && o.userId === customerId) return true;
+      if (customerEmail && o.customer?.email?.trim().toLowerCase() === customerEmail.trim().toLowerCase()) return true;
+      return false;
+    });
+  }, [orders, customerId, customerEmail]);
+
+  // Customer-scoped saved addresses
+  const customerAddresses = useMemo(() => {
+    if (!customerId) return savedAddresses;
+    return savedAddresses.filter((a) => !a.userId || a.userId === customerId);
+  }, [savedAddresses, customerId]);
+
+  // Total spent calculation
+  const totalSpent = useMemo(() => {
+    return customerOrders.reduce((sum, o) => sum + (o.total || 0), 0);
+  }, [customerOrders]);
+
+  // Filtered orders list
+  const filteredOrders = useMemo(() => {
+    return customerOrders.filter((o) => {
+      const matchesSearch =
+        o.id.toLowerCase().includes(orderSearchQuery.toLowerCase()) ||
+        o.items.some((i) => i.productName.toLowerCase().includes(orderSearchQuery.toLowerCase())) ||
+        (o.waybill && o.waybill.toLowerCase().includes(orderSearchQuery.toLowerCase()));
+
+      const matchesStatus =
+        orderStatusFilter === 'all' ? true : o.status === orderStatusFilter;
+
+      return matchesSearch && matchesStatus;
+    });
+  }, [customerOrders, orderSearchQuery, orderStatusFilter]);
 
   // "Find & Link Order" modal state
   const [showLinkOrderModal, setShowLinkOrderModal] = useState(false);
@@ -219,25 +258,7 @@ export const Profile: React.FC<ProfileProps> = ({ defaultMode }) => {
     }
   }, [location.pathname, searchParams, defaultMode, customerEmail]);
 
-  // Total spent calculation
-  const totalSpent = useMemo(() => {
-    return orders.reduce((sum, o) => sum + (o.total || 0), 0);
-  }, [orders]);
 
-  // Filtered orders list
-  const filteredOrders = useMemo(() => {
-    return orders.filter((o) => {
-      const matchesSearch =
-        o.id.toLowerCase().includes(orderSearchQuery.toLowerCase()) ||
-        o.items.some((i) => i.productName.toLowerCase().includes(orderSearchQuery.toLowerCase())) ||
-        (o.waybill && o.waybill.toLowerCase().includes(orderSearchQuery.toLowerCase()));
-
-      const matchesStatus =
-        orderStatusFilter === 'all' ? true : o.status === orderStatusFilter;
-
-      return matchesSearch && matchesStatus;
-    });
-  }, [orders, orderSearchQuery, orderStatusFilter]);
 
   // Wishlisted products
   const wishlistedProducts = useMemo(() => {
@@ -436,7 +457,7 @@ export const Profile: React.FC<ProfileProps> = ({ defaultMode }) => {
       city: patronProfile.city || 'Colombo',
       district: patronProfile.district || 'Colombo',
       postalCode: '',
-      isDefault: savedAddresses.length === 0,
+      isDefault: customerAddresses.length === 0,
     });
     setIsAddressModalOpen(true);
   };
@@ -968,7 +989,7 @@ export const Profile: React.FC<ProfileProps> = ({ defaultMode }) => {
             </span>
             <div className="mt-1 flex items-baseline gap-1.5">
               <span className="font-serif text-2xl sm:text-3xl font-bold text-white">
-                {orders.length}
+                {customerOrders.length}
               </span>
               <span className="text-xs text-[#EADFD0]/70">orders</span>
             </div>
@@ -992,7 +1013,7 @@ export const Profile: React.FC<ProfileProps> = ({ defaultMode }) => {
             </span>
             <div className="mt-1 flex items-baseline gap-1.5">
               <span className="font-serif text-2xl sm:text-3xl font-bold text-white">
-                {savedAddresses.length}
+                {customerAddresses.length}
               </span>
               <span className="text-xs text-[#EADFD0]/70">saved</span>
             </div>
@@ -1069,7 +1090,7 @@ export const Profile: React.FC<ProfileProps> = ({ defaultMode }) => {
         >
           <Package className="w-4 h-4" />
           <span>My Orders</span>
-          {orders.length > 0 && (
+          {customerOrders.length > 0 && (
             <span
               className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
                 activeTab === 'orders'
@@ -1077,7 +1098,7 @@ export const Profile: React.FC<ProfileProps> = ({ defaultMode }) => {
                   : 'bg-[#EADFD0] text-[#424843]'
               }`}
             >
-              {orders.length}
+              {customerOrders.length}
             </span>
           )}
         </button>
@@ -1093,7 +1114,7 @@ export const Profile: React.FC<ProfileProps> = ({ defaultMode }) => {
         >
           <MapPin className="w-4 h-4" />
           <span>Delivery Addresses</span>
-          {savedAddresses.length > 0 && (
+          {customerAddresses.length > 0 && (
             <span
               className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
                 activeTab === 'addresses'
@@ -1101,7 +1122,7 @@ export const Profile: React.FC<ProfileProps> = ({ defaultMode }) => {
                   : 'bg-[#EADFD0] text-[#424843]'
               }`}
             >
-              {savedAddresses.length}
+              {customerAddresses.length}
             </span>
           )}
         </button>
@@ -1185,7 +1206,7 @@ export const Profile: React.FC<ProfileProps> = ({ defaultMode }) => {
                 aria-label="Filter orders by status"
                 className="px-3 py-2 bg-[#FAF8F4] border border-[#EADFD0] rounded-xl text-xs font-medium text-[#424843] focus:outline-none focus:border-[#1F3D2B]"
               >
-                <option value="all">All Orders ({orders.length})</option>
+                <option value="all">All Orders ({customerOrders.length})</option>
                 <option value="placed">Placed</option>
                 <option value="confirmed">Confirmed</option>
                 <option value="packed">Packed</option>
@@ -1212,12 +1233,12 @@ export const Profile: React.FC<ProfileProps> = ({ defaultMode }) => {
               </div>
               <div className="max-w-md mx-auto space-y-2">
                 <h3 className="font-serif text-xl font-bold text-[#1F3D2B]">
-                  {orders.length === 0
+                  {customerOrders.length === 0
                     ? 'No Orders Placed Yet'
                     : 'No orders match your filter'}
                 </h3>
                 <p className="text-xs sm:text-sm text-[#6B6B6B] leading-relaxed">
-                  {orders.length === 0
+                  {customerOrders.length === 0
                     ? 'Explore hand-roasted jumbo cashews, sweet Medjool dates, exotic nuts, and cinnamon quills packaged fresh in small batches.'
                     : 'Try clearing your search terms or filter to see all your past orders.'}
                 </p>
@@ -1432,7 +1453,7 @@ export const Profile: React.FC<ProfileProps> = ({ defaultMode }) => {
             </button>
           </div>
 
-          {savedAddresses.length === 0 ? (
+          {customerAddresses.length === 0 ? (
             <div className="bg-white rounded-3xl p-8 sm:p-12 text-center border border-[#EADFD0] shadow-xs space-y-4">
               <div className="w-16 h-16 rounded-full bg-[#FAF5ED] text-[#8B5E3C] flex items-center justify-center mx-auto border border-[#EADFD0]">
                 <MapPin className="w-8 h-8" />
@@ -1455,7 +1476,7 @@ export const Profile: React.FC<ProfileProps> = ({ defaultMode }) => {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {savedAddresses.map((addr) => (
+              {customerAddresses.map((addr) => (
                 <div
                   key={addr.id}
                   className={`bg-white rounded-2xl p-5 border relative transition-all ${

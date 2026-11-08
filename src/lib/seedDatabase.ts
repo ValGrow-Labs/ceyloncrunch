@@ -1,8 +1,8 @@
-import { supabase, adminSupabase } from './supabase';
+import { supabase } from './supabase';
 import { INITIAL_PRODUCTS } from '../data/products';
 
 /**
- * Seeds Supabase with all existing initial products from products.ts.
+ * Seeds Supabase with all existing initial products and variants from products.ts.
  * Can be safely called from the Admin dashboard.
  */
 export async function seedProductsToSupabase(): Promise<{
@@ -10,82 +10,97 @@ export async function seedProductsToSupabase(): Promise<{
   inserted: number;
   message: string;
 }> {
-  const client = adminSupabase || supabase;
-  if (!client) {
+  if (!supabase) {
     return {
       success: false,
       inserted: 0,
-      message: 'Supabase is not configured. Please verify your connection credentials.',
+      message: 'Supabase is not configured. Please add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to your .env file.',
     };
   }
 
   try {
-    const formattedProducts = INITIAL_PRODUCTS.map((product) => {
-      const primaryVariant = product.variants?.[0];
-      const lowestPrice = primaryVariant ? primaryVariant.price : 900;
-      const formattedVariants = product.variants.map((v) => ({
-        size: v.weight,
-        price: v.price,
-        original_price: v.originalPrice,
-        stock: v.stock,
-      }));
+    let insertedCount = 0;
 
-      return {
-        name: product.name,
-        slug: product.slug,
-        category: product.category,
-        price: lowestPrice,
-        variants: formattedVariants,
-        image_url: product.images?.[0] || '/img/product-1.jpg',
-        description: product.description,
-        badge: product.badge || null,
-        active: true,
-      };
-    });
-
-    // 1. Try server endpoint first (has admin service role privileges bypassing RLS)
-    try {
-      const res = await fetch('/api/seed-database', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ products: formattedProducts }),
-      });
-      if (res.ok) {
-        const json = await res.json();
-        if (json.success) {
-          return {
-            success: true,
-            inserted: json.inserted,
-            message: `Successfully synchronized ${json.inserted} of ${INITIAL_PRODUCTS.length} products to Supabase.`,
-          };
-        }
-      }
-    } catch {}
-
-    // 2. Fallback to direct client
-    let syncedCount = 0;
-    for (const row of formattedProducts) {
-      const { error } = await client
+    for (const product of INITIAL_PRODUCTS) {
+      // 1. Check if product already exists by slug
+      const { data: existing } = await supabase
         .from('products')
-        .upsert(row, { onConflict: 'slug' });
+        .select('id')
+        .eq('slug', product.slug)
+        .maybeSingle();
 
-      if (!error) {
-        syncedCount++;
-      } else {
-        console.warn(`Failed to sync product ${row.name}:`, error.message);
+      let productId = existing?.id;
+
+      if (!productId) {
+        // 2. Insert product record
+        const { data: insertedProduct, error: prodError } = await supabase
+          .from('products')
+          .insert([
+            {
+              slug: product.slug,
+              name: product.name,
+              subtitle: product.subtitle,
+              category: product.category,
+              badge: product.badge,
+              origin: product.origin,
+              roast_style: product.roastStyle,
+              rating: product.rating,
+              review_count: product.reviewCount,
+              images: product.images,
+              description: product.description,
+              extended_about: product.extendedAbout,
+              ingredients: product.ingredients,
+              storage: product.storage,
+              shelf_life: product.shelfLife,
+              allergen_notice: product.allergenNotice,
+              is_featured: product.isFeatured || false,
+            },
+          ])
+          .select('id')
+          .single();
+
+        if (prodError || !insertedProduct) {
+          console.error(`Failed to seed product ${product.name}:`, prodError?.message);
+          continue;
+        }
+
+        productId = insertedProduct.id;
+        insertedCount++;
+      }
+
+      // 3. Insert or update variants
+      for (const variant of product.variants) {
+        const { data: existingVariant } = await supabase
+          .from('product_variants')
+          .select('id')
+          .eq('product_id', productId)
+          .eq('weight', variant.weight)
+          .maybeSingle();
+
+        if (!existingVariant) {
+          await supabase.from('product_variants').insert([
+            {
+              product_id: productId,
+              weight: variant.weight,
+              price: variant.price,
+              original_price: variant.originalPrice,
+              stock: variant.stock,
+            },
+          ]);
+        }
       }
     }
 
     return {
       success: true,
-      inserted: syncedCount,
-      message: `Successfully synchronized ${syncedCount} of ${INITIAL_PRODUCTS.length} products to Supabase.`,
+      inserted: insertedCount,
+      message: `Successfully seeded/verified ${INITIAL_PRODUCTS.length} products in Supabase.`,
     };
   } catch (err: any) {
     return {
       success: false,
       inserted: 0,
-      message: err?.message || 'Database sync encountered an unexpected error.',
+      message: `Seeding error: ${err?.message || 'Unknown error occurred'}`,
     };
   }
 }
