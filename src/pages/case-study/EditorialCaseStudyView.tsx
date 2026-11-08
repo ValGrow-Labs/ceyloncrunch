@@ -322,37 +322,37 @@ export const EditorialCaseStudyView: React.FC<EditorialCaseStudyViewProps> = ({ 
         </div>
 
         {/* Minimal Inquiry Banner */}
-        <div id="contact" className="mt-6 sm:mt-8 p-5 sm:p-8 rounded-2xl sm:rounded-3xl bg-white border border-[#EADFD0] shadow-sm flex flex-col lg:flex-row items-center justify-between gap-5 sm:gap-6 text-center sm:text-left">
-          <div className="flex items-center gap-4 text-center sm:text-left min-w-0 flex-1">
+        <div id="contact" className="mt-4 sm:mt-6 p-3.5 sm:py-4 sm:px-6 lg:px-8 rounded-xl sm:rounded-2xl bg-white border border-[#EADFD0] shadow-2xs flex flex-col lg:flex-row items-center justify-between gap-3.5 sm:gap-4 lg:gap-6 text-center sm:text-left">
+          <div className="flex items-center gap-3 sm:gap-3.5 text-center sm:text-left min-w-0 flex-1">
             <img
               src="/valgrow-logo.png"
               alt="ValGrow Labs Logo"
-              className="h-10 sm:h-12 w-auto object-contain shrink-0 hidden sm:block"
+              className="h-7 sm:h-8 w-auto object-contain shrink-0 hidden sm:block"
             />
-            <div className="space-y-1 sm:space-y-1.5">
-              <h3 className="font-sans text-xl sm:text-2xl lg:text-3xl font-bold text-[#1F3D2B]">
+            <div className="space-y-0.5 sm:space-y-1">
+              <h3 className="font-sans text-base sm:text-lg lg:text-xl font-bold text-[#1F3D2B] leading-snug">
                 Ready to build your next digital platform?
               </h3>
-              <p className="text-sm sm:text-base lg:text-lg text-[#202820] font-sans font-medium">
+              <p className="text-xs sm:text-sm text-[#202820]/90 font-sans font-medium leading-relaxed">
                 ValGrow Labs work with exciting brands to build out scalable, high-converting digital products.
               </p>
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto shrink-0">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full sm:w-auto shrink-0">
             <a
               href="mailto:contact@valgrowlabs.com?subject=Project Inquiry — D2C Platform"
-              className="w-full sm:w-auto justify-center px-5 sm:px-6 py-3.5 sm:py-4 rounded-full bg-[#1F3D2B] text-white text-sm sm:text-base font-semibold hover:bg-[#162C1F] shadow-sm transition-all cursor-pointer inline-flex items-center gap-2 group whitespace-nowrap shrink-0"
+              className="w-full sm:w-auto justify-center px-4 sm:px-5 py-2 sm:py-2.5 rounded-full bg-[#1F3D2B] text-white text-xs sm:text-sm font-semibold hover:bg-[#162C1F] shadow-2xs transition-all cursor-pointer inline-flex items-center gap-1.5 group whitespace-nowrap shrink-0"
             >
               <span>Start a Project Inquiry</span>
-              <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </a>
 
             <Link
               to="/store"
-              className="w-full sm:w-auto justify-center px-5 py-3.5 sm:py-4 rounded-full bg-[#FAF6EF] text-[#1F3D2B] text-sm sm:text-base font-semibold hover:bg-white border border-[#EADFD0] transition-colors inline-flex items-center gap-2 whitespace-nowrap shrink-0"
+              className="w-full sm:w-auto justify-center px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-full bg-[#FAF6EF] text-[#1F3D2B] text-xs sm:text-sm font-semibold hover:bg-white border border-[#EADFD0] transition-colors inline-flex items-center gap-1.5 whitespace-nowrap shrink-0"
             >
-              <Sparkles className="w-4 h-4 text-[#D9A441]" />
+              <Sparkles className="w-3.5 h-3.5 text-[#D9A441]" />
               <span>Interactive Store Demo</span>
             </Link>
           </div>
