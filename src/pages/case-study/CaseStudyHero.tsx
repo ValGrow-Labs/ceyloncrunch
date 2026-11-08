@@ -39,9 +39,6 @@ export const CaseStudyHero: React.FC<CaseStudyHeroProps> = ({ onExploreClick }) 
             />
             <span>Case Study · D2C E-Commerce</span>
           </div>
-          <span className="text-[#7A4B28] text-xs sm:text-sm font-sans tracking-[0.14em] uppercase font-bold">
-            Client: Ceylon Crunch · Colombo, LK
-          </span>
         </div>
 
         {/* Asymmetrical Editorial Grid */}

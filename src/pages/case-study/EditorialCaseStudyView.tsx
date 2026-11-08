@@ -322,8 +322,8 @@ export const EditorialCaseStudyView: React.FC<EditorialCaseStudyViewProps> = ({ 
         </div>
 
         {/* Minimal Inquiry Banner */}
-        <div id="contact" className="mt-6 sm:mt-8 p-5 sm:p-8 rounded-2xl sm:rounded-3xl bg-white border border-[#EADFD0] shadow-sm flex flex-col sm:flex-row items-center justify-between gap-5 sm:gap-6 text-center sm:text-left">
-          <div className="flex items-center gap-4 text-center sm:text-left">
+        <div id="contact" className="mt-6 sm:mt-8 p-5 sm:p-8 rounded-2xl sm:rounded-3xl bg-white border border-[#EADFD0] shadow-sm flex flex-col lg:flex-row items-center justify-between gap-5 sm:gap-6 text-center sm:text-left">
+          <div className="flex items-center gap-4 text-center sm:text-left min-w-0 flex-1">
             <img
               src="/valgrow-logo.png"
               alt="ValGrow Labs Logo"
@@ -339,10 +339,10 @@ export const EditorialCaseStudyView: React.FC<EditorialCaseStudyViewProps> = ({ 
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto shrink-0">
             <a
               href="mailto:contact@valgrowlabs.com?subject=Project Inquiry — D2C Platform"
-              className="w-full sm:w-auto justify-center px-5 sm:px-6 py-3.5 sm:py-4 rounded-full bg-[#1F3D2B] text-white text-sm sm:text-base font-semibold hover:bg-[#162C1F] shadow-sm transition-all cursor-pointer inline-flex items-center gap-2 group"
+              className="w-full sm:w-auto justify-center px-5 sm:px-6 py-3.5 sm:py-4 rounded-full bg-[#1F3D2B] text-white text-sm sm:text-base font-semibold hover:bg-[#162C1F] shadow-sm transition-all cursor-pointer inline-flex items-center gap-2 group whitespace-nowrap shrink-0"
             >
               <span>Start a Project Inquiry</span>
               <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
@@ -350,7 +350,7 @@ export const EditorialCaseStudyView: React.FC<EditorialCaseStudyViewProps> = ({ 
 
             <Link
               to="/store"
-              className="w-full sm:w-auto justify-center px-5 py-3.5 sm:py-4 rounded-full bg-[#FAF6EF] text-[#1F3D2B] text-sm sm:text-base font-semibold hover:bg-white border border-[#EADFD0] transition-colors inline-flex items-center gap-2"
+              className="w-full sm:w-auto justify-center px-5 py-3.5 sm:py-4 rounded-full bg-[#FAF6EF] text-[#1F3D2B] text-sm sm:text-base font-semibold hover:bg-white border border-[#EADFD0] transition-colors inline-flex items-center gap-2 whitespace-nowrap shrink-0"
             >
               <Sparkles className="w-4 h-4 text-[#D9A441]" />
               <span>Interactive Store Demo</span>
