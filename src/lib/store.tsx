@@ -1,10 +1,12 @@
 import React, { createContext, useContext, useEffect, useState, useMemo } from 'react';
-import { INITIAL_PRODUCTS, INITIAL_REVIEWS, Product, ProductVariant, Review } from '../data/products';
+import { INITIAL_PRODUCTS, INITIAL_REVIEWS, Product, ProductVariant, Review, sortVariantsByWeight } from '../data/products';
 import {
   supabase,
   isSupabaseConfigured,
   getProductsFromSupabase,
   adminUpdateVariant,
+  adminUpdateVariantWeight,
+  adminSyncProductVariants,
   adminUpdateVariantPrice,
   adminUpdateVariantOriginalPrice,
   adminUpdateVariantStock,
@@ -152,7 +154,9 @@ interface StoreContextType {
   updateProductStock: (productId: string, variantId: string, newStock: number) => Promise<void>;
   updateProductVariantPrice: (productId: string, variantId: string, newPrice: number) => Promise<void>;
   updateProductVariantOriginalPrice: (productId: string, variantId: string, newOriginalPrice?: number) => Promise<void>;
-  updateProductVariants: (productId: string, variantUpdates: { id: string; price: number; originalPrice?: number; stock: number }[]) => Promise<{ success: boolean; error?: string }>;
+  updateProductVariantWeight: (productId: string, variantId: string, newWeight: string) => Promise<void>;
+  saveProductVariants: (productId: string, variants: Array<{ id?: string; weight: string; price: number; originalPrice?: number; stock?: number }>) => Promise<{ success: boolean; error?: string }>;
+  updateProductVariants: (productId: string, variantUpdates: { id: string; weight?: string; price: number; originalPrice?: number; stock: number }[]) => Promise<{ success: boolean; error?: string }>;
   updateProductImage: (productId: string, newImageUrl: string) => Promise<void>;
   getProductBySlug: (slug: string) => Product | undefined;
 
@@ -235,6 +239,7 @@ interface StoreContextType {
     originalPrice?: number;
     stock: number;
     weight?: string;
+    variants?: Array<{ weight: string; price: number; originalPrice?: number; stock?: number }>;
   }) => Promise<{ success: boolean; error?: string }>;
   updateProductDetails: (
     productId: string,
@@ -812,13 +817,13 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           storage: p.storage,
           shelfLife: p.shelf_life,
           allergenNotice: p.allergen_notice || '',
-          variants: (p.variants || []).map((v) => ({
+          variants: sortVariantsByWeight((p.variants || []).map((v) => ({
             id: v.id,
             weight: v.weight,
             price: Number(v.price),
             originalPrice: v.original_price ? Number(v.original_price) : undefined,
             stock: v.stock,
-          })),
+          }))),
           pairsWithIds: [],
           isFeatured: p.is_featured,
           isActive: p.is_active !== false,
@@ -826,6 +831,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         const dbSlugs = new Set(mappedProducts.map((p) => p.slug));
         const extraInitial = INITIAL_PRODUCTS.filter((p) => !dbSlugs.has(p.slug)).map((p) => ({
           ...p,
+          variants: sortVariantsByWeight(p.variants || []),
           isActive: p.isActive !== false,
         }));
         setProducts([...extraInitial, ...mappedProducts]);
@@ -1187,28 +1193,120 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   };
 
+  // Variant weight update with automatic sorting (100g → 250g → 500g → 1kg)
+  const updateProductVariantWeight = async (productId: string, variantId: string, newWeight: string) => {
+    const trimmed = newWeight.trim();
+    if (!trimmed) return;
+
+    // Optimistic local state update with automatic weight sorting
+    setProducts((prev) =>
+      prev.map((p) => {
+        if (p.id !== productId) return p;
+        const updated = p.variants.map((v) => (v.id === variantId ? { ...v, weight: trimmed } : v));
+        return {
+          ...p,
+          variants: sortVariantsByWeight(updated),
+        };
+      })
+    );
+
+    // Synchronize active cart items with new weight
+    setCart((prev) =>
+      prev.map((item) =>
+        item.variantId === variantId ? { ...item, variantWeight: trimmed } : item
+      )
+    );
+
+    if (isSupabaseConfigured) {
+      const res = await adminUpdateVariantWeight(variantId, trimmed);
+      if (!res.success) {
+        showToast(`Weight update failed: ${res.error}`);
+        await refreshProducts();
+      } else {
+        showToast('Weight updated & synchronized across all devices');
+      }
+    }
+  };
+
+  // Full synchronization of product variants (weights, prices, new variants, deleted variants)
+  const saveProductVariants = async (
+    productId: string,
+    variantList: Array<{ id?: string; weight: string; price: number; originalPrice?: number; stock?: number }>
+  ): Promise<{ success: boolean; error?: string }> => {
+    const validVariants = variantList.filter((v) => v.weight && v.weight.trim());
+    const sorted = sortVariantsByWeight(
+      validVariants.map((v) => ({
+        id: v.id || `temp-${Math.random().toString(36).substring(2, 9)}`,
+        weight: v.weight.trim(),
+        price: Math.round(v.price),
+        originalPrice: v.originalPrice !== undefined ? Math.round(v.originalPrice) : undefined,
+        stock: v.stock !== undefined ? Math.max(0, Math.round(v.stock)) : 50,
+      }))
+    );
+
+    // Optimistically update products state with sorted variants
+    setProducts((prev) =>
+      prev.map((p) => {
+        if (p.id !== productId) return p;
+        return {
+          ...p,
+          variants: sorted,
+        };
+      })
+    );
+
+    // Sync active cart items
+    setCart((prev) =>
+      prev.map((item) => {
+        const match = sorted.find((s) => s.id === item.variantId);
+        if (match) {
+          return {
+            ...item,
+            variantWeight: match.weight,
+            price: match.price,
+          };
+        }
+        return item;
+      })
+    );
+
+    if (isSupabaseConfigured) {
+      const res = await adminSyncProductVariants(productId, sorted);
+      if (!res.success) {
+        showToast(`Variant sync failed: ${res.error}`);
+        await refreshProducts();
+        return res;
+      }
+      await refreshProducts();
+    }
+
+    return { success: true };
+  };
+
   // Batch save variants for a product
   const updateProductVariants = async (
     productId: string,
-    variantUpdates: { id: string; price: number; originalPrice?: number; stock: number }[]
+    variantUpdates: { id: string; weight?: string; price: number; originalPrice?: number; stock: number }[]
   ): Promise<{ success: boolean; error?: string }> => {
     // Optimistic local state update
     setProducts((prev) =>
       prev.map((p) => {
         if (p.id !== productId) return p;
         const updateMap = new Map(variantUpdates.map((u) => [u.id, u]));
+        const updated = p.variants.map((v) => {
+          const upd = updateMap.get(v.id);
+          if (!upd) return v;
+          return {
+            ...v,
+            weight: upd.weight ? upd.weight.trim() : v.weight,
+            price: Math.round(upd.price),
+            originalPrice: upd.originalPrice !== undefined ? Math.round(upd.originalPrice) : undefined,
+            stock: Math.max(0, Math.round(upd.stock)),
+          };
+        });
         return {
           ...p,
-          variants: p.variants.map((v) => {
-            const upd = updateMap.get(v.id);
-            if (!upd) return v;
-            return {
-              ...v,
-              price: Math.round(upd.price),
-              originalPrice: upd.originalPrice !== undefined ? Math.round(upd.originalPrice) : undefined,
-              stock: Math.max(0, Math.round(upd.stock)),
-            };
-          }),
+          variants: sortVariantsByWeight(updated),
         };
       })
     );
@@ -1220,6 +1318,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         if (upd) {
           return {
             ...item,
+            variantWeight: upd.weight ? upd.weight.trim() : item.variantWeight,
             price: Math.round(upd.price),
             quantity: Math.min(item.quantity, Math.max(1, Math.round(upd.stock))),
           };
@@ -1232,6 +1331,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       try {
         const promises = variantUpdates.map((v) =>
           adminUpdateVariant(v.id, {
+            weight: v.weight,
             price: v.price,
             original_price: v.originalPrice ?? null,
             stock: v.stock,
@@ -1741,7 +1841,21 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     originalPrice?: number;
     stock: number;
     weight?: string;
+    variants?: Array<{ weight: string; price: number; originalPrice?: number; stock?: number }>;
   }): Promise<{ success: boolean; error?: string }> => {
+    const rawVariants = payload.variants && payload.variants.length > 0
+      ? payload.variants
+      : [{ weight: payload.weight || '250g', price: payload.price, originalPrice: payload.originalPrice, stock: payload.stock }];
+
+    const sortedVariants = sortVariantsByWeight(
+      rawVariants.filter((v) => v.weight && v.weight.trim()).map((v) => ({
+        weight: v.weight.trim(),
+        price: Math.round(v.price),
+        originalPrice: v.originalPrice !== undefined ? Math.round(v.originalPrice) : undefined,
+        stock: v.stock !== undefined ? Math.max(0, Math.round(v.stock)) : 50,
+      }))
+    );
+
     if (isSupabaseConfigured) {
       const res = await adminCreateProduct({
         name: payload.name,
@@ -1760,7 +1874,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         price: payload.price,
         original_price: payload.originalPrice,
         stock: payload.stock,
-        weight: payload.weight || '250g',
+        weight: sortedVariants[0]?.weight || '250g',
+        variants: sortedVariants,
       });
 
       if (!res.success) {
@@ -1793,15 +1908,13 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       allergenNotice: payload.allergenNotice || '',
       isFeatured: payload.isFeatured || false,
       pairsWithIds: [],
-      variants: [
-        {
-          id: `var-${Date.now()}`,
-          weight: payload.weight || '250g',
-          price: Math.round(payload.price),
-          originalPrice: payload.originalPrice ? Math.round(payload.originalPrice) : undefined,
-          stock: Math.max(0, Math.round(payload.stock)),
-        },
-      ],
+      variants: sortedVariants.map((v, i) => ({
+        id: `var-${Date.now()}-${i}`,
+        weight: v.weight,
+        price: v.price,
+        originalPrice: v.originalPrice,
+        stock: v.stock,
+      })),
     };
 
     setProducts((prev) => [newProduct, ...prev]);
@@ -2271,6 +2384,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         updateProductStock,
         updateProductVariantPrice,
         updateProductVariantOriginalPrice,
+        updateProductVariantWeight,
+        saveProductVariants,
         updateProductVariants,
         updateProductImage,
         getProductBySlug,

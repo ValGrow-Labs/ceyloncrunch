@@ -7,7 +7,7 @@ import {
   X,
   Sparkles,
 } from 'lucide-react';
-import { Product, ProductVariant } from '../../data/products';
+import { Product, ProductVariant, sortVariantsByWeight } from '../../data/products';
 import { formatRs } from '../../data/products';
 
 interface ProductsTabProps {
@@ -30,6 +30,7 @@ interface ProductsTabProps {
     originalPrice?: number;
     stock: number;
     weight?: string;
+    variants?: Array<{ weight: string; price: number; originalPrice?: number; stock?: number }>;
   }) => Promise<{ success: boolean; error?: string }>;
   onUpdateProductDetails: (
     productId: string,
@@ -52,8 +53,13 @@ interface ProductsTabProps {
     variantId: string,
     price: number,
     originalPrice?: number,
-    stock?: number
+    stock?: number,
+    weight?: string
   ) => Promise<void>;
+  onSaveProductVariants?: (
+    productId: string,
+    variants: Array<{ id?: string; weight: string; price: number; originalPrice?: number; stock?: number }>
+  ) => Promise<{ success: boolean; error?: string }>;
   onDeleteProduct: (productId: string) => Promise<{ success: boolean; error?: string }>;
   onUploadImage: (productId: string, file: File) => Promise<void>;
   onToggleProductVisibility?: (productId: string, isActive: boolean) => Promise<{ success: boolean; error?: string }>;
@@ -87,6 +93,7 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
   onCreateProduct,
   onUpdateProductDetails,
   onUpdateVariant,
+  onSaveProductVariants,
   onDeleteProduct,
   onUploadImage,
   onToggleProductVisibility,
@@ -226,8 +233,9 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
     setImageUrl(prod.images[0] || '/img/product-1.jpg');
 
     if (prod.variants && prod.variants.length > 0) {
+      const sorted = sortVariantsByWeight(prod.variants);
       setVariants(
-        prod.variants.map((v) => ({
+        sorted.map((v) => ({
           id: v.id,
           weight: v.weight,
           price: String(v.price || ''),
@@ -334,10 +342,25 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
         isActive,
       });
 
-      // Update variants if available
-      for (const v of variants) {
-        if (v.id && v.price) {
-          await onUpdateVariant(editingProduct.id, v.id, Number(v.price) || numPrice);
+      // Filter and automatically sort variants by weight (100g → 250g → 500g → 1kg)
+      const validVariants = variants.filter((v) => v.weight && v.weight.trim());
+      const sortedVariants = sortVariantsByWeight(
+        validVariants.map((v) => ({
+          id: v.id,
+          weight: v.weight.trim(),
+          price: Number(v.price) || numPrice,
+          stock: 50,
+        }))
+      );
+
+      // Save and synchronize variants across Admin and customer pages
+      if (onSaveProductVariants) {
+        await onSaveProductVariants(editingProduct.id, sortedVariants);
+      } else {
+        for (const v of sortedVariants) {
+          if (v.id) {
+            await onUpdateVariant(editingProduct.id, v.id, Number(v.price) || numPrice, undefined, undefined, v.weight);
+          }
         }
       }
 
@@ -349,6 +372,15 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
         showToast(`Failed to update: ${res.error}`);
       }
     } else {
+      const validVariants = variants.filter((v) => v.weight && v.weight.trim());
+      const sortedVariants = sortVariantsByWeight(
+        validVariants.map((v) => ({
+          weight: v.weight.trim(),
+          price: Number(v.price) || numPrice,
+          stock: 50,
+        }))
+      );
+
       const res = await onCreateProduct({
         name,
         category,
@@ -357,7 +389,8 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
         description: description || `${name} artisan provisions.`,
         price: numPrice,
         stock: 50,
-        weight: variants[0]?.weight || '250g',
+        weight: sortedVariants[0]?.weight || '250g',
+        variants: sortedVariants,
       });
 
       setIsSubmitting(false);

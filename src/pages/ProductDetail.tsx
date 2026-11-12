@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useStore } from '../lib/store';
-import { formatRs, Product } from '../data/products';
+import { formatRs, Product, sortVariantsByWeight } from '../data/products';
 import { ProductCard } from '../components/product/ProductCard';
 import {
   ArrowLeft,
@@ -50,15 +50,19 @@ export const ProductDetail: React.FC = () => {
   });
 
   // Initialize selected variant when product loads
+  const sortedVariants = useMemo(() => {
+    return sortVariantsByWeight(product?.variants || []);
+  }, [product]);
+
   const currentVariant = useMemo(() => {
-    if (!product) return null;
+    if (!product || sortedVariants.length === 0) return null;
     if (selectedVariantId) {
-      return product.variants.find((v) => v.id === selectedVariantId) || product.variants[0];
+      return sortedVariants.find((v) => v.id === selectedVariantId) || sortedVariants[0];
     }
     // Default to first in-stock variant or first variant
-    const inStockVar = product.variants.find((v) => v.stock > 0);
-    return inStockVar || product.variants[0];
-  }, [product, selectedVariantId]);
+    const inStockVar = sortedVariants.find((v) => v.stock > 0);
+    return inStockVar || sortedVariants[0];
+  }, [product, sortedVariants, selectedVariantId]);
 
   if (!product) {
     return (
@@ -334,7 +338,7 @@ export const ProductDetail: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              {product.variants.map((v) => {
+              {sortedVariants.map((v) => {
                 const isSelected = currentVariant?.id === v.id;
                 const isOutOfStock = v.stock <= 0;
                 return (

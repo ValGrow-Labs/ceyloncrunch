@@ -11,6 +11,7 @@ export const Header: React.FC = () => {
 
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [mobileSearchQuery, setMobileSearchQuery] = useState('');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isShopMenuOpen, setIsShopMenuOpen] = useState(false);
 
@@ -68,6 +69,15 @@ export const Header: React.FC = () => {
     if (searchQuery.trim()) {
       navigate(`/shop?q=${encodeURIComponent(searchQuery.trim())}`);
       setIsSearchOpen(false);
+    }
+  };
+
+  const handleMobileSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (mobileSearchQuery.trim()) {
+      navigate(`/shop?q=${encodeURIComponent(mobileSearchQuery.trim())}`);
+      setIsMenuOpen(false);
+      setMobileSearchQuery('');
     }
   };
 
@@ -362,6 +372,27 @@ export const Header: React.FC = () => {
                   </>
                 )}
               </div>
+            </div>
+
+            {/* Mobile Menu Search Bar - Direct Search Below Customer Account */}
+            <div className="mt-3">
+              <form onSubmit={handleMobileSearchSubmit} className="relative flex items-center">
+                <Search className="w-4 h-4 text-[#8B5E3C] absolute left-3.5 pointer-events-none" />
+                <input
+                  type="search"
+                  value={mobileSearchQuery}
+                  onChange={(e) => setMobileSearchQuery(e.target.value)}
+                  placeholder="Search products, nuts, dates, spices..."
+                  aria-label="Search all products"
+                  className="w-full h-11 pl-10 pr-20 rounded-2xl bg-white border border-[#EADFD0] text-xs sm:text-sm text-[#1F3D2B] placeholder:text-[#6B6B6B]/70 focus:outline-none focus:border-[#1F3D2B] focus:ring-1 focus:ring-[#1F3D2B] shadow-2xs transition-all"
+                />
+                <button
+                  type="submit"
+                  className="absolute right-1.5 px-3.5 py-1.5 rounded-xl bg-[#1F3D2B] text-white text-xs font-bold hover:bg-[#162C1F] transition-colors shadow-2xs cursor-pointer"
+                >
+                  Search
+                </button>
+              </form>
             </div>
 
             {/* Menu Links */}

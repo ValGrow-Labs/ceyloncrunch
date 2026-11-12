@@ -45,6 +45,8 @@ export const Admin: React.FC = () => {
     updateProductStock,
     updateProductVariantPrice,
     updateProductVariantOriginalPrice,
+    updateProductVariantWeight,
+    saveProductVariants,
     createProduct,
     updateProductDetails,
     toggleProductVisibility,
@@ -135,14 +137,18 @@ export const Admin: React.FC = () => {
     }
   };
 
-  // Variant price & stock updater
+  // Variant price, weight & stock updater
   const handleUpdateVariant = async (
     productId: string,
     variantId: string,
     price: number,
     originalPrice?: number,
-    stock?: number
+    stock?: number,
+    weight?: string
   ) => {
+    if (weight !== undefined) {
+      await updateProductVariantWeight(productId, variantId, weight);
+    }
     if (stock !== undefined) {
       await updateProductStock(productId, variantId, stock);
     }
