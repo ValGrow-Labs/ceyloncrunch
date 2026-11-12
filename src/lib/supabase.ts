@@ -355,6 +355,7 @@ export async function adminUpdateVariant(
     price?: number;
     original_price?: number | null;
     stock?: number;
+    weight?: string;
   }
 ): Promise<{ success: boolean; error?: string }> {
   if (!supabase) return { success: false, error: 'Database is not connected.' };
@@ -375,6 +376,10 @@ export async function adminUpdateVariant(
   if (updates.stock !== undefined) {
     payload.stock = Math.max(0, Math.round(updates.stock));
   }
+  if (updates.weight !== undefined) {
+    const trimmed = updates.weight.trim();
+    if (trimmed) payload.weight = trimmed;
+  }
 
   try {
     const { error } = await supabase
@@ -388,6 +393,108 @@ export async function adminUpdateVariant(
     return { success: true };
   } catch (err: any) {
     return { success: false, error: err?.message || 'Failed to update variant.' };
+  }
+}
+
+/**
+ * Admin: Update variant weight directly in Supabase product_variants table
+ */
+export async function adminUpdateVariantWeight(
+  variantId: string,
+  newWeight: string
+): Promise<{ success: boolean; error?: string }> {
+  if (!supabase) return { success: false, error: 'Database is not connected.' };
+  const trimmed = newWeight.trim();
+  if (!trimmed) {
+    return { success: false, error: 'Variant weight cannot be empty.' };
+  }
+
+  try {
+    const { error } = await supabase
+      .from('product_variants')
+      .update({ weight: trimmed, updated_at: new Date().toISOString() })
+      .eq('id', variantId);
+
+    if (error) {
+      return { success: false, error: error.message };
+    }
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err?.message || 'Failed to update variant weight.' };
+  }
+}
+
+/**
+ * Admin: Synchronize product variants (save weight, price, original_price, stock, and add/remove variants)
+ */
+export async function adminSyncProductVariants(
+  productId: string,
+  variants: Array<{
+    id?: string;
+    weight: string;
+    price: number;
+    original_price?: number | null;
+    stock?: number;
+  }>
+): Promise<{ success: boolean; error?: string }> {
+  if (!supabase) return { success: false, error: 'Database is not connected.' };
+  try {
+    // 1. Fetch current variants for this product
+    const { data: existingRows, error: fetchErr } = await supabase
+      .from('product_variants')
+      .select('id')
+      .eq('product_id', productId);
+
+    if (fetchErr) {
+      return { success: false, error: fetchErr.message };
+    }
+
+    const existingIds = new Set((existingRows || []).map((r) => r.id));
+    const incomingValidWithId = variants.filter(
+      (v) => v.id && !v.id.startsWith('temp-') && existingIds.has(v.id)
+    );
+    const incomingIds = new Set(incomingValidWithId.map((v) => v.id!));
+
+    // Delete variants that were removed
+    const toDelete = (existingRows || []).filter((r) => !incomingIds.has(r.id)).map((r) => r.id);
+    if (toDelete.length > 0) {
+      await supabase.from('product_variants').delete().in('id', toDelete);
+    }
+
+    // Update existing and insert new
+    for (const v of variants) {
+      const trimmedWeight = v.weight.trim();
+      if (!trimmedWeight) continue;
+
+      if (v.id && !v.id.startsWith('temp-') && existingIds.has(v.id)) {
+        await supabase
+          .from('product_variants')
+          .update({
+            weight: trimmedWeight,
+            price: Math.round(v.price),
+            original_price: v.original_price ? Math.round(v.original_price) : null,
+            stock: v.stock !== undefined ? Math.max(0, Math.round(v.stock)) : 50,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', v.id);
+      } else {
+        await supabase
+          .from('product_variants')
+          .insert([
+            {
+              product_id: productId,
+              weight: trimmedWeight,
+              price: Math.round(v.price),
+              original_price: v.original_price ? Math.round(v.original_price) : null,
+              stock: v.stock !== undefined ? Math.max(0, Math.round(v.stock)) : 50,
+            },
+          ]);
+      }
+    }
+
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err?.message || 'Failed to sync product variants.' };
   }
 }
 
@@ -753,6 +860,12 @@ export async function adminCreateProduct(payload: {
   original_price?: number | null;
   stock: number;
   weight?: string;
+  variants?: Array<{
+    weight: string;
+    price: number;
+    original_price?: number | null;
+    stock?: number;
+  }>;
 }): Promise<{ success: boolean; product?: DbProduct; error?: string }> {
   if (!supabase) return { success: false, error: 'Database is not connected.' };
   try {
@@ -792,7 +905,36 @@ export async function adminCreateProduct(payload: {
       return { success: false, error: prodErr?.message || 'Failed to insert product.' };
     }
 
-    // Insert default variant
+    // Insert variants
+    if (payload.variants && payload.variants.length > 0) {
+      const rowsToInsert = payload.variants
+        .filter((v) => v.weight && v.weight.trim())
+        .map((v) => ({
+          product_id: insertedProduct.id,
+          weight: v.weight.trim(),
+          price: Math.round(v.price || payload.price),
+          original_price: v.original_price ? Math.round(v.original_price) : null,
+          stock: v.stock !== undefined ? Math.max(0, Math.round(v.stock)) : Math.max(0, Math.round(payload.stock)),
+        }));
+
+      const { data: insertedVariants, error: varErr } = await supabase
+        .from('product_variants')
+        .insert(rowsToInsert)
+        .select('*');
+
+      if (varErr) {
+        console.warn('Variant insertion notice:', varErr.message);
+      }
+
+      return {
+        success: true,
+        product: {
+          ...insertedProduct,
+          variants: insertedVariants || [],
+        },
+      };
+    }
+
     const variantWeight = payload.weight || '250g';
     const { data: insertedVariant, error: varErr } = await supabase
       .from('product_variants')

@@ -6,6 +6,55 @@ export interface ProductVariant {
   stock: number;
 }
 
+/**
+ * Parse weight string into grams for numeric sorting (e.g. '100g' -> 100, '1kg' -> 1000).
+ */
+export function parseWeightInGrams(weightStr: string): number {
+  if (!weightStr) return 0;
+  const normalized = weightStr.trim().toLowerCase();
+
+  // 1. Check for kg e.g. "1kg", "1.5 kg", "2 kg"
+  const kgMatch = normalized.match(/([\d.]+)\s*kg\b/);
+  if (kgMatch) {
+    const val = parseFloat(kgMatch[1]);
+    if (!isNaN(val)) return val * 1000;
+  }
+
+  // 2. Check for g / grams / gms e.g. "100g", "250 g", "500 grams", "400g keepsake box"
+  const gMatch = normalized.match(/([\d.]+)\s*(?:g|gm|gms|grams?)\b/);
+  if (gMatch) {
+    const val = parseFloat(gMatch[1]);
+    if (!isNaN(val)) return val;
+  }
+
+  // 3. Check for bare number at start e.g. "100"
+  const numMatch = normalized.match(/^([\d.]+)/);
+  if (numMatch) {
+    const val = parseFloat(numMatch[1]);
+    if (!isNaN(val)) return val;
+  }
+
+  // 4. Fallback for non-weight variants (e.g. Standard, Deluxe, Royal) - sort by price or original order
+  return 999999;
+}
+
+/**
+ * Automatically sorts product variants in ascending weight order (100g → 250g → 500g → 1kg).
+ */
+export function sortVariantsByWeight<T extends { weight: string; price?: number }>(variants: T[]): T[] {
+  return [...variants].sort((a, b) => {
+    const gA = parseWeightInGrams(a.weight);
+    const gB = parseWeightInGrams(b.weight);
+    if (gA !== gB) {
+      return gA - gB;
+    }
+    if (a.price !== undefined && b.price !== undefined) {
+      return a.price - b.price;
+    }
+    return 0;
+  });
+}
+
 export interface Review {
   id: string;
   author: string;
