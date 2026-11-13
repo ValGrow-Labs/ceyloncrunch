@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
-import { Product, getLowestPrice, formatRs } from '../../data/products';
+import { Product, getLowestPrice, formatRs, CATEGORIES } from '../../data/products';
 import { useStore } from '../../lib/store';
 import { Plus, Check, Lock, Star } from 'lucide-react';
 
@@ -15,7 +15,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, compact = fal
   const [imageError, setImageError] = useState(false);
   const [justAdded, setJustAdded] = useState(false);
 
-  const { price, inStock, originalPrice, discountPercent } = getLowestPrice(product);
+  const { price, inStock, originalPrice, discountPercent, weight } = getLowestPrice(product);
+  const displayWeight = weight || product.variants[0]?.weight;
+  const categoryLabel = CATEGORIES.find((category) => category.slug === product.category)?.name ?? product.category.replace(/-/g, ' ');
 
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -85,15 +87,22 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, compact = fal
       <div className="p-2.5 sm:p-3.5 flex flex-col flex-1 justify-between bg-white">
         <Link to={`/product/${product.slug}`} className="block">
           <span className="text-[10px] sm:text-[11px] font-medium tracking-wider text-[#8B5E3C] uppercase block truncate mb-0.5">
-            {product.subtitle || product.category.replace('-', ' ')}
+            {categoryLabel}
           </span>
           <h3 className="font-serif text-sm sm:text-[15px] leading-snug text-[#1F3D2B] font-semibold line-clamp-1 group-hover:text-[#B5741E] transition-colors duration-200">
             {product.name}
           </h3>
-          <div className="mt-1 flex items-center gap-1 text-[10px] sm:text-[11px] leading-none">
-            <Star className="w-3 h-3 fill-[#D9A441] text-[#D9A441]" aria-hidden="true" />
-            <span className="font-semibold text-[#2B2B2B]">{product.rating.toFixed(1)}</span>
-            <span className="text-[#6B6B6B]">({product.reviewCount})</span>
+          <div className="mt-1 flex items-center justify-between gap-1 text-[10px] sm:text-[11px] leading-none">
+            <div className="flex items-center gap-1">
+              <Star className="w-3 h-3 fill-[#D9A441] text-[#D9A441]" aria-hidden="true" />
+              <span className="font-semibold text-[#2B2B2B]">{product.rating.toFixed(1)}</span>
+              <span className="text-[#6B6B6B]">({product.reviewCount})</span>
+            </div>
+            {product.variants.length > 1 && (
+              <span className="text-[10px] text-[#8B5E3C] font-semibold bg-[#FAF8F5] px-1.5 py-0.5 rounded border border-[#EADFD0]/80">
+                {product.variants.length} sizes
+              </span>
+            )}
           </div>
         </Link>
 
@@ -106,7 +115,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, compact = fal
                 </span>
               </div>
             )}
-            <div className="flex items-baseline gap-1.5 flex-wrap">
+            <div className="flex items-baseline gap-1 sm:gap-1.5 flex-wrap">
               {originalPrice && originalPrice > price && (
                 <span className="text-[10px] sm:text-xs text-[#8C827A] line-through tabular-nums leading-none font-normal">
                   {formatRs(originalPrice)}
@@ -115,6 +124,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, compact = fal
               <span className="font-sans font-bold text-[#1F3D2B] text-xs sm:text-[15px] tabular-nums leading-none">
                 {formatRs(price)}
               </span>
+              {displayWeight && (
+                <span className="text-[10px] sm:text-xs text-[#6B6B6B] font-medium leading-none">
+                  / {displayWeight}
+                </span>
+              )}
             </div>
           </div>
 

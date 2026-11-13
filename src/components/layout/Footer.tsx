@@ -235,10 +235,13 @@ export const Footer: React.FC = () => {
             </a>
           </div>
 
-          {/* Exact Copyright */}
-          <div className="text-center sm:text-right text-xs text-[#C4C4C4] leading-relaxed font-sans">
+          {/* Exact Copyright & Studio Branding */}
+          <div className="text-center sm:text-right text-xs text-[#C4C4C4] leading-relaxed font-sans space-y-1">
             <p>© 2026 Ceylon Crunch (Pvt) Ltd.</p>
             <p>Colombo, Sri Lanka</p>
+            <div className="flex items-center justify-center sm:justify-end gap-1.5 text-[11px] text-[#A0A0A0] pt-0.5">
+              <span>Powered by <strong className="font-semibold text-[#D9A441]">ValGrow Labs</strong></span>
+            </div>
           </div>
         </div>
       </div>

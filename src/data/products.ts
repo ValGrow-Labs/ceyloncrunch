@@ -1125,6 +1125,7 @@ export function getLowestPrice(product: Product): {
   inStock: boolean;
   originalPrice?: number;
   discountPercent?: number;
+  weight?: string;
 } {
   const inStockVariants = product.variants.filter((v) => v.stock > 0);
   const pool = inStockVariants.length > 0 ? inStockVariants : product.variants;
@@ -1151,6 +1152,7 @@ export function getLowestPrice(product: Product): {
     inStock: inStockVariants.length > 0,
     originalPrice: originalPrice && originalPrice > price ? originalPrice : undefined,
     discountPercent,
+    weight: lowestVariant.weight,
   };
 }
 

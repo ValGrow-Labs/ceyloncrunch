@@ -1003,7 +1003,7 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
                           )}
                         </div>
                         <div className="text-[11px] text-stone-400 truncate mt-0.5">
-                          {prod.subtitle || `${prod.variants.length} pack variants`}
+                          {prod.variants.map((variant) => variant.weight).join(' · ') || 'No pack variants'}
                         </div>
                         <div className="flex items-center gap-2 mt-1">
                           <span className="px-2 py-0.5 rounded-md bg-stone-100 text-stone-700 text-[10px] font-medium capitalize">
@@ -1108,7 +1108,7 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
                                 )}
                               </div>
                               <div className="text-[11px] text-stone-400 truncate">
-                                {prod.subtitle || `${prod.variants.length} pack variants`}
+                                {prod.variants.map((variant) => variant.weight).join(' · ') || 'No pack variants'}
                               </div>
                             </div>
                           </div>
