@@ -292,9 +292,9 @@ export const CategoryPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Two-Column on mobile, Four-Column on desktop */}
+      {/* Responsive Product Catalog Grid (mobile to widescreen desktop) */}
       {filteredProducts.length > 0 ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5 mb-10">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 sm:gap-4 lg:gap-5 mb-10">
           {filteredProducts.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}

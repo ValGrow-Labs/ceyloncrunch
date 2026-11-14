@@ -4,8 +4,8 @@ import { Instagram, Facebook, Phone, Mail, MapPin } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   return (
-    <footer className="mt-16 bg-[#111111] border-t border-[#3A3A3A] rounded-t-3xl pt-10 pb-24 lg:pb-12 text-[#F5F2EB]">
-      <div className="max-w-[1320px] mx-auto px-4 lg:px-8 space-y-10">
+    <footer className="mt-16 bg-[#111111] border-t border-[#3A3A3A] rounded-t-3xl pt-10 pb-24 lg:pb-12 text-[#F5F2EB] w-full">
+      <div className="w-full px-4 sm:px-6 lg:px-8 space-y-10">
         {/* Brand Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#3A3A3A] pb-6">
           <Link to="/" className="inline-block">

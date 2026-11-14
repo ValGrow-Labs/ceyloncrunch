@@ -76,7 +76,7 @@ export const Home: React.FC = () => {
           {/* Directional readability gradient */}
           <div className="absolute inset-0 bg-gradient-to-r from-[#FBF7F0] via-[#FBF7F0]/85 via-[48%] to-transparent to-[75%] sm:via-[#FBF7F0]/40 sm:via-[40%] sm:to-transparent pointer-events-none" />
 
-          <div className="relative z-10 max-w-[1440px] mx-auto flex items-center min-h-[340px] xs:min-h-[380px] sm:min-h-[440px] md:min-h-[480px] lg:min-h-[520px]">
+          <div className="relative z-10 w-full mx-auto flex items-center min-h-[340px] xs:min-h-[380px] sm:min-h-[440px] md:min-h-[480px] lg:min-h-[520px]">
             {/* Hero Copy: Left-Aligned across all screens */}
             <div className="w-full pl-4 xs:pl-6 sm:pl-8 md:pl-12 lg:pl-20 pr-3 sm:pr-6 py-7 xs:py-9 sm:py-12 lg:py-16 flex flex-col items-start text-left space-y-2.5 xs:space-y-3 sm:space-y-4 lg:space-y-5">
               {/* Eyebrow */}
@@ -161,7 +161,7 @@ export const Home: React.FC = () => {
 
         {/* Bottom 4-Column Feature / Trust Strip */}
         <div className="bg-[#FAF8F4] px-3 xs:px-4 sm:px-8 lg:px-16 py-4 xs:py-5 sm:py-6 border-t border-[#EFECE6]/80">
-          <div className="max-w-[1440px] mx-auto grid grid-cols-2 md:grid-cols-4 gap-3 xs:gap-4 md:gap-0 md:divide-x divide-[#E2DDD2]">
+          <div className="w-full mx-auto grid grid-cols-2 md:grid-cols-4 gap-3 xs:gap-4 md:gap-0 md:divide-x divide-[#E2DDD2]">
             {trustFeatures.map((feat, idx) => {
               const Icon = feat.icon;
               return (
@@ -249,9 +249,9 @@ export const Home: React.FC = () => {
           </Link>
         </motion.div>
 
-        {/* Grid - 6 Popular Picks */}
+        {/* Grid - 6 Popular Picks (responsive from mobile 2-col to widescreen 6-col) */}
         {popularPicks.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3.5 lg:gap-5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5 lg:gap-5">
             {popularPicks.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
@@ -358,7 +358,7 @@ export const Home: React.FC = () => {
           </div>
         </motion.div>
 
-        <div className="grid grid-cols-2 gap-3.5 sm:gap-5 lg:gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5 sm:gap-5 lg:gap-6">
           {[
             {
               name: 'Nuts',
