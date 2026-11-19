@@ -126,15 +126,21 @@ export const Admin: React.FC = () => {
   };
 
   // Image uploader handler
-  const handleUploadProductImage = async (productId: string, file: File) => {
-    showToast('Uploading photo to Supabase Storage...');
-    const res = await adminUploadProductImage(productId, file);
+  const handleUploadProductImage = async (
+    productId: string,
+    file: File
+  ): Promise<{ success: boolean; url?: string; error?: string }> => {
+    const prod = products.find((p) => p.id === productId);
+    const prodSlug = prod?.slug || (productId.startsWith('prod-') ? productId.replace(/^prod-/, '') : productId);
+    showToast('Uploading photo...');
+    const res = await adminUploadProductImage(productId, file, prodSlug);
     if (res.success && res.url) {
-      showToast('Image uploaded and updated in Supabase catalog!');
+      showToast('Image uploaded and synced successfully!');
       await refreshProducts();
     } else {
       showToast(res.error || 'Failed to upload photo.');
     }
+    return res;
   };
 
   // Variant price, weight & stock updater

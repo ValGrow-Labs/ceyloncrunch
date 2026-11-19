@@ -51,7 +51,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, compact = fal
       className="group flex flex-col bg-white rounded-2xl overflow-hidden border border-[#EADFD0] shadow-[0_4px_20px_-2px_rgba(139,94,60,0.06)] hover:shadow-[0_16px_32px_-4px_rgba(31,61,43,0.14)] hover:border-[#1F3D2B]/30 transition-shadow duration-300"
     >
       <Link to={`/product/${product.slug}`} className="relative w-full aspect-square bg-[#f6f3f2] overflow-hidden block">
-        {!imageError && product.images[0] ? (
+        {!imageError && product.images && product.images[0] && product.images[0] !== '/img/product-1.jpg' ? (
           <img
             src={product.images[0]}
             alt={product.name}

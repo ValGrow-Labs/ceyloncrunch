@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { Product, ProductVariant, sortVariantsByWeight } from '../../data/products';
 import { formatRs } from '../../data/products';
+import { fileToOptimizedDataUrl } from '../../lib/supabase';
 
 interface ProductsTabProps {
   products: Product[];
@@ -61,7 +62,7 @@ interface ProductsTabProps {
     variants: Array<{ id?: string; weight: string; price: number; originalPrice?: number; stock?: number }>
   ) => Promise<{ success: boolean; error?: string }>;
   onDeleteProduct: (productId: string) => Promise<{ success: boolean; error?: string }>;
-  onUploadImage: (productId: string, file: File) => Promise<void>;
+  onUploadImage: (productId: string, file: File) => Promise<{ success: boolean; url?: string; error?: string }>;
   onToggleProductVisibility?: (productId: string, isActive: boolean) => Promise<{ success: boolean; error?: string }>;
   showToast: (msg: string) => void;
   isAddModalOpen?: boolean;
@@ -130,7 +131,7 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
   );
 
   // 2. Product Image
-  const [imageUrl, setImageUrl] = useState('/img/product-1.jpg');
+  const [imageUrl, setImageUrl] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // 3. Variants State
@@ -194,7 +195,7 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
     setCategory('nuts');
     setPrice('1200');
     setDescription('');
-    setImageUrl('/img/product-1.jpg');
+    setImageUrl('');
     setVariants([
       { weight: '100g', price: '' },
       { weight: '250g', price: '' },
@@ -230,7 +231,8 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
       prod.description ||
         'Golden-roasted to perfection, our cashews are slow-roasted in small batches over measured heat.'
     );
-    setImageUrl(prod.images[0] || '/img/product-1.jpg');
+    const firstImg = prod.images && prod.images[0] && prod.images[0] !== '/img/product-1.jpg' ? prod.images[0] : '';
+    setImageUrl(firstImg);
 
     if (prod.variants && prod.variants.length > 0) {
       const sorted = sortVariantsByWeight(prod.variants);
@@ -303,22 +305,30 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
     setIsUploadingPhoto(true);
     showToast('Uploading photo...');
 
-    if (editingProduct) {
-      try {
-        await onUploadImage(editingProduct.id, file);
-        setImageUrl(URL.createObjectURL(file));
-        showToast('Photo uploaded and synced!');
-      } catch {
-        setImageUrl(URL.createObjectURL(file));
-        showToast('Image preview loaded');
-      } finally {
-        setIsUploadingPhoto(false);
+    try {
+      const prodId = editingProduct ? editingProduct.id : 'new-product';
+      const res = await onUploadImage(prodId, file);
+      if (res && res.success && res.url) {
+        setImageUrl(res.url);
+        showToast('Photo uploaded and preview updated!');
+      } else {
+        const dataUrl = await fileToOptimizedDataUrl(file);
+        setImageUrl(dataUrl);
+        showToast('Photo ready and preview updated!');
       }
-    } else {
-      const previewUrl = URL.createObjectURL(file);
-      setImageUrl(previewUrl);
+    } catch {
+      try {
+        const dataUrl = await fileToOptimizedDataUrl(file);
+        setImageUrl(dataUrl);
+        showToast('Photo preview ready');
+      } catch {
+        showToast('Could not process photo file.');
+      }
+    } finally {
       setIsUploadingPhoto(false);
-      showToast('Image selected for product');
+      if (e.target) {
+        e.target.value = '';
+      }
     }
   };
 
@@ -338,7 +348,7 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
         category,
         badge: badgeText,
         description,
-        images: imageUrl ? [imageUrl] : editingProduct.images,
+        images: imageUrl.trim() ? [imageUrl.trim()] : [],
         isActive,
       });
 
@@ -385,7 +395,7 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
         name,
         category,
         badge: badgeText,
-        images: imageUrl ? [imageUrl] : [],
+        images: imageUrl.trim() ? [imageUrl.trim()] : [],
         description: description || `${name} artisan provisions.`,
         price: numPrice,
         stock: 50,
@@ -546,18 +556,21 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                 {/* Thumbnail with red delete circle badge */}
                 <div className="relative group shrink-0">
-                  <div className="w-16 h-16 rounded-xl overflow-hidden border border-stone-200 bg-stone-100 flex items-center justify-center">
+                  <div className="w-16 h-16 rounded-xl overflow-hidden border border-[#EADFD0] bg-[#EADFD0]/40 flex items-center justify-center">
                     {imageUrl ? (
                       <img
                         src={imageUrl}
                         alt="Product preview"
                         className="w-full h-full object-cover"
-                        onError={(e) => {
-                          (e.target as HTMLElement).style.display = 'none';
-                        }}
+                        onError={() => setImageUrl('')}
                       />
                     ) : (
-                      <span className="text-xs text-stone-400 font-semibold">No Image</span>
+                      <div className="w-full h-full flex flex-col items-center justify-center p-1 text-[#1F3D2B] text-center">
+                        <span className="material-symbols-outlined text-[20px] text-[#8B5E3C] leading-none mb-0.5">spa</span>
+                        <span className="font-serif text-[8px] font-semibold text-[#1F3D2B] leading-tight truncate max-w-full px-0.5">
+                          {name.trim() || 'Default'}
+                        </span>
+                      </div>
                     )}
                   </div>
                   {imageUrl && (
@@ -578,7 +591,7 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
                     type="text"
                     value={imageUrl}
                     onChange={(e) => setImageUrl(e.target.value)}
-                    placeholder="/img/product-1.jpg"
+                    placeholder="Leave empty for default branded card or enter image URL"
                     className="w-full h-11 px-4 bg-white rounded-xl border border-stone-200 text-stone-800 text-xs sm:text-sm placeholder:text-stone-400 focus:outline-none focus:border-[#1E4E35] transition-all"
                   />
 
@@ -990,11 +1003,24 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
                 return (
                   <div key={prod.id} className="p-4 hover:bg-stone-50/60 transition-colors space-y-3">
                     <div className="flex items-start gap-3">
-                      <img
-                        src={prod.images[0]}
-                        alt={prod.name}
-                        className="w-14 h-14 rounded-xl object-cover bg-stone-100 border border-stone-200 shrink-0"
-                      />
+                      <div className="relative w-14 h-14 rounded-xl overflow-hidden border border-[#EADFD0] bg-[#EADFD0]/40 flex items-center justify-center shrink-0">
+                        {prod.images?.[0] && prod.images[0] !== '/img/product-1.jpg' ? (
+                          <img
+                            src={prod.images[0]}
+                            alt={prod.name}
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none';
+                              const fallback = e.currentTarget.parentElement?.querySelector('.admin-tile-fallback');
+                              if (fallback) fallback.classList.remove('hidden');
+                            }}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : null}
+                        <div className={`admin-tile-fallback w-full h-full flex flex-col items-center justify-center p-0.5 text-center ${prod.images?.[0] && prod.images[0] !== '/img/product-1.jpg' ? 'hidden' : ''}`}>
+                          <span className="material-symbols-outlined text-[20px] text-[#8B5E3C] leading-none mb-0.5">spa</span>
+                          <span className="font-serif text-[7px] font-semibold text-[#1F3D2B] leading-tight truncate max-w-full px-0.5">{prod.name}</span>
+                        </div>
+                      </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-1.5 font-bold text-stone-900 text-sm">
                           <span className="truncate">{prod.name}</span>
@@ -1095,11 +1121,24 @@ export const ProductsTab: React.FC<ProductsTabProps> = ({
                       <tr key={prod.id} className="hover:bg-stone-50/60 transition-colors">
                         <td className="py-3 px-4">
                           <div className="flex items-center gap-3">
-                            <img
-                              src={prod.images[0]}
-                              alt={prod.name}
-                              className="w-12 h-12 rounded-xl object-cover bg-stone-100 border border-stone-200 shrink-0"
-                            />
+                            <div className="relative w-12 h-12 rounded-xl overflow-hidden border border-[#EADFD0] bg-[#EADFD0]/40 flex items-center justify-center shrink-0">
+                              {prod.images?.[0] && prod.images[0] !== '/img/product-1.jpg' ? (
+                                <img
+                                  src={prod.images[0]}
+                                  alt={prod.name}
+                                  onError={(e) => {
+                                    e.currentTarget.style.display = 'none';
+                                    const fallback = e.currentTarget.parentElement?.querySelector('.admin-tile-fallback');
+                                    if (fallback) fallback.classList.remove('hidden');
+                                  }}
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : null}
+                              <div className={`admin-tile-fallback w-full h-full flex flex-col items-center justify-center p-0.5 text-center ${prod.images?.[0] && prod.images[0] !== '/img/product-1.jpg' ? 'hidden' : ''}`}>
+                                <span className="material-symbols-outlined text-[18px] text-[#8B5E3C] leading-none mb-0.5">spa</span>
+                                <span className="font-serif text-[6px] font-semibold text-[#1F3D2B] leading-tight truncate max-w-full px-0.5">{prod.name}</span>
+                              </div>
+                            </div>
                             <div className="min-w-0">
                               <div className="flex items-center gap-1.5 font-bold text-stone-900 text-sm">
                                 <span className="truncate">{prod.name}</span>

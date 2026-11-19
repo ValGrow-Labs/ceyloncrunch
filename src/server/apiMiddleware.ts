@@ -982,10 +982,11 @@ export function createApiMiddleware(supabaseUrl?: string, serviceRoleKey?: strin
                 },
               ];
 
-          const imageUrl =
+          const rawImg =
             (payload.images && Array.isArray(payload.images) && payload.images.length > 0)
               ? payload.images[0]
-              : payload.image_url || '/img/product-1.jpg';
+              : payload.image_url;
+          const imageUrl = rawImg && rawImg !== '/img/product-1.jpg' ? rawImg : '';
 
           // Strictly use only existing columns in public.products table
           const newProductRow: Record<string, any> = {

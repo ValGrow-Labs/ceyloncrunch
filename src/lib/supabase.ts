@@ -288,6 +288,133 @@ export async function getProductsFromSupabase(includeInactive = true): Promise<D
   }
 }
 
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/**
+ * Checks if a string conforms to the standard UUID v4/generic format
+ */
+export function isValidUuid(id: string | null | undefined): boolean {
+  if (!id || typeof id !== 'string') return false;
+  return UUID_REGEX.test(id.trim());
+}
+
+/**
+ * Resolves a product ID (which may be a database UUID or a local/fallback ID like 'prod-mixed-nuts')
+ * to its corresponding PostgreSQL UUID in Supabase, looking up by slug if necessary.
+ */
+export async function resolveProductUuid(productId: string, slug?: string): Promise<string | null> {
+  if (!supabase) return null;
+  const trimmed = productId ? productId.trim() : '';
+  if (isValidUuid(trimmed)) {
+    return trimmed;
+  }
+  const candidateSlugs = [
+    slug,
+    trimmed,
+    trimmed.startsWith('prod-') ? trimmed.replace(/^prod-/, '') : null,
+  ].filter(Boolean) as string[];
+
+  if (candidateSlugs.length === 0) return null;
+
+  try {
+    const { data } = await supabase
+      .from('products')
+      .select('id')
+      .in('slug', candidateSlugs)
+      .limit(1)
+      .maybeSingle();
+    return data?.id || null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Optimizes and converts an image File into a persistent Data URL (JPEG/WebP)
+ * Resizes down to a max dimension (e.g. 1000px) and quality 0.82 to keep payload lightweight (~40-80KB)
+ * Works in both browser runtime and Node.js test environments.
+ */
+export async function fileToOptimizedDataUrl(
+  file: File | Blob,
+  maxDimension = 1000,
+  quality = 0.82
+): Promise<string> {
+  const mimeType = file.type || 'image/jpeg';
+
+  // Node.js environment (e.g. unit tests or server)
+  if (typeof window === 'undefined' || typeof document === 'undefined') {
+    if (typeof (file as any).arrayBuffer === 'function') {
+      const buffer = Buffer.from(await (file as any).arrayBuffer());
+      return `data:${mimeType};base64,${buffer.toString('base64')}`;
+    }
+  }
+
+  // Browser environment with HTML5 Canvas optimization
+  return new Promise((resolve) => {
+    try {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const rawDataUrl = e.target?.result as string;
+        if (!rawDataUrl) {
+          resolve('');
+          return;
+        }
+
+        try {
+          const img = new window.Image();
+          img.onload = () => {
+            try {
+              let width = img.width;
+              let height = img.height;
+
+              if (width > maxDimension || height > maxDimension) {
+                if (width > height) {
+                  height = Math.round((height * maxDimension) / width);
+                  width = maxDimension;
+                } else {
+                  width = Math.round((width * maxDimension) / height);
+                  height = maxDimension;
+                }
+              }
+
+              const canvas = document.createElement('canvas');
+              canvas.width = width;
+              canvas.height = height;
+              const ctx = canvas.getContext('2d');
+              if (!ctx) {
+                resolve(rawDataUrl);
+                return;
+              }
+
+              ctx.drawImage(img, 0, 0, width, height);
+
+              try {
+                const webp = canvas.toDataURL('image/webp', quality);
+                if (webp.startsWith('data:image/webp')) {
+                  resolve(webp);
+                  return;
+                }
+              } catch {}
+
+              resolve(canvas.toDataURL('image/jpeg', quality));
+            } catch {
+              resolve(rawDataUrl);
+            }
+          };
+          img.onerror = () => resolve(rawDataUrl);
+          img.src = rawDataUrl;
+        } catch {
+          resolve(rawDataUrl);
+        }
+      };
+      reader.onerror = () => resolve('');
+      reader.readAsDataURL(file);
+    } catch {
+      resolve('');
+    }
+  });
+}
+
 /**
  * Admin: Update variant price directly in Supabase product_variants table
  */
@@ -296,6 +423,10 @@ export async function adminUpdateVariantPrice(
   newPrice: number
 ): Promise<{ success: boolean; error?: string }> {
   if (!supabase) return { success: false, error: 'Database is not connected.' };
+  if (!isValidUuid(variantId)) {
+    // Static mock variant; local state update is sufficient
+    return { success: true };
+  }
   if (isNaN(newPrice) || newPrice < 0) {
     return { success: false, error: 'Price must be a non-negative number.' };
   }
@@ -324,6 +455,10 @@ export async function adminUpdateVariantOriginalPrice(
   newOriginalPrice: number | null
 ): Promise<{ success: boolean; error?: string }> {
   if (!supabase) return { success: false, error: 'Database is not connected.' };
+  if (!isValidUuid(variantId)) {
+    // Static mock variant; local state update is sufficient
+    return { success: true };
+  }
   try {
     const val = newOriginalPrice === null || isNaN(newOriginalPrice) ? null : Math.round(newOriginalPrice);
     const { error } = await supabase
@@ -348,6 +483,10 @@ export async function adminUpdateVariantStock(
   newStock: number
 ): Promise<{ success: boolean; error?: string }> {
   if (!supabase) return { success: false, error: 'Database is not connected.' };
+  if (!isValidUuid(variantId)) {
+    // Static mock variant; local state update is sufficient
+    return { success: true };
+  }
   const safeStock = Math.max(0, Math.round(newStock));
 
   try {
@@ -378,6 +517,10 @@ export async function adminUpdateVariant(
   }
 ): Promise<{ success: boolean; error?: string }> {
   if (!supabase) return { success: false, error: 'Database is not connected.' };
+  if (!isValidUuid(variantId)) {
+    // Static mock variant; local state update is sufficient
+    return { success: true };
+  }
 
   const payload: Record<string, any> = { updated_at: new Date().toISOString() };
   if (updates.price !== undefined) {
@@ -423,6 +566,10 @@ export async function adminUpdateVariantWeight(
   newWeight: string
 ): Promise<{ success: boolean; error?: string }> {
   if (!supabase) return { success: false, error: 'Database is not connected.' };
+  if (!isValidUuid(variantId)) {
+    // Static mock variant; local state update is sufficient
+    return { success: true };
+  }
   const trimmed = newWeight.trim();
   if (!trimmed) {
     return { success: false, error: 'Variant weight cannot be empty.' };
@@ -454,15 +601,22 @@ export async function adminSyncProductVariants(
     price: number;
     original_price?: number | null;
     stock?: number;
-  }>
+  }>,
+  slug?: string
 ): Promise<{ success: boolean; error?: string }> {
   if (!supabase) return { success: false, error: 'Database is not connected.' };
   try {
+    const targetUuid = await resolveProductUuid(productId, slug);
+    if (!targetUuid) {
+      // Product only exists locally, not in Supabase
+      return { success: true };
+    }
+
     // 1. Fetch current variants for this product
     const { data: existingRows, error: fetchErr } = await supabase
       .from('product_variants')
       .select('id')
-      .eq('product_id', productId);
+      .eq('product_id', targetUuid);
 
     if (fetchErr) {
       return { success: false, error: fetchErr.message };
@@ -501,7 +655,7 @@ export async function adminSyncProductVariants(
           .from('product_variants')
           .insert([
             {
-              product_id: productId,
+              product_id: targetUuid,
               weight: trimmedWeight,
               price: Math.round(v.price),
               original_price: v.original_price ? Math.round(v.original_price) : null,
@@ -518,59 +672,88 @@ export async function adminSyncProductVariants(
 }
 
 /**
- * Admin: Upload product image to Supabase Storage and update database image URL
+ * Admin: Upload product image to Supabase Storage and update database image URL.
+ * Automatically falls back to a persistent optimized data URL if Supabase Storage is offline or RLS blocks direct client upload.
  */
 export async function adminUploadProductImage(
   productId: string,
-  file: File
+  file: File,
+  slug?: string
 ): Promise<{ success: boolean; url?: string; error?: string }> {
-  if (!supabase) return { success: false, error: 'Database is not connected.' };
   try {
-    const fileExt = file.name.split('.').pop() || 'jpg';
-    const filePath = `products/${productId}_${Date.now()}.${fileExt}`;
+    let publicUrl: string | null = null;
+    const targetUuid = await resolveProductUuid(productId, slug);
+    const safePrefix = targetUuid || (productId ? productId.replace(/[^a-zA-Z0-9_-]/g, '') : 'prod');
+    const fileExt = file.name ? (file.name.split('.').pop() || 'jpg') : 'jpg';
+    const filePath = `products/${safePrefix}_${Date.now()}.${fileExt}`;
 
-    const { error: uploadError } = await supabase.storage
-      .from('product-images')
-      .upload(filePath, file, { upsert: true });
+    // 1. Try uploading to Supabase Storage if connected
+    if (supabase) {
+      try {
+        const { error: uploadError } = await supabase.storage
+          .from('product-images')
+          .upload(filePath, file, { upsert: true, contentType: file.type || 'image/jpeg' });
 
-    if (uploadError) {
-      return { success: false, error: uploadError.message };
+        if (!uploadError) {
+          const { data: publicData } = supabase.storage
+            .from('product-images')
+            .getPublicUrl(filePath);
+
+          if (publicData?.publicUrl) {
+            publicUrl = publicData.publicUrl;
+          }
+        } else {
+          console.warn('Supabase storage upload returned notice, falling back to persistent data URL:', uploadError.message);
+        }
+      } catch (storageErr) {
+        console.warn('Supabase storage exception, falling back to persistent data URL:', storageErr);
+      }
     }
 
-    const { data: publicData } = supabase.storage
-      .from('product-images')
-      .getPublicUrl(filePath);
-
-    const publicUrl = publicData?.publicUrl;
+    // 2. Fallback to optimized permanent Base64 Data URL if storage was unavailable or failed
     if (!publicUrl) {
-      return { success: false, error: 'Failed to retrieve public image URL.' };
+      publicUrl = await fileToOptimizedDataUrl(file);
     }
 
-    // Update in product_images table and products.images array
-    await supabase.from('product_images').insert([
-      {
-        product_id: productId,
-        url: publicUrl,
-        is_primary: true,
-        display_order: 0,
-      },
-    ]);
+    if (!publicUrl) {
+      return { success: false, error: 'Failed to process image file.' };
+    }
 
-    // Update primary image in products table
-    const { data: currentProd } = await supabase
-      .from('products')
-      .select('images')
-      .eq('id', productId)
-      .single();
+    // 3. Update in database if targetUuid is known
+    if (supabase && targetUuid) {
+      try {
+        await supabase.from('product_images').insert([
+          {
+            product_id: targetUuid,
+            url: publicUrl,
+            is_primary: true,
+            display_order: 0,
+          },
+        ]);
+      } catch {}
 
-    const otherImages = currentProd?.images ? currentProd.images.slice(1) : [];
-    await supabase
-      .from('products')
-      .update({
-        images: [publicUrl, ...otherImages],
-        updated_at: new Date().toISOString(),
-      })
-      .eq('id', productId);
+      try {
+        const { data: currentProd } = await supabase
+          .from('products')
+          .select('images')
+          .eq('id', targetUuid)
+          .single();
+
+        const otherImages = (currentProd?.images || []).filter(
+          (img: string) => img && !img.startsWith('blob:') && img !== publicUrl
+        );
+
+        await supabase
+          .from('products')
+          .update({
+            images: [publicUrl, ...otherImages],
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', targetUuid);
+      } catch (dbErr) {
+        console.warn('Database image URL sync notice:', dbErr);
+      }
+    }
 
     return { success: true, url: publicUrl };
   } catch (err: any) {
@@ -583,17 +766,23 @@ export async function adminUploadProductImage(
  */
 export async function adminUpdateProductImageUrl(
   productId: string,
-  newImageUrl: string
+  newImageUrl: string,
+  slug?: string
 ): Promise<{ success: boolean; error?: string }> {
   if (!supabase) return { success: false, error: 'Database is not connected.' };
   const trimmed = newImageUrl.trim();
   if (!trimmed) return { success: false, error: 'Image URL cannot be empty.' };
 
   try {
+    const targetUuid = await resolveProductUuid(productId, slug);
+    if (!targetUuid) {
+      return { success: true };
+    }
+
     const { data: currentProd } = await supabase
       .from('products')
       .select('images')
-      .eq('id', productId)
+      .eq('id', targetUuid)
       .single();
 
     const otherImages = currentProd?.images ? currentProd.images.slice(1) : [];
@@ -603,7 +792,7 @@ export async function adminUpdateProductImageUrl(
         images: [trimmed, ...otherImages],
         updated_at: new Date().toISOString(),
       })
-      .eq('id', productId);
+      .eq('id', targetUuid);
 
     if (error) {
       return { success: false, error: error.message };
@@ -907,7 +1096,9 @@ export async function adminCreateProduct(payload: {
           roast_style: payload.roast_style?.trim() || 'Artisan Roasted',
           rating: 5.0,
           review_count: 0,
-          images: payload.images.length > 0 ? payload.images : ['https://images.unsplash.com/photo-1549488344-1f9b8d2bd1f3?auto=format&fit=crop&w=800&q=80'],
+          images: payload.images && payload.images.length > 0
+            ? payload.images.filter((img) => img && img.trim() && img !== '/img/product-1.jpg' && !img.includes('photo-1549488344'))
+            : [],
           description: payload.description.trim(),
           extended_about: [],
           ingredients: payload.ingredients?.trim() || '100% pure artisan harvested',
@@ -1002,10 +1193,16 @@ export async function adminUpdateProductDetails(
     is_featured?: boolean;
     images?: string[];
     is_active?: boolean;
-  }
+  },
+  slug?: string
 ): Promise<{ success: boolean; error?: string }> {
   if (!supabase) return { success: false, error: 'Database is not connected.' };
   try {
+    const targetUuid = await resolveProductUuid(productId, slug);
+    if (!targetUuid) {
+      return { success: true };
+    }
+
     const payload: Record<string, any> = {
       updated_at: new Date().toISOString(),
     };
@@ -1018,13 +1215,17 @@ export async function adminUpdateProductDetails(
     if (updates.description !== undefined) payload.description = updates.description.trim();
     if (updates.ingredients !== undefined) payload.ingredients = updates.ingredients.trim();
     if (updates.is_featured !== undefined) payload.is_featured = updates.is_featured;
-    if (updates.images !== undefined) payload.images = updates.images;
+    if (updates.images !== undefined) {
+      payload.images = updates.images.filter(
+        (img) => img && img.trim() && img !== '/img/product-1.jpg' && !img.includes('photo-1549488344')
+      );
+    }
     if (updates.is_active !== undefined) payload.is_active = updates.is_active;
 
     const { error } = await supabase
       .from('products')
       .update(payload)
-      .eq('id', productId);
+      .eq('id', targetUuid);
 
     if (error) {
       return { success: false, error: error.message };
@@ -1040,14 +1241,20 @@ export async function adminUpdateProductDetails(
  */
 export async function adminToggleProductActive(
   productId: string,
-  isActive: boolean
+  isActive: boolean,
+  slug?: string
 ): Promise<{ success: boolean; error?: string }> {
   if (!supabase) return { success: false, error: 'Database is not connected.' };
   try {
+    const targetUuid = await resolveProductUuid(productId, slug);
+    if (!targetUuid) {
+      return { success: true };
+    }
+
     const { error } = await supabase
       .from('products')
       .update({ is_active: isActive, updated_at: new Date().toISOString() })
-      .eq('id', productId);
+      .eq('id', targetUuid);
 
     if (error) {
       return { success: false, error: error.message };
@@ -1062,13 +1269,31 @@ export async function adminToggleProductActive(
  * Admin: Delete a product from Supabase
  */
 export async function adminDeleteProduct(
-  productId: string
+  productId: string,
+  slug?: string
 ): Promise<{ success: boolean; error?: string }> {
   if (!supabase) return { success: false, error: 'Database is not connected.' };
   try {
-    // Delete product variants first if foreign key cascade is not enabled
-    await supabase.from('product_variants').delete().eq('product_id', productId);
-    const { error } = await supabase.from('products').delete().eq('id', productId);
+    const targetUuid = await resolveProductUuid(productId, slug);
+    if (!targetUuid) {
+      // Product was a static/mock fallback and never existed in Supabase.
+      // Deleting it from the database succeeds cleanly.
+      return { success: true };
+    }
+
+    // Delete associated relations first to avoid foreign key violations
+    try {
+      await supabase.from('product_images').delete().eq('product_id', targetUuid);
+    } catch {}
+    try {
+      await supabase.from('customer_wishlist').delete().eq('product_id', targetUuid);
+    } catch {}
+    try {
+      await supabase.from('reviews').delete().eq('product_id', targetUuid);
+    } catch {}
+    await supabase.from('product_variants').delete().eq('product_id', targetUuid);
+
+    const { error } = await supabase.from('products').delete().eq('id', targetUuid);
     if (error) {
       return { success: false, error: error.message };
     }
@@ -1132,29 +1357,41 @@ export async function adminDeleteNewsletterSubscriber(id: string): Promise<boole
 }
 
 /**
- * Admin: Upload banner/hero image to Supabase Storage
+ * Admin: Upload banner/hero image to Supabase Storage with persistent data URL fallback
  */
 export async function adminUploadBannerImage(
   file: File
 ): Promise<{ success: boolean; url?: string; error?: string }> {
-  if (!supabase) return { success: false, error: 'Database is not connected.' };
   try {
-    const fileExt = file.name.split('.').pop() || 'jpg';
+    let publicUrl: string | null = null;
+    const fileExt = file.name ? (file.name.split('.').pop() || 'jpg') : 'jpg';
     const filePath = `banners/banner_${Date.now()}.${fileExt}`;
 
-    const { error: uploadError } = await supabase.storage
-      .from('product-images')
-      .upload(filePath, file, { upsert: true });
+    if (supabase) {
+      try {
+        const { error: uploadError } = await supabase.storage
+          .from('product-images')
+          .upload(filePath, file, { upsert: true, contentType: file.type || 'image/jpeg' });
 
-    if (uploadError) {
-      return { success: false, error: uploadError.message };
+        if (!uploadError) {
+          const { data: publicData } = supabase.storage
+            .from('product-images')
+            .getPublicUrl(filePath);
+
+          publicUrl = publicData?.publicUrl || null;
+        }
+      } catch {}
     }
 
-    const { data: publicData } = supabase.storage
-      .from('product-images')
-      .getPublicUrl(filePath);
+    if (!publicUrl) {
+      publicUrl = await fileToOptimizedDataUrl(file);
+    }
 
-    return { success: true, url: publicData?.publicUrl };
+    if (!publicUrl) {
+      return { success: false, error: 'Failed to process banner image.' };
+    }
+
+    return { success: true, url: publicUrl };
   } catch (err: any) {
     return { success: false, error: err?.message || 'Banner upload failed.' };
   }
@@ -1348,19 +1585,22 @@ export async function addCustomerWishlistItem(productId: string): Promise<boolea
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return false;
 
+    const targetUuid = await resolveProductUuid(productId);
+    if (!targetUuid) return false;
+
     // Verify if already present
     const { data: existing } = await supabase
       .from('customer_wishlist')
       .select('id')
       .eq('user_id', user.id)
-      .eq('product_id', productId)
+      .eq('product_id', targetUuid)
       .maybeSingle();
 
     if (existing) return true;
 
     const { error } = await supabase
       .from('customer_wishlist')
-      .insert([{ user_id: user.id, product_id: productId }]);
+      .insert([{ user_id: user.id, product_id: targetUuid }]);
 
     return !error;
   } catch {
@@ -1376,11 +1616,15 @@ export async function removeCustomerWishlistItem(productId: string): Promise<boo
   try {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return false;
+
+    const targetUuid = await resolveProductUuid(productId);
+    if (!targetUuid) return true;
+
     const { error } = await supabase
       .from('customer_wishlist')
       .delete()
       .eq('user_id', user.id)
-      .eq('product_id', productId);
+      .eq('product_id', targetUuid);
     return !error;
   } catch {
     return false;

@@ -32,7 +32,16 @@ export const ProductDetail: React.FC = () => {
   const [selectedVariantId, setSelectedVariantId] = useState<string>('');
   const [quantity, setQuantity] = useState(1);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [detailImageError, setDetailImageError] = useState(false);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+
+  const validImages = useMemo(() => {
+    return (product?.images || []).filter(
+      (img) => typeof img === 'string' && img.trim() && img !== '/img/product-1.jpg' && !img.includes('photo-1549488344')
+    );
+  }, [product?.images]);
+
+  const activeImageUrl = validImages[activeImageIndex] || validImages[0] || '';
 
   // Accordion state
   const [openAccordions, setOpenAccordions] = useState<Record<string, boolean>>({
@@ -204,11 +213,20 @@ export const ProductDetail: React.FC = () => {
         <div className="lg:col-span-6 flex flex-col gap-3.5">
           {/* Main Photo Viewport */}
           <div className="relative w-full aspect-square rounded-2xl overflow-hidden bg-[#f6f3f2] border border-[#EADFD0] shadow-sm">
-            <img
-              src={product.images[activeImageIndex] || product.images[0]}
-              alt={product.name}
-              className="w-full h-full object-cover"
-            />
+            {!detailImageError && activeImageUrl ? (
+              <img
+                src={activeImageUrl}
+                alt={product.name}
+                onError={() => setDetailImageError(true)}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full flex flex-col items-center justify-center p-6 bg-[#EADFD0]/40 text-[#1F3D2B] text-center">
+                <span className="material-symbols-outlined text-[48px] text-[#8B5E3C] mb-2">spa</span>
+                <span className="font-serif text-base sm:text-lg font-semibold text-[#1F3D2B] max-w-sm px-4">{product.name}</span>
+                <span className="text-[11px] sm:text-xs text-[#8B5E3C] mt-1 font-medium tracking-wide">Pure Artisan Provisions</span>
+              </div>
+            )}
 
             {/* Floating Top Badges */}
             <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
@@ -238,9 +256,9 @@ export const ProductDetail: React.FC = () => {
             </button>
 
             {/* Pagination Dots */}
-            {product.images.length > 1 && (
+            {validImages.length > 1 && (
               <div className="absolute bottom-3 left-0 right-0 flex items-center justify-center gap-1.5 z-10">
-                {product.images.map((_, i) => (
+                {validImages.map((_, i) => (
                   <button
                     key={i}
                     type="button"
@@ -256,9 +274,9 @@ export const ProductDetail: React.FC = () => {
           </div>
 
           {/* Thumbnails Row */}
-          {product.images.length > 1 && (
+          {validImages.length > 1 && (
             <div className="flex gap-2.5 overflow-x-auto no-scrollbar pb-1">
-              {product.images.map((img, idx) => (
+              {validImages.map((img, idx) => (
                 <button
                   key={idx}
                   type="button"

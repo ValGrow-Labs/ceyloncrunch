@@ -423,6 +423,59 @@ function getInitialCustomerSession(): { uid: string | null; email: string | null
   return { uid: null, email: null };
 }
 
+const DELETED_PRODUCTS_KEY = 'ceylon_crunch_deleted_products';
+
+export function getDeletedProductIdentifiers(): Set<string> {
+  try {
+    const raw = localStorage.getItem(DELETED_PRODUCTS_KEY);
+    if (raw) {
+      const arr = JSON.parse(raw);
+      if (Array.isArray(arr)) {
+        return new Set(arr);
+      }
+    }
+  } catch {}
+  return new Set();
+}
+
+export function recordDeletedProductIdentifier(...identifiers: (string | undefined | null)[]): void {
+  try {
+    const set = getDeletedProductIdentifiers();
+    let changed = false;
+    for (const id of identifiers) {
+      if (id && typeof id === 'string') {
+        const trimmed = id.trim();
+        if (trimmed && !set.has(trimmed)) {
+          set.add(trimmed);
+          changed = true;
+        }
+      }
+    }
+    if (changed) {
+      localStorage.setItem(DELETED_PRODUCTS_KEY, JSON.stringify(Array.from(set)));
+    }
+  } catch {}
+}
+
+export function unrecordDeletedProductIdentifier(...identifiers: (string | undefined | null)[]): void {
+  try {
+    const set = getDeletedProductIdentifiers();
+    let changed = false;
+    for (const id of identifiers) {
+      if (id && typeof id === 'string') {
+        const trimmed = id.trim();
+        if (trimmed && set.has(trimmed)) {
+          set.delete(trimmed);
+          changed = true;
+        }
+      }
+    }
+    if (changed) {
+      localStorage.setItem(DELETED_PRODUCTS_KEY, JSON.stringify(Array.from(set)));
+    }
+  } catch {}
+}
+
 export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Purge any stale legacy unpartitioned localStorage caches so customer data privacy is strictly protected
   try {
@@ -440,8 +493,14 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   // Synchronous session derivation for flicker-free data persistence across page refreshes
   const initialSession = useMemo(() => getInitialCustomerSession(), []);
 
-  // Products state (initial skeleton from INITIAL_PRODUCTS, immediately hydrated from Supabase)
-  const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
+  // Products state (initial skeleton from INITIAL_PRODUCTS minus deleted products, immediately hydrated from Supabase)
+  const [products, setProducts] = useState<Product[]>(() => {
+    const deletedSet = getDeletedProductIdentifiers();
+    if (deletedSet.size > 0) {
+      return INITIAL_PRODUCTS.filter((p) => !deletedSet.has(p.id) && !deletedSet.has(p.slug));
+    }
+    return INITIAL_PRODUCTS;
+  });
   const [isLoadingProducts, setIsLoadingProducts] = useState<boolean>(true);
 
   // Cart
@@ -810,7 +869,14 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           roastStyle: p.roast_style || undefined,
           rating: Number(p.rating),
           reviewCount: p.review_count,
-          images: p.images || [],
+          images: (p.images || []).filter(
+            (img) =>
+              typeof img === 'string' &&
+              img.trim().length > 0 &&
+              !img.startsWith('blob:') &&
+              img !== '/img/product-1.jpg' &&
+              !img.includes('photo-1549488344')
+          ),
           description: p.description,
           extendedAbout: p.extended_about || [],
           ingredients: p.ingredients,
@@ -829,12 +895,18 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           isActive: p.is_active !== false,
         }));
         const dbSlugs = new Set(mappedProducts.map((p) => p.slug));
-        const extraInitial = INITIAL_PRODUCTS.filter((p) => !dbSlugs.has(p.slug)).map((p) => ({
-          ...p,
-          variants: sortVariantsByWeight(p.variants || []),
-          isActive: p.isActive !== false,
-        }));
-        setProducts([...extraInitial, ...mappedProducts]);
+        const deletedSet = getDeletedProductIdentifiers();
+        const extraInitial = INITIAL_PRODUCTS
+          .filter((p) => !dbSlugs.has(p.slug) && !deletedSet.has(p.id) && !deletedSet.has(p.slug))
+          .map((p) => ({
+            ...p,
+            variants: sortVariantsByWeight(p.variants || []),
+            isActive: p.isActive !== false,
+          }));
+        const filteredMappedProducts = mappedProducts.filter(
+          (p) => !deletedSet.has(p.id) && !deletedSet.has(p.slug)
+        );
+        setProducts([...extraInitial, ...filteredMappedProducts]);
       }
     } catch (err) {
       console.warn('Error fetching products from Supabase:', err);
@@ -1899,7 +1971,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       roastStyle: payload.roastStyle || 'Artisan Roasted',
       rating: 5.0,
       reviewCount: 0,
-      images: payload.images.length > 0 ? payload.images : ['https://images.unsplash.com/photo-1549488344-1f9b8d2bd1f3?auto=format&fit=crop&w=800&q=80'],
+      images: payload.images && payload.images.length > 0
+        ? payload.images.filter((img) => img && img.trim() && img !== '/img/product-1.jpg' && !img.includes('photo-1549488344'))
+        : [],
       description: payload.description,
       extendedAbout: [],
       ingredients: payload.ingredients || '',
@@ -1916,6 +1990,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         stock: v.stock,
       })),
     };
+
+    const newSlug = payload.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    unrecordDeletedProductIdentifier(newSlug, newProduct.id);
 
     setProducts((prev) => [newProduct, ...prev]);
     return { success: true };
@@ -1937,6 +2014,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       isActive?: boolean;
     }
   ): Promise<{ success: boolean; error?: string }> => {
+    const prod = products.find((p) => p.id === productId);
+    const prodSlug = prod?.slug || (productId.startsWith('prod-') ? productId.replace(/^prod-/, '') : productId);
+
     // Optimistic local state update
     setProducts((prev) =>
       prev.map((p) => {
@@ -1971,7 +2051,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         is_featured: updates.isFeatured,
         images: updates.images,
         is_active: updates.isActive,
-      });
+      }, prodSlug);
       if (!res.success) {
         await refreshProducts();
         return { success: false, error: res.error };
@@ -1985,13 +2065,16 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     productId: string,
     isActive: boolean
   ): Promise<{ success: boolean; error?: string }> => {
+    const prod = products.find((p) => p.id === productId);
+    const prodSlug = prod?.slug || (productId.startsWith('prod-') ? productId.replace(/^prod-/, '') : productId);
+
     // Optimistic local state update
     setProducts((prev) =>
       prev.map((p) => (p.id === productId ? { ...p, isActive } : p))
     );
 
     if (isSupabaseConfigured) {
-      const res = await adminToggleProductActive(productId, isActive);
+      const res = await adminToggleProductActive(productId, isActive, prodSlug);
       if (!res.success) {
         showToast(`Visibility update failed: ${res.error}`);
         await refreshProducts();
@@ -2008,10 +2091,18 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const deleteProduct = async (productId: string): Promise<{ success: boolean; error?: string }> => {
-    setProducts((prev) => prev.filter((p) => p.id !== productId));
+    const prod = products.find((p) => p.id === productId);
+    const prodSlug = prod?.slug || (productId.startsWith('prod-') ? productId.replace(/^prod-/, '') : productId);
+
+    // Optimistically remove from state
+    setProducts((prev) => prev.filter((p) => p.id !== productId && p.slug !== prodSlug));
+    // Persist deleted identifier locally so it never resurrects from INITIAL_PRODUCTS or on refresh
+    recordDeletedProductIdentifier(productId, prodSlug, prod?.id);
+
     if (isSupabaseConfigured) {
-      const res = await adminDeleteProduct(productId);
+      const res = await adminDeleteProduct(productId, prodSlug);
       if (!res.success) {
+        unrecordDeletedProductIdentifier(productId, prodSlug, prod?.id);
         await refreshProducts();
         return { success: false, error: res.error };
       }

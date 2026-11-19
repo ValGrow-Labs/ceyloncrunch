@@ -10,7 +10,7 @@ import {
   Check,
   Loader2,
 } from 'lucide-react';
-import { adminUploadBannerImage } from '../../lib/supabase';
+import { adminUploadBannerImage, fileToOptimizedDataUrl } from '../../lib/supabase';
 
 interface HeroConfig {
   eyebrow: string;
@@ -66,10 +66,13 @@ export const HeroSectionTab: React.FC<HeroSectionTabProps> = ({ showToast }) => 
       setConfig((prev) => ({ ...prev, bgImage: res.url! }));
       showToast('Hero background photograph updated!');
     } else {
-      // Fallback local preview
-      const localUrl = URL.createObjectURL(file);
-      setConfig((prev) => ({ ...prev, bgImage: localUrl }));
-      showToast('Preview updated with uploaded photo');
+      try {
+        const localUrl = await fileToOptimizedDataUrl(file);
+        setConfig((prev) => ({ ...prev, bgImage: localUrl }));
+        showToast('Preview updated with uploaded photo');
+      } catch {
+        showToast('Failed to process image file');
+      }
     }
   };
 
