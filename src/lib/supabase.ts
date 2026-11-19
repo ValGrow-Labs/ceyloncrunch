@@ -840,12 +840,22 @@ export async function placeOrderRpc(
       p_order_notes: payload.order_notes || null,
       p_gift_note: payload.gift_note || null,
       p_idempotency_key: payload.idempotency_key || null,
+      p_user_id: payload.user_id || null,
     };
-    if (payload.user_id) {
-      rpcParams.p_user_id = payload.user_id;
-    }
 
-    const { data, error } = await supabase.rpc('place_order', rpcParams);
+    let { data, error } = await supabase.rpc('place_order', rpcParams);
+
+    // If ambiguous or parameter overload resolution fails (PGRST203), retry without p_user_id
+    if (error && (error.code === 'PGRST203' || error.message?.includes('best candidate function'))) {
+      const { p_user_id, ...paramsWithoutUserId } = rpcParams;
+      const retry = await supabase.rpc('place_order', paramsWithoutUserId);
+      if (!retry.error) {
+        data = retry.data;
+        error = null;
+      } else {
+        error = retry.error;
+      }
+    }
 
     if (error) {
       return { success: false, error: error.message };
