@@ -37,8 +37,6 @@ import { CaseStudyPage } from './pages/case-study/CaseStudyPage';
 
 import { Database, AlertTriangle } from 'lucide-react';
 import { isSupabaseConfigured } from './lib/supabase';
-import { PasscodeProvider } from './contexts/PasscodeContext';
-import { PasscodeGate } from './components/auth/PasscodeGate';
 
 const isCaseStudyRoute = (pathname: string): boolean => {
   if (!pathname) return false;
@@ -205,11 +203,5 @@ function AppContent() {
 }
 
 export default function App() {
-  return (
-    <PasscodeProvider>
-      <PasscodeGate>
-        <AppContent />
-      </PasscodeGate>
-    </PasscodeProvider>
-  );
+  return <AppContent />;
 }

@@ -105,11 +105,11 @@ describe('Passcode Security & Gate Validation', () => {
     );
   });
 
-  it('App.tsx protects all routes with PasscodeGate', () => {
+  it('App.tsx allows direct public access to the storefront without a site-wide passcode gate', () => {
     const filePath = path.resolve('src/App.tsx');
     const content = fs.readFileSync(filePath, 'utf-8');
 
-    assert.ok(content.includes('<PasscodeGate>'), 'App.tsx must wrap application in PasscodeGate');
-    assert.ok(content.includes('<PasscodeProvider>'), 'App.tsx must provide PasscodeProvider context');
+    assert.ok(!content.includes('<PasscodeGate>'), 'App.tsx must not gate application behind PasscodeGate');
+    assert.ok(!content.includes('<PasscodeProvider>'), 'App.tsx must not require PasscodeProvider wrapper');
   });
 });

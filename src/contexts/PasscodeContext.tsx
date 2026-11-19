@@ -21,8 +21,8 @@ interface PasscodeContextType {
 const PasscodeContext = createContext<PasscodeContextType | null>(null);
 
 export const PasscodeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [isUnlocked, setIsUnlocked] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isUnlocked, setIsUnlocked] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [isLockedOut, setIsLockedOut] = useState(false);
   const [remainingLockoutSeconds, setRemainingLockoutSeconds] = useState(0);
 
