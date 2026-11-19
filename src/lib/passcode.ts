@@ -12,15 +12,11 @@ const STORAGE_KEY_ATTEMPTS = 'ceylon_crunch_passcode_attempts';
 const MAX_FAILED_ATTEMPTS = 5;
 const LOCKOUT_DURATION_MS = 30 * 1000; // 30 seconds
 
-// Pre-computed SHA-256 hashes of standard default passcodes:
+// Authorized site passcode: strictly 'crunch2026'
+// Pre-computed SHA-256 hash of 'crunch2026':
 // 'crunch2026' -> 24db66463194d962f64b289b5ccf5912206b5c4302dc09e4b6d907c7a8b6f145
-// 'ceylon2026' -> 0e54454254db324351d733ef212f4d68381b98551e0da8bdaad444d307c8343a
-// 'ceyloncrunch' -> fb158a889b0aa6230a33706819fc08fbdebe091d7290bbae42511f7f6264690e
-const DEFAULT_PASSCODE_HASHES: string[] = [
-  '24db66463194d962f64b289b5ccf5912206b5c4302dc09e4b6d907c7a8b6f145', // crunch2026
-  '0e54454254db324351d733ef212f4d68381b98551e0da8bdaad444d307c8343a', // ceylon2026
-  'fb158a889b0aa6230a33706819fc08fbdebe091d7290bbae42511f7f6264690e', // ceyloncrunch
-];
+export const AUTHORIZED_PASSCODE = 'crunch2026';
+export const AUTHORIZED_PASSCODE_HASH = '24db66463194d962f64b289b5ccf5912206b5c4302dc09e4b6d907c7a8b6f145';
 
 // Configured environment passcode (if set)
 const getConfiguredPasscode = (): string | null => {
@@ -236,30 +232,14 @@ export function resetFailedAttempts(): void {
 }
 
 /**
- * Validate input passcode against configured passcode and defaults
+ * Validate input passcode: ONLY 'crunch2026' is authorized to access the storefront.
  */
 export async function verifyPasscode(input: string): Promise<boolean> {
   const cleanInput = input.trim();
   if (!cleanInput) return false;
 
   const inputHash = await computeHash(cleanInput);
-
-  // 1. Check against environment configured passcode (if set)
-  const envPasscode = getConfiguredPasscode();
-  if (envPasscode) {
-    if (cleanInput === envPasscode) return true;
-    const envHash = await computeHash(envPasscode);
-    if (constantTimeEquals(inputHash, envHash)) return true;
-  }
-
-  // 2. Check against default hashes
-  for (const expectedHash of DEFAULT_PASSCODE_HASHES) {
-    if (constantTimeEquals(inputHash, expectedHash)) {
-      return true;
-    }
-  }
-
-  return false;
+  return constantTimeEquals(inputHash, AUTHORIZED_PASSCODE_HASH);
 }
 
 /**
@@ -308,17 +288,9 @@ export async function isSiteUnlocked(): Promise<boolean> {
         return false;
       }
 
-      // Check if hash matches environment passcode or default hashes
-      const envPasscode = getConfiguredPasscode();
-      if (envPasscode) {
-        const envHash = await computeHash(envPasscode);
-        if (constantTimeEquals(session.hash, envHash)) return true;
-      }
-
-      for (const expectedHash of DEFAULT_PASSCODE_HASHES) {
-        if (constantTimeEquals(session.hash, expectedHash)) {
-          return true;
-        }
+      // Strictly verify that the saved session hash matches 'crunch2026'
+      if (constantTimeEquals(session.hash, AUTHORIZED_PASSCODE_HASH)) {
+        return true;
       }
     } catch {}
     return false;

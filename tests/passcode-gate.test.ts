@@ -12,10 +12,16 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 describe('Passcode Security & Gate Validation', () => {
-  it('correctly validates accepted default passcodes', async () => {
+  it('strictly validates crunch2026 as the only accepted passcode', async () => {
     assert.strictEqual(await verifyPasscode('crunch2026'), true);
-    assert.strictEqual(await verifyPasscode('ceylon2026'), true);
-    assert.strictEqual(await verifyPasscode('ceyloncrunch'), true);
+  });
+
+  it('strictly rejects any other passcodes including former defaults', async () => {
+    assert.strictEqual(await verifyPasscode('ceylon2026'), false);
+    assert.strictEqual(await verifyPasscode('ceyloncrunch'), false);
+    assert.strictEqual(await verifyPasscode('admin'), false);
+    assert.strictEqual(await verifyPasscode('password'), false);
+    assert.strictEqual(await verifyPasscode('123456'), false);
   });
 
   it('correctly handles whitespace-trimmed passcodes', async () => {
