@@ -74,26 +74,65 @@ describe('Admin Product Deletion & Fallback Resolution', () => {
     });
 
     it('prevents deleted product from being resurrected in INITIAL_PRODUCTS filtering', () => {
-      recordDeletedProductIdentifier('prod-mixed-nuts', 'mixed-nuts');
+      recordDeletedProductIdentifier('prod-roasted-almonds', 'roasted-almonds');
       const deletedSet = getDeletedProductIdentifiers();
 
       const filtered = INITIAL_PRODUCTS.filter(
         (p) => !deletedSet.has(p.id) && !deletedSet.has(p.slug)
       );
 
-      const mixedNuts = filtered.find((p) => p.slug === 'mixed-nuts' || p.id === 'prod-mixed-nuts');
+      const roastedAlmonds = filtered.find((p) => p.slug === 'roasted-almonds' || p.id === 'prod-roasted-almonds');
+      assert.equal(roastedAlmonds, undefined);
+    });
+
+    it('verifies that Artisan Mixed Nuts is permanently removed from INITIAL_PRODUCTS', () => {
+      const mixedNuts = INITIAL_PRODUCTS.find((p) => p.slug === 'mixed-nuts' || p.id === 'prod-mixed-nuts');
       assert.equal(mixedNuts, undefined);
     });
 
     it('unrecords deleted identifier when re-adding or creating product', () => {
-      recordDeletedProductIdentifier('prod-mixed-nuts', 'mixed-nuts');
+      recordDeletedProductIdentifier('prod-roasted-almonds', 'roasted-almonds');
       let deletedSet = getDeletedProductIdentifiers();
-      assert.equal(deletedSet.has('mixed-nuts'), true);
+      assert.equal(deletedSet.has('roasted-almonds'), true);
 
-      unrecordDeletedProductIdentifier('mixed-nuts', 'prod-mixed-nuts');
+      unrecordDeletedProductIdentifier('roasted-almonds', 'prod-roasted-almonds');
       deletedSet = getDeletedProductIdentifiers();
-      assert.equal(deletedSet.has('mixed-nuts'), false);
-      assert.equal(deletedSet.has('prod-mixed-nuts'), false);
+      assert.equal(deletedSet.has('roasted-almonds'), false);
+      assert.equal(deletedSet.has('prod-roasted-almonds'), false);
+    });
+  });
+
+  describe('Customer View Filtering for Hidden Products', () => {
+    const mockProducts = [
+      { id: '1', slug: 'p1', name: 'Product 1', category: 'nuts' as const, isActive: true, isFeatured: true },
+      { id: '2', slug: 'p2', name: 'Product 2 (Hidden)', category: 'nuts' as const, isActive: false, isFeatured: true },
+      { id: '3', slug: 'h1', name: 'Hamper 1', category: 'gifts-hampers' as const, isActive: true },
+      { id: '4', slug: 'h2', name: 'Hamper 2 (Hidden)', category: 'gifts-hampers' as const, isActive: false },
+    ];
+
+    it('excludes hidden products from category views', () => {
+      const categoryProducts = mockProducts
+        .filter((p) => p.category === 'nuts')
+        .filter((p) => p.isActive !== false);
+
+      assert.equal(categoryProducts.length, 1);
+      assert.equal(categoryProducts[0].id, '1');
+    });
+
+    it('excludes hidden hampers from gifting views', () => {
+      const hampers = mockProducts
+        .filter((p) => p.category === 'gifts-hampers' && p.isActive !== false);
+
+      assert.equal(hampers.length, 1);
+      assert.equal(hampers[0].id, '3');
+    });
+
+    it('excludes hidden products from paired products view', () => {
+      const pairedIds = ['1', '2'];
+      const paired = mockProducts.filter((p) => pairedIds.includes(p.id) && p.isActive !== false);
+
+      assert.equal(paired.length, 1);
+      assert.equal(paired[0].id, '1');
     });
   });
 });

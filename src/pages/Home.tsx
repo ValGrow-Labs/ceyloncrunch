@@ -18,14 +18,26 @@ export const Home: React.FC = () => {
       'curated-hamper',
       'nuts-box',
     ];
+    const activeProducts = products.filter((p) => p.isActive !== false);
     const picked: typeof products = [];
+    const seen = new Set<string>();
+
     for (const slug of desiredSlugs) {
-      const match = products.find((p) => p.slug === slug && p.isActive !== false);
-      if (match) picked.push(match);
+      const match = activeProducts.find((p) => p.slug === slug);
+      if (match && !seen.has(match.id)) {
+        picked.push(match);
+        seen.add(match.id);
+      }
     }
-    // If any items are missing, fill with active featured products
-    if (picked.length === 0) {
-      return products.filter((p) => p.isFeatured && p.isActive !== false).slice(0, 6);
+    // Fill up to 6 with active featured or regular active products
+    if (picked.length < 6) {
+      for (const p of activeProducts) {
+        if (!seen.has(p.id)) {
+          picked.push(p);
+          seen.add(p.id);
+          if (picked.length >= 6) break;
+        }
+      }
     }
     return picked;
   }, [products]);

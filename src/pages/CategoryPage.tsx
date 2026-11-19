@@ -140,6 +140,7 @@ export const CategoryPage: React.FC = () => {
   const filteredProducts = useMemo(() => {
     return products
       .filter((p) => p.category === slug)
+      .filter((p) => p.isActive !== false)
       .filter((p) => {
         if (activeSubFilter === 'all') return true;
         const query = activeSubFilter.toLowerCase();

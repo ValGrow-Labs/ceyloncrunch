@@ -161,7 +161,7 @@ export const ProductDetail: React.FC = () => {
   };
 
   // Pairs Well With products
-  const pairedProducts = products.filter((p) => product.pairsWithIds.includes(p.id));
+  const pairedProducts = products.filter((p) => product.pairsWithIds.includes(p.id) && p.isActive !== false);
 
   const discountPercent =
     currentVariant && currentVariant.originalPrice && currentVariant.originalPrice > currentVariant.price

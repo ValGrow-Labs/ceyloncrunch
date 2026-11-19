@@ -302,7 +302,7 @@ export function isValidUuid(id: string | null | undefined): boolean {
  * Resolves a product ID (which may be a database UUID or a local/fallback ID like 'prod-mixed-nuts')
  * to its corresponding PostgreSQL UUID in Supabase, looking up by slug if necessary.
  */
-export async function resolveProductUuid(productId: string, slug?: string): Promise<string | null> {
+export async function resolveProductUuid(productId: string, slug?: string, name?: string): Promise<string | null> {
   if (!supabase) return null;
   const trimmed = productId ? productId.trim() : '';
   if (isValidUuid(trimmed)) {
@@ -314,19 +314,31 @@ export async function resolveProductUuid(productId: string, slug?: string): Prom
     trimmed.startsWith('prod-') ? trimmed.replace(/^prod-/, '') : null,
   ].filter(Boolean) as string[];
 
-  if (candidateSlugs.length === 0) return null;
-
-  try {
-    const { data } = await supabase
-      .from('products')
-      .select('id')
-      .in('slug', candidateSlugs)
-      .limit(1)
-      .maybeSingle();
-    return data?.id || null;
-  } catch {
-    return null;
+  if (candidateSlugs.length > 0) {
+    try {
+      const { data } = await supabase
+        .from('products')
+        .select('id')
+        .in('slug', candidateSlugs)
+        .limit(1)
+        .maybeSingle();
+      if (data?.id) return data.id;
+    } catch {}
   }
+
+  if (name && name.trim()) {
+    try {
+      const { data } = await supabase
+        .from('products')
+        .select('id')
+        .ilike('name', name.trim())
+        .limit(1)
+        .maybeSingle();
+      if (data?.id) return data.id;
+    } catch {}
+  }
+
+  return null;
 }
 
 /**
@@ -1270,18 +1282,47 @@ export async function adminToggleProductActive(
  */
 export async function adminDeleteProduct(
   productId: string,
-  slug?: string
+  slug?: string,
+  name?: string
 ): Promise<{ success: boolean; error?: string }> {
   if (!supabase) return { success: false, error: 'Database is not connected.' };
   try {
-    const targetUuid = await resolveProductUuid(productId, slug);
+    const targetUuid = await resolveProductUuid(productId, slug, name);
     if (!targetUuid) {
       // Product was a static/mock fallback and never existed in Supabase.
       // Deleting it from the database succeeds cleanly.
       return { success: true };
     }
 
-    // Delete associated relations first to avoid foreign key violations
+    // Check if any orders reference this product to preserve customer order history
+    try {
+      const { data: referencingOrders } = await supabase
+        .from('order_items')
+        .select('id')
+        .eq('product_id', targetUuid)
+        .limit(1);
+
+      if (referencingOrders && referencingOrders.length > 0) {
+        // Soft-delete: Mark as inactive and DELETED to preserve customer order history
+        const { error: softErr } = await supabase
+          .from('products')
+          .update({
+            is_active: false,
+            badge: 'DELETED',
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', targetUuid);
+
+        if (softErr) {
+          return { success: false, error: softErr.message };
+        }
+        return { success: true };
+      }
+    } catch {
+      // If order_items check fails or table structure differs, proceed with hard-delete with soft fallback
+    }
+
+    // Hard-delete associated relations first to avoid foreign key violations
     try {
       await supabase.from('product_images').delete().eq('product_id', targetUuid);
     } catch {}
@@ -1291,10 +1332,25 @@ export async function adminDeleteProduct(
     try {
       await supabase.from('reviews').delete().eq('product_id', targetUuid);
     } catch {}
-    await supabase.from('product_variants').delete().eq('product_id', targetUuid);
+    try {
+      await supabase.from('product_variants').delete().eq('product_id', targetUuid);
+    } catch {}
 
     const { error } = await supabase.from('products').delete().eq('id', targetUuid);
     if (error) {
+      // Fallback: If hard delete fails due to any historical constraints, safely soft delete
+      const { error: fallbackSoftErr } = await supabase
+        .from('products')
+        .update({
+          is_active: false,
+          badge: 'DELETED',
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', targetUuid);
+
+      if (!fallbackSoftErr) {
+        return { success: true };
+      }
       return { success: false, error: error.message };
     }
     return { success: true };

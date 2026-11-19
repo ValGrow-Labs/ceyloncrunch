@@ -27,7 +27,7 @@ const getConfiguredPasscode = (): string | null => {
         return envVal.trim();
       }
     }
-  } catch {}
+  } catch { }
   try {
     if (typeof process !== 'undefined' && process.env) {
       const envVal = process.env.VITE_SITE_PASSCODE || process.env.VITE_PASSCODE;
@@ -35,7 +35,7 @@ const getConfiguredPasscode = (): string | null => {
         return envVal.trim();
       }
     }
-  } catch {}
+  } catch { }
   return null;
 };
 
@@ -81,7 +81,7 @@ function sha256Fallback(ascii: string): string {
   words[words.length] = (asciiBitLength / maxWord) | 0;
   words[words.length] = asciiBitLength | 0;
 
-  for (j = 0; j < words.length; ) {
+  for (j = 0; j < words.length;) {
     const w = words.slice(j, (j += 16));
     const oldHash = hash.slice(0);
 
@@ -145,7 +145,7 @@ export async function computeHash(input: string): Promise<string> {
         .map((b) => b.toString(16).padStart(2, '0'))
         .join('');
     }
-  } catch {}
+  } catch { }
   return sha256Fallback(normalized);
 }
 
@@ -188,7 +188,7 @@ export function getRateLimitStatus(): { isLocked: boolean; remainingSeconds: num
       const remainingSeconds = Math.ceil((state.lockedUntil - now) / 1000);
       return { isLocked: true, remainingSeconds };
     }
-  } catch {}
+  } catch { }
   return { isLocked: false, remainingSeconds: 0 };
 }
 
@@ -203,7 +203,7 @@ export function recordFailedAttempt(): { isLocked: boolean; remainingSeconds: nu
     if (raw) {
       try {
         state = JSON.parse(raw);
-      } catch {}
+      } catch { }
     }
 
     state.count = (state.count || 0) + 1;
@@ -216,7 +216,7 @@ export function recordFailedAttempt(): { isLocked: boolean; remainingSeconds: nu
     }
 
     localStorage.setItem(STORAGE_KEY_ATTEMPTS, JSON.stringify(state));
-  } catch {}
+  } catch { }
   return { isLocked: false, remainingSeconds: 0 };
 }
 
@@ -228,7 +228,7 @@ export function resetFailedAttempts(): void {
     if (typeof window !== 'undefined') {
       localStorage.removeItem(STORAGE_KEY_ATTEMPTS);
     }
-  } catch {}
+  } catch { }
 }
 
 /**
@@ -265,12 +265,12 @@ export async function saveSession(inputPasscode: string): Promise<void> {
   // Permanently save to localStorage (persists indefinitely until browser data is cleared)
   try {
     localStorage.setItem(STORAGE_KEY_LOCAL, payload);
-  } catch {}
+  } catch { }
 
   // Also hydrate sessionStorage for current active tab
   try {
     sessionStorage.setItem(STORAGE_KEY_SESSION, payload);
-  } catch {}
+  } catch { }
 }
 
 /**
@@ -292,7 +292,7 @@ export async function isSiteUnlocked(): Promise<boolean> {
       if (constantTimeEquals(session.hash, AUTHORIZED_PASSCODE_HASH)) {
         return true;
       }
-    } catch {}
+    } catch { }
     return false;
   };
 
@@ -303,10 +303,10 @@ export async function isSiteUnlocked(): Promise<boolean> {
       // Re-hydrate sessionStorage for this tab
       try {
         sessionStorage.setItem(STORAGE_KEY_SESSION, localRaw);
-      } catch {}
+      } catch { }
       return true;
     }
-  } catch {}
+  } catch { }
 
   // 2. Fallback check for sessionStorage
   try {
@@ -314,7 +314,7 @@ export async function isSiteUnlocked(): Promise<boolean> {
     if (sessionRaw && (await checkPayload(sessionRaw))) {
       return true;
     }
-  } catch {}
+  } catch { }
 
   return false;
 }
@@ -327,5 +327,5 @@ export function lockSite(): void {
   try {
     sessionStorage.removeItem(STORAGE_KEY_SESSION);
     localStorage.removeItem(STORAGE_KEY_LOCAL);
-  } catch {}
+  } catch { }
 }

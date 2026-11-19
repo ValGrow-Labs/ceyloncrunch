@@ -493,9 +493,23 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   // Synchronous session derivation for flicker-free data persistence across page refreshes
   const initialSession = useMemo(() => getInitialCustomerSession(), []);
 
-  // Products state (initial skeleton from INITIAL_PRODUCTS minus deleted products, immediately hydrated from Supabase)
+  // Products state (loads cached database products if available, falls back to INITIAL_PRODUCTS)
   const [products, setProducts] = useState<Product[]>(() => {
     const deletedSet = getDeletedProductIdentifiers();
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        const cached = localStorage.getItem('ceylon_crunch_db_products');
+        if (cached) {
+          const parsed = JSON.parse(cached) as Product[];
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            return parsed.filter(
+              (p) => !deletedSet.has(p.id) && !deletedSet.has(p.slug) && p.badge !== 'DELETED'
+            );
+          }
+        }
+      }
+    } catch {}
+
     if (deletedSet.size > 0) {
       return INITIAL_PRODUCTS.filter((p) => !deletedSet.has(p.id) && !deletedSet.has(p.slug));
     }
@@ -853,60 +867,63 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     try {
       const dbProducts = await getProductsFromSupabase();
       if (dbProducts && dbProducts.length > 0) {
-        const mappedProducts: Product[] = dbProducts.map((p) => ({
-          id: p.id,
-          slug: p.slug,
-          name: p.name,
-          subtitle: p.subtitle || '',
-          category: (() => {
-            const raw = String(p.category || 'nuts').toLowerCase();
-            if (raw === 'mixes') return 'nuts';
-            if (raw === 'berries') return 'dried-fruits';
-            return raw;
-          })() as any,
-          badge: p.badge || undefined,
-          origin: p.origin,
-          roastStyle: p.roast_style || undefined,
-          rating: Number(p.rating),
-          reviewCount: p.review_count,
-          images: (p.images || []).filter(
-            (img) =>
-              typeof img === 'string' &&
-              img.trim().length > 0 &&
-              !img.startsWith('blob:') &&
-              img !== '/img/product-1.jpg' &&
-              !img.includes('photo-1549488344')
-          ),
-          description: p.description,
-          extendedAbout: p.extended_about || [],
-          ingredients: p.ingredients,
-          storage: p.storage,
-          shelfLife: p.shelf_life,
-          allergenNotice: p.allergen_notice || '',
-          variants: sortVariantsByWeight((p.variants || []).map((v) => ({
-            id: v.id,
-            weight: v.weight,
-            price: Number(v.price),
-            originalPrice: v.original_price ? Number(v.original_price) : undefined,
-            stock: v.stock,
-          }))),
-          pairsWithIds: [],
-          isFeatured: p.is_featured,
-          isActive: p.is_active !== false,
-        }));
-        const dbSlugs = new Set(mappedProducts.map((p) => p.slug));
         const deletedSet = getDeletedProductIdentifiers();
-        const extraInitial = INITIAL_PRODUCTS
-          .filter((p) => !dbSlugs.has(p.slug) && !deletedSet.has(p.id) && !deletedSet.has(p.slug))
+        const mappedProducts: Product[] = dbProducts
+          .filter(
+            (p) =>
+              p.badge !== 'DELETED' &&
+              !p.name?.startsWith('[DELETED]') &&
+              !deletedSet.has(p.id) &&
+              !deletedSet.has(p.slug)
+          )
           .map((p) => ({
-            ...p,
-            variants: sortVariantsByWeight(p.variants || []),
-            isActive: p.isActive !== false,
+            id: p.id,
+            slug: p.slug,
+            name: p.name,
+            subtitle: p.subtitle || '',
+            category: (() => {
+              const raw = String(p.category || 'nuts').toLowerCase();
+              if (raw === 'mixes') return 'nuts';
+              if (raw === 'berries') return 'dried-fruits';
+              return raw;
+            })() as any,
+            badge: p.badge || undefined,
+            origin: p.origin,
+            roastStyle: p.roast_style || undefined,
+            rating: Number(p.rating),
+            reviewCount: p.review_count,
+            images: (p.images || []).filter(
+              (img) =>
+                typeof img === 'string' &&
+                img.trim().length > 0 &&
+                !img.startsWith('blob:') &&
+                img !== '/img/product-1.jpg' &&
+                !img.includes('photo-1549488344')
+            ),
+            description: p.description,
+            extendedAbout: p.extended_about || [],
+            ingredients: p.ingredients,
+            storage: p.storage,
+            shelfLife: p.shelf_life,
+            allergenNotice: p.allergen_notice || '',
+            variants: sortVariantsByWeight((p.variants || []).map((v) => ({
+              id: v.id,
+              weight: v.weight,
+              price: Number(v.price),
+              originalPrice: v.original_price ? Number(v.original_price) : undefined,
+              stock: v.stock,
+            }))),
+            pairsWithIds: [],
+            isFeatured: p.is_featured,
+            isActive: p.is_active !== false,
           }));
-        const filteredMappedProducts = mappedProducts.filter(
-          (p) => !deletedSet.has(p.id) && !deletedSet.has(p.slug)
-        );
-        setProducts([...extraInitial, ...filteredMappedProducts]);
+
+        // Cache synced catalog into localStorage for fast offline/subsequent boots
+        try {
+          localStorage.setItem('ceylon_crunch_db_products', JSON.stringify(mappedProducts));
+        } catch {}
+
+        setProducts(mappedProducts);
       }
     } catch (err) {
       console.warn('Error fetching products from Supabase:', err);
@@ -2080,6 +2097,16 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         await refreshProducts();
         return { success: false, error: res.error };
       }
+
+      // Update cached products in localStorage
+      try {
+        const cached = localStorage.getItem('ceylon_crunch_db_products');
+        if (cached) {
+          const parsed = JSON.parse(cached) as Product[];
+          const updated = parsed.map((p) => (p.id === productId ? { ...p, isActive } : p));
+          localStorage.setItem('ceylon_crunch_db_products', JSON.stringify(updated));
+        }
+      } catch {}
     }
 
     showToast(
@@ -2093,6 +2120,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const deleteProduct = async (productId: string): Promise<{ success: boolean; error?: string }> => {
     const prod = products.find((p) => p.id === productId);
     const prodSlug = prod?.slug || (productId.startsWith('prod-') ? productId.replace(/^prod-/, '') : productId);
+    const prodName = prod?.name;
 
     // Optimistically remove from state
     setProducts((prev) => prev.filter((p) => p.id !== productId && p.slug !== prodSlug));
@@ -2100,12 +2128,22 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     recordDeletedProductIdentifier(productId, prodSlug, prod?.id);
 
     if (isSupabaseConfigured) {
-      const res = await adminDeleteProduct(productId, prodSlug);
+      const res = await adminDeleteProduct(productId, prodSlug, prodName);
       if (!res.success) {
         unrecordDeletedProductIdentifier(productId, prodSlug, prod?.id);
         await refreshProducts();
         return { success: false, error: res.error };
       }
+
+      // Re-cache updated catalog in localStorage
+      try {
+        const cached = localStorage.getItem('ceylon_crunch_db_products');
+        if (cached) {
+          const parsed = JSON.parse(cached) as Product[];
+          const updated = parsed.filter((p) => p.id !== productId && p.slug !== prodSlug);
+          localStorage.setItem('ceylon_crunch_db_products', JSON.stringify(updated));
+        }
+      } catch {}
     }
     return { success: true };
   };
